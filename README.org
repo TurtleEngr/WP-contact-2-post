@@ -1,3 +1,4 @@
+#+BEGIN_EXPORT html
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -60,26 +61,26 @@ blockquote {
   </style>
 </head>
 <body>
-```
-# make-core
+#+END_EXPORT
+* make-core
 
-![version](https://img.shields.io/badge/version-0.1.1-orange.svg)
+[[https://img.shields.io/badge/version-VERSION-orange.svg][version]]
 
-![WordPress](https://img.shields.io/badge/WordPress-Compatible-blue.svg)
+[[https://img.shields.io/badge/WordPress-Compatible-blue.svg][WordPress]]
 
 Create posts from forms.
 
-## Installation
+** Installation
 
-Source: <https://moria.whyayh.com/rel/released/software/own/make-core>
+Source: https://moria.whyayh.com/rel/released/software/own/make-core
 
-1.  Download the contact2post-0.1.1.zip file.
-2.  Use Add Plugins, Upload Plugin, Install, Activate
+1. Download the contact2post-VERSION.zip file.
+2. Use Add Plugins, Upload Plugin, Install, Activate
 
-## How do I use this plugin?
+** How do I use this plugin?
 
-### Prepare
+*** Prepare
 
-1.  Install Contact Forms 7
-2.  Install Flamingo
-3.  Install this plugin contact2post to your main WP site.
+1. Install Contact Forms 7
+2. Install Flamingo
+3. Install this plugin contact2post to your main WP site.
