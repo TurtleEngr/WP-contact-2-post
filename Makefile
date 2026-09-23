@@ -5,8 +5,8 @@
 
 SHELL := /bin/bash
 
-mProj = WP-contact2form
-mName = contact2form
+mName = contact-2-post
+mProj = WP-$(mName)
 mProduct = dist/$(mName)-VERSION.zip
 
 mBuildList = \

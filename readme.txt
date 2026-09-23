@@ -15,7 +15,7 @@ License URI: <http://www.gnu.org/licenses/gpl-2.0.html>
 
 Source: https://moria.whyayh.com/rel/released/software/own/make-core
 
-1. Download the contact2post-VERSION.zip file.
+1. Download the contact-2-post-VERSION.zip file.
 2. Use Add Plugins, Upload Plugin, Install, Activate
 
 == Changelog ==
