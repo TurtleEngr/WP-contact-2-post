@@ -1,69 +1,6 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
-<title>make-core</title>
-  <style type="text/css">
-body {
-    margin-left: 5%;
-    margin-right: 5%;
-    font-family: Times, serif;
-    font-size: 110%;
-}
-
-h1, h2, h3, h4, h5, h6, p {
-    font-family: Times, serif;
-}
-
-dt {
-    font-weight: bold
-}
-
-pre {
-    font-family: Courier New, monospace;
-    font-size: 100%;
-    font-weight: bold
-}
-
-ins {
-    color: green;
-}
-
-del {
-    color: red;
-}
-
-dt {
-    font-weight: bold
-}
-
-p.red {
-    color: red;
-}
-
-span.red {
-    color: red;
-}
-
-div.red {
-    color: red;
-}
-
-blockquote {
-    margin-left: 5%;
-    margin-right: 5%;
-    font-family: Times, serif;
-    font-style: italic;
-    text-align: left;
-    text-indent: 0px;
-}
-  </style>
-</head>
-<body>
-```
 # make-core
 
-![version](https://img.shields.io/badge/version-0.1.1-orange.svg)
+![version](https://img.shields.io/badge/version-0.1.3-orange.svg)
 
 ![WordPress](https://img.shields.io/badge/WordPress-Compatible-blue.svg)
 
@@ -73,7 +10,7 @@ Create posts from forms.
 
 Source: <https://moria.whyayh.com/rel/released/software/own/make-core>
 
-1.  Download the contact2post-0.1.1.zip file.
+1.  Download the contact-2-post-0.1.3.zip file.
 2.  Use Add Plugins, Upload Plugin, Install, Activate
 
 ## How do I use this plugin?
@@ -82,4 +19,4 @@ Source: <https://moria.whyayh.com/rel/released/software/own/make-core>
 
 1.  Install Contact Forms 7
 2.  Install Flamingo
-3.  Install this plugin contact2post to your main WP site.
+3.  Install this plugin contact-2-post to your main WP site.
