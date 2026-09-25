@@ -1,4 +1,4 @@
-# Makefile for github.com:TurtleEngr/WP-contact2form
+# Makefile for github.com:TurtleEngr/WP-contact-2-post
 
 # ----------
 # Macros
