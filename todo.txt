@@ -1,3 +1,9 @@
+# Note to simplify: change title-1 to your-subject
+# simplify: fC2pGetAttrLines() Enclose attributes with:
+ATTR-BEGIN
+attrubute: value
+ATTR-END
+
 title: {title-1}
 categories: {category-1}
 tags: {tags-1}
@@ -8,9 +14,7 @@ skip_mail: on
 create_post: true
 do_not_store: false
 post_template: template-event
-flamingo_subject: "title-1"
-
-# Note to simplify: change title-1 to your-subject
+flamingo_subject: "[title-1]"
 
     [text* your-name autocomplete:name minlength:3 maxlength:60
     [email* your-email autocomplete:email minlength:8 maxlength:60]
