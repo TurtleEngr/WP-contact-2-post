@@ -1,6 +1,6 @@
 # WP-contact-2-post
 
--   Version: 0.1.4
+-   Version: 0.1.5
 
 -   Create a \"Pending\" post from a Contact Form 7 submission, after
     Flamingo saves it. The post content comes from a template page.
@@ -19,14 +19,14 @@
 -   The form\'s \"create~post~\" and \"post~template~\" Additional
     Settings are read with WPCF7~ContactForm~::is~true~() and pref().
 -   The template page is split with parse~blocks~(). Attribute blocks
-    are removed, \[field\] is replaced only in the block HTML (not in
-    the block comment JSON), then serialize~blocks~().
+    are removed, {field} is replaced only in the block HTML (not in the
+    block comment JSON), then serialize~blocks~().
 
 ## Notes
 
 -   File fields: CF7 saves a hash of the file as the field value, so
-    \[file-field\] in a template shows that hash. The images are
-    attached to the post instead.
+    {file-field} in a template shows that hash. The images are attached
+    to the post instead.
 -   store-cf7-file-uploads only saves image files.
 -   Post author is the user with the site\'s admin~email~, else the
     lowest ID administrator. Content is still filtered by core kses,

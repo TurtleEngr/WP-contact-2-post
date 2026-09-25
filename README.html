@@ -65,7 +65,7 @@
 <body>
   <hr />
   <h1 id="wp-contact-2-post">WP-contact-2-post</h1>
-  <p>Version: 0.1.4</p>
+  <p>Version: 0.1.5</p>
   <p>Create a "Pending" post from a Contact Form 7 submission, after Flamingo
   saves it. The post content comes from a template page.</p>
   <p>See readme.txt for the user documentation.</p>
@@ -82,13 +82,13 @@
   Additional Settings are read with
   WPCF7<sub>ContactForm</sub>::is<sub>true</sub>() and pref().</p>
   <p>The template page is split with parse<sub>blocks</sub>(). Attribute
-  blocks are removed, [field] is replaced only in the block HTML (not in the
-  block comment JSON), then serialize<sub>blocks</sub>().</p>
+  blocks are removed, <cite>{field}</cite> is replaced only in the block HTML
+  (not in the block comment JSON), then serialize<sub>blocks</sub>().</p>
   <hr />
   <h2 id="notes">Notes</h2>
   <p>File fields: CF7 saves a hash of the file as the field value, so
-  [file-field] in a template shows that hash. The images are attached to the
-  post instead.</p>
+  <cite>{file-field}</cite> in a template shows that hash. The images are
+  attached to the post instead.</p>
   <p>store-cf7-file-uploads only saves image files.</p>
   <p>Post author is the user with the site's admin<sub>email</sub>, else the
   lowest ID administrator. Content is still filtered by core kses, because
