@@ -92,10 +92,13 @@ blockquote {
   [file-field] in a template shows that hash. The images are attached
   to the post instead.
 - store-cf7-file-uploads only saves image files.
-- Post author is 0 (no user). Content is also filtered by core kses,
-  because the submitter does not have unfiltered_html.
-- If there is no publish-date, the post date "floats": it is set when
-  the post is published.
+- Post author is the user with the site's admin_email, else the
+  lowest ID administrator. Content is still filtered by core kses,
+  because kses checks the submitter (not logged in), not the author.
+- If publish-date is valid, the date is fixed (post_date_gmt is set),
+  so publishing keeps it; a future date makes the post "Scheduled".
+  If there is no valid publish-date, the post date "floats": it is
+  set when the post is published.
 - ninja-auto-post-expire only acts on posts if its "Post" option is
   set to "Yes" in Settings, Post Expire Settings.
 

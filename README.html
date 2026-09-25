@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-Type"
         content="text/html; charset=utf-8" />
-  <title>contact-2-post</title>
+  <title>make-core</title>
   <style type="text/css">
 
   body {
@@ -64,27 +64,88 @@
 </head>
 <body>
   <hr />
-  <h1 id="make-core">make-core</h1>
-  <p><a href=
-  "https://img.shields.io/badge/version-0.1.2-orange.svg">version</a></p>
-  <p><a href=
-  "https://img.shields.io/badge/WordPress-Compatible-blue.svg">WordPress</a></p>
-  <p>Create posts from forms.</p>
+  <h1 id="wp-contact-2-post">WP-contact-2-post</h1>
+  <p>Version: 0.1.4</p>
+  <p>Create a "Pending" post from a Contact Form 7 submission, after Flamingo
+  saves it. The post content comes from a template page.</p>
+  <p>See readme.txt for the user documentation.</p>
   <hr />
-  <h2 id="installation">Installation</h2>
-  <p>Source: <a href=
-  "https://moria.whyayh.com/rel/released/software/own/make-core">https://moria.whyayh.com/rel/released/software/own/make-core</a></p>
-  <ol>
-    <li>Download the contact-2-post-0.1.2.zip file.</li>
-    <li>Use Add Plugins, Upload Plugin, Install, Activate</li>
-  </ol>
+  <h2 id="how-it-works">How it works</h2>
+  <p>store-cf7-file-uploads saves images in wpcf7<sub>beforesendmail</sub>
+  and fires nmr<sub>createattachmentidgenerated</sub>. This plugin collects
+  those IDs.</p>
+  <p>Flamingo saves the message in wpcf7<sub>submit</sub>, then fires
+  wpcf7<sub>afterflamingo</sub> with flamingo<sub>inboundid</sub>. This
+  plugin hooks that action, so no post is made when Flamingo does not store
+  the message (do<sub>notstore</sub>: true), or for spam.</p>
+  <p>The form's "create<sub>post</sub>" and "post<sub>template</sub>"
+  Additional Settings are read with
+  WPCF7<sub>ContactForm</sub>::is<sub>true</sub>() and pref().</p>
+  <p>The template page is split with parse<sub>blocks</sub>(). Attribute
+  blocks are removed, [field] is replaced only in the block HTML (not in the
+  block comment JSON), then serialize<sub>blocks</sub>().</p>
   <hr />
-  <h2 id="how-do-i-use-this-plugin">How do I use this plugin?</h2>
-  <h3 id="prepare">Prepare</h3>
-  <ol>
-    <li>Install Contact Forms 7</li>
-    <li>Install Flamingo</li>
-    <li>Install this plugin contact-2-post to your main WP site.</li>
-  </ol>
+  <h2 id="notes">Notes</h2>
+  <p>File fields: CF7 saves a hash of the file as the field value, so
+  [file-field] in a template shows that hash. The images are attached to the
+  post instead.</p>
+  <p>store-cf7-file-uploads only saves image files.</p>
+  <p>Post author is the user with the site's admin<sub>email</sub>, else the
+  lowest ID administrator. Content is still filtered by core kses, because
+  kses checks the submitter (not logged in), not the author.</p>
+  <p>If publish-date is valid, the date is fixed (post<sub>dategmt</sub> is
+  set), so publishing keeps it; a future date makes the post "Scheduled". If
+  there is no valid publish-date, the post date "floats": it is set when the
+  post is published.</p>
+  <p>ninja-auto-post-expire only acts on posts if its "Post" option is set to
+  "Yes" in Settings, Post Expire Settings.</p>
+  <hr />
+  <h2 id="test">Test</h2>
+  <p>test/setup.php and test/submit.php are run with wp-cli on a test site
+  with all the plugins active. They are not in the dist zip.</p>
+  <div class="sourceCode"
+       id="cb1">
+    <pre class="sourceCode bash"><code class="sourceCode bash"><span id=
+    "cb1-1"><a href="#cb1-1"
+   aria-hidden="true"
+   tabindex="-1"></a><span class=
+   "ex">wp</span> eval-file test/setup.php</span>
+<span id="cb1-2"><a href="#cb1-2"
+   aria-hidden="true"
+   tabindex="-1"></a><span class=
+   "ex">wp</span> eval-file test/submit.php full attach   <span class=
+   "co"># post, attachment, expiry</span></span>
+<span id="cb1-3"><a href="#cb1-3"
+   aria-hidden="true"
+   tabindex="-1"></a><span class=
+   "ex">wp</span> eval-file test/submit.php notitle       <span class=
+   "co"># title UNDEFINED</span></span>
+<span id="cb1-4"><a href="#cb1-4"
+   aria-hidden="true"
+   tabindex="-1"></a><span class=
+   "ex">wp</span> eval-file test/submit.php nostore       <span class=
+   "co"># no post</span></span>
+<span id="cb1-5"><a href="#cb1-5"
+   aria-hidden="true"
+   tabindex="-1"></a><span class=
+   "ex">wp</span> eval-file test/submit.php nocreate      <span class=
+   "co"># no post</span></span>
+<span id="cb1-6"><a href="#cb1-6"
+   aria-hidden="true"
+   tabindex="-1"></a><span class=
+   "ex">wp</span> eval-file test/submit.php badslug       <span class=
+   "co"># no post, error_log</span></span>
+<span id="cb1-7"><a href="#cb1-7"
+   aria-hidden="true"
+   tabindex="-1"></a><span class=
+   "ex">wp</span> eval-file test/submit.php full spam     <span class=
+   "co"># no post</span></span>
+<span id="cb1-8"><a href="#cb1-8"
+   aria-hidden="true"
+   tabindex="-1"></a><span class="ex">wp</span> post list <span class=
+   "at">--post_type</span><span class="op">=</span>post <span class=
+   "at">--post_status</span><span class=
+   "op">=</span>pending</span></code></pre>
+  </div>
 </body>
 </html>

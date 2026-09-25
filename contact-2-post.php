@@ -105,7 +105,7 @@ function fC2pCreatePost($pTemplate, $pFields, $pAttachIdList)
     $tPost = [
         'post_type'    => 'post',
         'post_status'  => 'pending',
-        'post_author'  => 0,
+        'post_author'  => fC2pGetAdminId(),
         'post_title'   => $tTitle !== '' ? $tTitle : 'UNDEFINED',
         'post_content' => serialize_blocks($tBlockList),
     ];
@@ -239,6 +239,18 @@ function fC2pGetTermIdList($pList, $pTax)
         }
     }
     return array_values(array_unique($tIdList));
+}
+
+// ----------------------------------------
+// The user with the site's admin_email, else the lowest ID administrator.
+function fC2pGetAdminId()
+{
+    $tUser = get_user_by('email', get_option('admin_email'));
+    if ($tUser && user_can($tUser, 'administrator')) {
+        return (int) $tUser->ID;
+    }
+    $tIdList = get_users(['role' => 'administrator', 'orderby' => 'ID', 'order' => 'ASC', 'number' => 1, 'fields' => 'ID']);
+    return $tIdList ? (int) $tIdList[0] : 0;
 }
 
 // ----------------------------------------

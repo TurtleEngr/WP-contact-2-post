@@ -15,7 +15,8 @@ as the post template.
 When a Contact Form 7 form is submitted and Flamingo saves the
 message, this plugin creates a post with status "Pending". The post
 content is copied from a template page, with each [field] replaced by
-the submitted value.
+the submitted value. The post author is the user with the site's
+Administration Email Address, or else the first administrator.
 
 Required plugins: Contact Form 7, Flamingo. Optional:
 store-cf7-file-uploads (images are attached to the post, and the first
@@ -57,7 +58,9 @@ expire-time: [field]
 * title - post title. Default: UNDEFINED
 * categories, tags - comma separated names or slugs. Only existing
   categories and tags are used; others are ignored.
-* publish-date - YYYY-MM-DD, time is set to 12:00. Default: now.
+* publish-date - YYYY-MM-DD, time is set to 12:00. This date is kept
+  when the post is published (a future date makes it "Scheduled").
+  Default: the time the post is published.
 * expire-date - YYYY-MM-DD. Saved in the ninja-auto-post-expire meta
   (_njtape_expiration_date).
 * expire-time - HH:MM. Default: 00:00
