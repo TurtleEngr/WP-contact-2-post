@@ -83,13 +83,13 @@ blockquote {
 - The form's "create_post" and "post_template" Additional Settings
   are read with WPCF7_ContactForm::is_true() and pref().
 - The template page is split with parse_blocks(). Attribute blocks
-  are removed, [field] is replaced only in the block HTML (not in the
+  are removed, {field} is replaced only in the block HTML (not in the
   block comment JSON), then serialize_blocks().
 
 ** Notes
 
 - File fields: CF7 saves a hash of the file as the field value, so
-  [file-field] in a template shows that hash. The images are attached
+  {file-field} in a template shows that hash. The images are attached
   to the post instead.
 - store-cf7-file-uploads only saves image files.
 - Post author is the user with the site's admin_email, else the

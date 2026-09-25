@@ -156,7 +156,7 @@ function fC2pCreatePost($pTemplate, $pFields, $pAttachIdList)
 
 // ----------------------------------------
 // If every non-empty line in a top-level block is "attr: value", return
-// [attr => value, ...] with [field] replaced (plain text). Else null.
+// [attr => value, ...] with {field} replaced (plain text). Else null.
 function fC2pGetAttrLines($pBlock, $pFields)
 {
     $tText = preg_replace('/<br\s*\/?>/i', "\n", (string) $pBlock['innerHTML']);
@@ -177,7 +177,7 @@ function fC2pGetAttrLines($pBlock, $pFields)
 }
 
 // ----------------------------------------
-// Replace [field] in the block's HTML (and its inner blocks). Block
+// Replace {field} in the block's HTML (and its inner blocks). Block
 // attributes (the JSON in the block comment) are not changed.
 function fC2pReplaceInBlock($pBlock, $pFields)
 {
@@ -194,12 +194,12 @@ function fC2pReplaceInBlock($pBlock, $pFields)
 }
 
 // ----------------------------------------
-// Single pass, so a value containing "[x]" is not expanded again.
-// Unknown [x] are left as is. For HTML: escape the value, and encode
+// Single pass, so a value containing "{x}" is not expanded again.
+// Unknown {x} are left as is. For HTML: escape the value, and encode
 // "[" "]" so submitted text can not become a shortcode.
 function fC2pReplaceFields($pText, $pFields, $pIsHtml)
 {
-    return preg_replace_callback('/\[([A-Za-z0-9_-]+)\]/', function ($pMatch) use ($pFields, $pIsHtml) {
+    return preg_replace_callback('/\{([A-Za-z0-9_-]+)\}/', function ($pMatch) use ($pFields, $pIsHtml) {
         if (!array_key_exists($pMatch[1], $pFields)) {
             return $pMatch[0];
         }

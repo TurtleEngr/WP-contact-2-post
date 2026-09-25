@@ -27,7 +27,7 @@ $_POST = [
     'pub' => '2026-10-15',
     'exp' => '2026-11-01',
     'etime' => '9:30',
-    'details' => "<script>alert(1)</script> [gallery] [your-name]\nline2",
+    'details' => "<script>alert(1)</script> [gallery] {your-name}\nline2",
 ];
 $tResult = $tForm->submit();
 echo 'status=' . $tResult['status'] . "\n";

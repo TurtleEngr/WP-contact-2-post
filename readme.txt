@@ -14,7 +14,7 @@ as the post template.
 
 When a Contact Form 7 form is submitted and Flamingo saves the
 message, this plugin creates a post with status "Pending". The post
-content is copied from a template page, with each [field] replaced by
+content is copied from a template page, with each {field} replaced by
 the submitted value. The post author is the user with the site's
 Administration Email Address, or else the first administrator.
 
@@ -37,22 +37,22 @@ messages never create a post.
 
 = Template page =
 
-All blocks of the PageSlug page are copied to the new post. [field] is
+All blocks of the PageSlug page are copied to the new post. {field} is
 replaced with the value of the form field with that name. Values are
 HTML escaped, and "[" "]" in values are encoded so they can not run a
 shortcode. Checkbox values are joined with ", ". If there is no field
-with that name, [field] is left as is.
+with that name, {field} is left as is.
 
 A top-level block with only these lines (one per line, or separated
 with Shift-Enter) is not copied. It sets the post attributes:
 
 `
-title: [field]
-categories: [field]
-tags: [field]
-publish-date: [field]
-expire-date: [field]
-expire-time: [field]
+title: {field}
+categories: {field}
+tags: {field}
+publish-date: {field}
+expire-date: {field}
+expire-time: {field}
 `
 
 * title - post title. Default: UNDEFINED

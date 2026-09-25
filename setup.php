@@ -6,39 +6,39 @@ wp_insert_term('music', 'post_tag');
 
 $cTemplate = <<<'TPL'
 <!-- wp:paragraph -->
-<p>title: Event: [ev-name]</p>
+<p>title: Event: {ev-name}</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>categories: [cats]<br>tags: [tagz]</p>
+<p>categories: {cats}<br>tags: {tagz}</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>publish-date: [pub]</p>
+<p>publish-date: {pub}</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>expire-date: [exp]<br>expire-time: [etime]</p>
+<p>expire-date: {exp}<br>expire-time: {etime}</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading -->
-<h2 class="wp-block-heading">[ev-name]</h2>
+<h2 class="wp-block-heading">{ev-name}</h2>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Details: [details] and [nofield]</p>
+<p>Details: {details} and {nofield} and [your-name]</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:group {"layout":{"type":"constrained"}} -->
 <div class="wp-block-group"><!-- wp:paragraph -->
-<p>From [your-name]</p>
+<p>From {your-name}</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 TPL;
 wp_insert_post(['post_type' => 'page', 'post_status' => 'draft', 'post_name' => 'event-template',
     'post_title' => 'Event Template', 'post_content' => wp_slash($cTemplate)]);
 wp_insert_post(['post_type' => 'page', 'post_status' => 'draft', 'post_name' => 'no-title-template',
-    'post_title' => 'No Title', 'post_content' => wp_slash("<!-- wp:paragraph -->\n<p>Hello [your-name]</p>\n<!-- /wp:paragraph -->")]);
+    'post_title' => 'No Title', 'post_content' => wp_slash("<!-- wp:paragraph -->\n<p>Hello {your-name}</p>\n<!-- /wp:paragraph -->")]);
 
 $cForm = '[text* your-name] [text ev-name] [checkbox cats "Events" "News" "Bogus"] [text tagz]'
     . ' [date pub] [date exp] [text etime] [textarea details] [submit]';
