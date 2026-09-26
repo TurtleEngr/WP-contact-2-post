@@ -1,7 +1,7 @@
 WP-contact-2-post
 =================
 
--   Version: 0.2.0
+-   Version: 1.0.0
 
 -   Create a \"Pending\" post from a Contact Form 7 submission, after
     Flamingo saves it. The post content comes from a template page.
