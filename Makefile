@@ -47,7 +47,6 @@ save development : check-dev
 	-ssh $(mServer) mkdir -p $(mPubDev)
 	rsync -a $(mDocList) readme.txt dist/$(mName)-$$(cat VERSION).zip $(mServer):$(mPubDev)
 	cp VERSION VERSION-dev
-	incver.sh -p
 	git ci -am Updated
 	git push origin develop
 	@echo 'If OK, make publish'
