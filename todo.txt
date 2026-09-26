@@ -4,7 +4,7 @@ ATTR-BEGIN
 attrubute: value
 ATTR-END
 
-title: {title-1}
+title: {your-subject}
 categories: {category-1}
 tags: {tags-1}
 expire-date: {date-1}

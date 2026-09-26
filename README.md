@@ -1,13 +1,15 @@
-# WP-contact-2-post
+WP-contact-2-post
+=================
 
--   Version: 0.1.6
+-   Version: 0.2.0
 
 -   Create a \"Pending\" post from a Contact Form 7 submission, after
     Flamingo saves it. The post content comes from a template page.
 
 -   See readme.txt for the user documentation.
 
-## How it works
+How it works
+------------
 
 -   store-cf7-file-uploads saves images in wpcf7~beforesendmail~ and
     fires nmr~createattachmentidgenerated~. This plugin collects those
@@ -22,7 +24,8 @@
     are removed, {field} is replaced only in the block HTML (not in the
     block comment JSON), then serialize~blocks~().
 
-## Notes
+Notes
+-----
 
 -   File fields: CF7 saves a hash of the file as the field value, so
     {file-field} in a template shows that hash. The images are attached
@@ -38,12 +41,13 @@
 -   ninja-auto-post-expire only acts on posts if its \"Post\" option is
     set to \"Yes\" in Settings, Post Expire Settings.
 
-## Test
+Test
+----
 
 -   test/setup.php and test/submit.php are run with wp-cli on a test
     site with all the plugins active. They are not in the dist zip.
 
-``` bash
+``` {.bash}
 wp eval-file test/setup.php
 wp eval-file test/submit.php full attach   # post, attachment, expiry
 wp eval-file test/submit.php notitle       # title UNDEFINED

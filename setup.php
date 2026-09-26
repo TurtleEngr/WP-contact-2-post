@@ -6,7 +6,7 @@ wp_insert_term('music', 'post_tag');
 
 $cTemplate = <<<'TPL'
 <!-- wp:paragraph -->
-<p>title: Event: {ev-name}</p>
+<p>ATTR-BEGIN<br>title: Event: {ev-name}</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -18,7 +18,7 @@ $cTemplate = <<<'TPL'
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>expire-date: {exp}<br>expire-time: {etime}</p>
+<p>expire-date:&nbsp;{exp}<br>expire-time: {etime}<br>ATTR-END</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading -->

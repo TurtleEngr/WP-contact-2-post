@@ -14,7 +14,10 @@ if (!defined('ABSPATH')) {
 }
 
 // Special syntax lines in the template page that set post attributes.
+// They are between the cC2pAttrBegin and cC2pAttrEnd lines.
 const cC2pAttrList = ['title', 'categories', 'tags', 'publish-date', 'expire-date', 'expire-time'];
+const cC2pAttrBegin = 'ATTR-BEGIN';
+const cC2pAttrEnd = 'ATTR-END';
 
 // Meta key used by the "ninja-auto-post-expire" plugin. Format: "Y-m-d H:i"
 const cC2pExpireMetaKey = '_njtape_expiration_date';
@@ -86,19 +89,23 @@ function fC2pCreatePost($pTemplate, $pFields, $pAttachIdList)
     $tBlockList = [];
 
     $tSkipBlank = false;
+    $tInAttr = false;
     foreach (parse_blocks($pTemplate) as $tBlock) {
         // Also drop the blank separator that followed a removed attribute block.
         if ($tSkipBlank && $tBlock['blockName'] === null && trim($tBlock['innerHTML']) === '') {
             $tSkipBlank = false;
             continue;
         }
-        $tLineAttr = fC2pGetAttrLines($tBlock, $pFields);
+        $tLineAttr = fC2pGetAttrLines($tBlock, $pFields, $tInAttr);
         $tSkipBlank = ($tLineAttr !== null);
         if ($tLineAttr !== null) {
             $tAttr = array_merge($tAttr, $tLineAttr);
             continue;
         }
         $tBlockList[] = fC2pReplaceInBlock($tBlock, $pFields);
+    }
+    if ($tInAttr) {
+        error_log('Contact 2 Post: ' . cC2pAttrEnd . ' not found in the template');
     }
 
     $tTitle = isset($tAttr['title']) ? sanitize_text_field($tAttr['title']) : '';
@@ -137,6 +144,8 @@ function fC2pCreatePost($pTemplate, $pFields, $pAttachIdList)
         if ($tDate) {
             $tTime = isset($tAttr['expire-time']) ? fC2pParseTime($tAttr['expire-time']) : '';
             update_post_meta($tPostId, cC2pExpireMetaKey, $tDate . ' ' . ($tTime ? $tTime : '00:00'));
+        } else {
+            error_log('Contact 2 Post: invalid expire-date: "' . $tAttr['expire-date'] . '"');
         }
     }
 
@@ -155,25 +164,32 @@ function fC2pCreatePost($pTemplate, $pFields, $pAttachIdList)
 }
 
 // ----------------------------------------
-// If every non-empty line in a top-level block is "attr: value", return
-// [attr => value, ...] with {field} replaced (plain text). Else null.
-function fC2pGetAttrLines($pBlock, $pFields)
+// If the top-level block is in the ATTR-BEGIN ... ATTR-END section,
+// return [attr => value, ...] for its "attr: value" lines, with {field}
+// replaced (plain text). Else null. The section can span blocks, so
+// pInAttr keeps the state between calls. The whole block is dropped.
+function fC2pGetAttrLines($pBlock, $pFields, &$pInAttr)
 {
     $tText = preg_replace('/<br\s*\/?>/i', "\n", (string) $pBlock['innerHTML']);
     $tText = html_entity_decode(wp_strip_all_tags($tText), ENT_QUOTES, 'UTF-8');
+    // The editor often saves a space as &nbsp; which trim() and \s miss.
+    $tText = str_replace("\xC2\xA0", ' ', $tText);
 
+    $tInBlock = $pInAttr;
     $tAttr = [];
-    $tPattern = '/^\s*(' . implode('|', array_map('preg_quote', cC2pAttrList)) . ')\s*:\s*(.*?)\s*$/i';
+    $tPattern = '/^(' . implode('|', array_map('preg_quote', cC2pAttrList)) . ')\s*:\s*(.*)$/i';
     foreach (preg_split('/\R/', $tText) as $tLine) {
-        if (trim($tLine) === '') {
-            continue;
+        $tLine = trim($tLine);
+        if ($tLine === cC2pAttrBegin) {
+            $pInAttr = true;
+            $tInBlock = true;
+        } elseif ($tLine === cC2pAttrEnd) {
+            $pInAttr = false;
+        } elseif ($pInAttr && preg_match($tPattern, $tLine, $tMatch)) {
+            $tAttr[strtolower($tMatch[1])] = fC2pReplaceFields($tMatch[2], $pFields, false);
         }
-        if (!preg_match($tPattern, $tLine, $tMatch)) {
-            return null;
-        }
-        $tAttr[strtolower($tMatch[1])] = fC2pReplaceFields($tMatch[2], $pFields, false);
     }
-    return $tAttr ? $tAttr : null;
+    return $tInBlock ? $tAttr : null;
 }
 
 // ----------------------------------------

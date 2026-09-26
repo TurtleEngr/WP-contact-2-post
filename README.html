@@ -65,7 +65,7 @@
 <body>
   <hr />
   <h1 id="wp-contact-2-post">WP-contact-2-post</h1>
-  <p>Version: 0.1.6</p>
+  <p>Version: 0.2.0</p>
   <p>Create a "Pending" post from a Contact Form 7 submission, after Flamingo
   saves it. The post content comes from a template page.</p>
   <p>See readme.txt for the user documentation.</p>
@@ -107,45 +107,29 @@
        id="cb1">
     <pre class="sourceCode bash"><code class="sourceCode bash"><span id=
     "cb1-1"><a href="#cb1-1"
-   aria-hidden="true"
-   tabindex="-1"></a><span class=
+   aria-hidden="true"></a><span class=
    "ex">wp</span> eval-file test/setup.php</span>
 <span id="cb1-2"><a href="#cb1-2"
-   aria-hidden="true"
-   tabindex="-1"></a><span class=
-   "ex">wp</span> eval-file test/submit.php full attach   <span class=
-   "co"># post, attachment, expiry</span></span>
+   aria-hidden="true"></a><span class=
+   "ex">wp</span> eval-file test/submit.php full attach   # post, attachment, expiry</span>
 <span id="cb1-3"><a href="#cb1-3"
-   aria-hidden="true"
-   tabindex="-1"></a><span class=
-   "ex">wp</span> eval-file test/submit.php notitle       <span class=
-   "co"># title UNDEFINED</span></span>
+   aria-hidden="true"></a><span class=
+   "ex">wp</span> eval-file test/submit.php notitle       # title UNDEFINED</span>
 <span id="cb1-4"><a href="#cb1-4"
-   aria-hidden="true"
-   tabindex="-1"></a><span class=
-   "ex">wp</span> eval-file test/submit.php nostore       <span class=
-   "co"># no post</span></span>
+   aria-hidden="true"></a><span class=
+   "ex">wp</span> eval-file test/submit.php nostore       # no post</span>
 <span id="cb1-5"><a href="#cb1-5"
-   aria-hidden="true"
-   tabindex="-1"></a><span class=
-   "ex">wp</span> eval-file test/submit.php nocreate      <span class=
-   "co"># no post</span></span>
+   aria-hidden="true"></a><span class=
+   "ex">wp</span> eval-file test/submit.php nocreate      # no post</span>
 <span id="cb1-6"><a href="#cb1-6"
-   aria-hidden="true"
-   tabindex="-1"></a><span class=
-   "ex">wp</span> eval-file test/submit.php badslug       <span class=
-   "co"># no post, error_log</span></span>
+   aria-hidden="true"></a><span class=
+   "ex">wp</span> eval-file test/submit.php badslug       # no post, error_log</span>
 <span id="cb1-7"><a href="#cb1-7"
-   aria-hidden="true"
-   tabindex="-1"></a><span class=
-   "ex">wp</span> eval-file test/submit.php full spam     <span class=
-   "co"># no post</span></span>
+   aria-hidden="true"></a><span class=
+   "ex">wp</span> eval-file test/submit.php full spam     # no post</span>
 <span id="cb1-8"><a href="#cb1-8"
-   aria-hidden="true"
-   tabindex="-1"></a><span class="ex">wp</span> post list <span class=
-   "at">--post_type</span><span class="op">=</span>post <span class=
-   "at">--post_status</span><span class=
-   "op">=</span>pending</span></code></pre>
+   aria-hidden="true"></a><span class=
+   "ex">wp</span> post list --post_type=post --post_status=pending</span></code></pre>
   </div>
 </body>
 </html>

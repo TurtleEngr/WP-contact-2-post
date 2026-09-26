@@ -43,16 +43,21 @@ HTML escaped, and "[" "]" in values are encoded so they can not run a
 shortcode. Checkbox values are joined with ", ". If there is no field
 with that name, {field} is left as is.
 
-A top-level block with only these lines (one per line, or separated
-with Shift-Enter) is not copied. It sets the post attributes:
+Put the post attribute lines between ATTR-BEGIN and ATTR-END lines
+(one per line, or separated with Shift-Enter). They can be in one
+top-level block or in several. Every top-level block from the one
+with ATTR-BEGIN to the one with ATTR-END is not copied. It sets the
+post attributes:
 
 `
+ATTR-BEGIN
 title: {field}
 categories: {field}
 tags: {field}
 publish-date: {field}
 expire-date: {field}
 expire-time: {field}
+ATTR-END
 `
 
 * title - post title. Default: UNDEFINED
@@ -65,7 +70,8 @@ expire-time: {field}
   (_njtape_expiration_date).
 * expire-time - HH:MM. Default: 00:00
 
-Invalid dates or times are ignored.
+Invalid dates or times are ignored. An invalid expire-date is logged
+with error_log().
 
 == Installation ==
 
