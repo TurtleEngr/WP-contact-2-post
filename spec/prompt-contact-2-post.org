@@ -1,0 +1,377 @@
+* prompt-contact-2-post.org
+
+Claude Project: Contact to Form
+
+** Prmopt1
+
+- Goal: Create a plugin named contact-2-post. A form filled in with
+  contact-form-7 can be used to create a post with the form field
+  values.
+
+- Assume the WordPress plugins "contact-form-7", "flamingo", and
+  "store-cf7-file-uploads" are installed. See the "Code Locations"
+  section for where to find the code for those plugins.
+
+- File structure: follow the pattern of the files in:
+  https://github.com/TurtleEngr/WP-store-cf7-file-uploads
+
++ Use the field names used in the contact-form-7 "Form" tab.
++ The contact-form-7 "Mail" tab is not relevant to this plugin.
++ In the contact-form-7 "Additional Settings" tab the following should be
+  put there for this to work:
+  + skip_mail: on
+  + create_post: true
+  + do_not_store: false
+  + post_template: PageSlug
+
++ When a form is filled out,
+  + "skip_mail" can be on or off. It has no effect on this process.
+  + If "do_not_store" is false, "flamingo" will shave the field/values
+    in the DB
+  + If attachments were defined "store-cf7-file-uploads" will save
+    them to the Media library.
+  + If "create_post" is true and a new message is added, this plugin
+    will create a post with the saved field/values, any attachments,
+    and it will use the "post_template" PageSlug page to generate the
+    post. See the "Page Template Spec" for how.
+
+- To implement this, follow the directions in CLAUDE.org
+- Follow good security practices, for example make sure the field
+  values are "clean."
+
+*** Page Template Spec
+
++ Copy each of the page's blocks to the new post.
++ Wherever a pattern [field] is seen, it will be replaced with
+  the field's value from the field/values saved in the DB by flamingo.
++ If there is no matching field, then do nothing.
++ New posts have the status set to "Pending"
+
+**** Special Syntax Post Attributes
+- These are not copied to the post directly. They are used to define
+  the post's attributes.
+
++ title: [field]
+  + This defines the title of the post
+  + If no "title:", set to UNDEFINED
++ categories: [field]
+  + Add all the field values to the post's categories
+  + Only use already defined categories. Ignore undefined categories.
++ tags: [field]
+  + Add all the field values to the post's tags
+  + Only use already defined tags.  Ignore undefined tags.
++ publish-date: [field]
+  + Set the publish date (default time: 12:00)
+  + If no "publish-date:", set to "now"
++ expire-date: [field]
+  + Set the meta Expiry Date, date part
++ expire-time: [field]
+  + Set the meta Expiry Date, time part
+  + Default: 00:00
+
+*** Code locations
++ The code for this plugin contact-2-post.php
+  https://github.com/TurtleEngr/WP-contact-2-post
+
++ The code for "contact-form-7"
+  https://github.com/TurtleEngr/WP-contact-form-7-clone/tree/tags-6.1.7
+
++ The code for "flamingo"
+  https://github.com/TurtleEngr/WP-flamingo-clone/tree/tags-2.6.4
+
++ The code for "store-cf7-file-uploads"
+  https://github.com/TurtleEngr/WP-store-cf7-file-uploads
+
++ The code for plugin ninja-auto-post-expire
+  https://plugins.svn.wordpress.org/ninja-auto-post-expire/tags/1.2/
+
+** Initial Response
+
+- I'll start by studying the referenced code so my assumptions are
+  grounded in what's actually there.Now the key question: order of
+  hooks, and what happens with 'skip_mail'. Let me check CF7's
+  submission flow and Flamingo's save.Flamingo fires
+  'wpcf7_after_flamingo' with the new inbound ID — that's the right
+  hook. Let me check what '$result' contains and how Flamingo stores
+  fields.I've read the three plugins. Before writing code (per
+  CLAUDE.org §1), here's what I found, the plan, and the assumptions
+  I'd make. A few points genuinely need your decision.
+
+*** What the code tells us
+
+- The hook order within one submission is: CF7
+  'wpcf7_before_send_mail' (store-cf7-file-uploads saves images here
+  and fires 'nmr_create_attachment_id_generated' per attachment), then
+  'mail()' (with 'skip_mail: on' it returns true, so status is still
+  'mail_sent'), then 'wpcf7_submit' (Flamingo saves the inbound
+  message), then 'wpcf7_after_flamingo' with 'flamingo_inbound_id' in
+  '$result'. So contact-2-post would collect attachment IDs from the
+  'nmr_' action, then hook 'wpcf7_after_flamingo', check 'create_post'
+  on the form, load the fields from the new
+  'Flamingo_Inbound_Message', and build the post. If 'do_not_store' is
+  true or Flamingo is missing, that hook never fires and no post is
+  made, which matches your "a new message is added" condition.
+
+- Two surprises worth knowing. First, Flamingo also stores submissions
+  with status 'spam'; I'd skip those. Second, for '[file]' fields CF7
+  stores a SHA-1 hash of the file as the field value, not a filename,
+  so '[your-file]' in the template would be replaced with a hash
+  string. Also, store-cf7-file-uploads only reports attachment IDs,
+  not which field they came from, and it silently drops non-image
+  files.
+
+*** Plan
+- (single file 'contact-2-post.php', plus 'readme.txt', 'README.org',
+  'Makefile', 'VERSION*', 'LICENSE' matching the pattern repo)
+
+1. Load the template with 'get_page_by_path(PageSlug)'; bail with
+   'error_log' if missing. Verify: bad slug logs, no post.
+2. 'parse_blocks()' the page, drop any block whose text starts with
+   'title:', 'categories:', 'tags:', 'publish-date:', 'expire-date:',
+   'expire-time:' and use those to set attributes. Verify: those lines
+   never appear in the post.
+3. Replace '[field]' only in block inner HTML (not in block attribute
+   JSON), values passed through 'esc_html()'; array values
+   (checkboxes) joined with ', '; unknown '[x]' left alone. Then
+   'serialize_blocks()' and 'wp_kses_post()'. Verify: a value of
+   '&lt;script>' renders as text.
+4. 'wp_insert_post()' with status 'pending', type 'post', title
+   sanitized (or 'UNDEFINED'). Categories/tags matched by name or slug
+   against existing terms only (values split on commas). Publish date
+   parsed with 'strtotime' in site timezone, default time 12:00, else
+   now.
+5. Attach collected images to the post ('post_parent').
+
+- Assumptions unless you say otherwise: post author is 0 (no user);
+  '[field]' names must match '[A-Za-z0-9_-]+'; I'll write shunit-style
+  tests only if you want a test harness, since this is PHP and your
+  CodingStyle.org only specifies shunit for bash (a WP-CLI or PHPUnit
+  test would need a WordPress test environment I can't run here, so
+  I'd verify with 'php -l' and hand-traced cases).
+
+** Design questions
+
++ Which plugin/meta key holds the post "Expiry Date"?
+  + A: ninja-auto-post-expire
+
++ How should saved attachments appear in the new post?
+  + A: attached first image as Featured. Others should be append at
+    the bottom of the post.
+    
++ Date format expected in the publish-date / expire-date fields?
+  + A: YYYY-MM-DD
+
+** Response
+
+- Let me get that plugin's source to find the exact meta key and
+  format.Found the meta key '_njtape_expiration_date'. Now I need its
+  stored format and whether time is a separate key.PHP is available,
+  and WordPress runs on SQLite, so I can do a real end-to-end test
+  rather than just a lint. Writing the plugin first.Lint, then set up
+  a real WordPress (SQLite) with CF7 6.1.7, Flamingo 2.6.4,
+  store-cf7-file-uploads, and this plugin.The SQLite repo tags are all
+  the dev monorepo layout. Simpler to install MariaDB.The DB server
+  stopped when the previous shell exited. Restarting it
+  detached.WordPress is up. Now building the test fixture:
+  categories/tags, a template page, a CF7 form with the Additional
+  Settings, and a real image.Each CF7 submission is a per-request
+  singleton, so I'll run each test case as its own 'wp eval-file'
+  process. Fixture setup:Now all the cases, including negative ones,
+  each in a fresh process:All six cases behave as specified. Now the
+  remaining files following the store-cf7-file-uploads layout.Quick
+  check that the Makefile's build target produces the zip, then
+  package the files.The plugin is complete and tested end to end on a
+  real WordPress 7 install running your exact plugin versions (CF7
+  6.1.7, Flamingo 2.6.4, store-cf7-file-uploads). The files are below.
+
+*** How it works.
+
+- The plugin hooks 'wpcf7_after_flamingo', which Flamingo fires right
+  after saving a message. That gives you "only when a new message is
+  added" for free: with 'do_not_store: true', or for spam, no post is
+  made. Attachment IDs come from store-cf7-file-uploads'
+  'nmr_create_attachment_id_generated' action, which fires earlier in
+  the same request. Each attachment gets the new post as its parent,
+  and the first image becomes the featured image.
+
+** Test results.
+
+- Each case ran as a separate submission:
+
+| Case                                         | Result                                                                                                                                                                   |
+|----------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| full + attachment                            | Post "Event: Jazz Night", pending, dated 2026-10-15 12:00 (GMT stored too). Only existing category/tag set. Expiry meta '2026-11-01 09:30'. Image parented and featured. |
+| no 'title:'                                  | Title 'UNDEFINED'                                                                                                                                                        |
+| 'do_not_store: true', no 'create_post', spam | No post                                                                                                                                                                  |
+| bad 'post_template' slug                     | No post, reason logged with 'error_log'                                                                                                                                  |
+
+** Security.
+
+- Values are replaced in one pass, so a submitted '[x]' is never
+  expanded again. In the post body, values are HTML-escaped, and '['
+  and ']' are encoded. That matters because otherwise a submitter
+  could type '[gallery]' or any shortcode and it would run when the
+  post is displayed. The test confirmed '&lt;script>' and '[gallery]'
+  show up as plain text. Replacement only touches block HTML, not the
+  JSON inside block comments. The data is passed through 'wp_slash',
+  and core kses also filters the content. Categories and tags are
+  looked up by ID so no new terms are ever created.
+
+** Things to know:
+- *Expiry format.* ninja-auto-post-expire stores one string,
+  '_njtape_expiration_date', and reads it with 'new DateTime(value,
+  site timezone)'. I write 'YYYY-MM-DD HH:MM', which that parses
+  correctly. I couldn't fetch its date-picker JS to confirm that's the
+  exact format its admin box shows. Also, it only acts on posts if its
+  "Post" setting is "Yes".
+- *File fields.* CF7 stores a file field's value as a hash, so a
+  '[file-field]' in the template shows that hash. Use the attachments
+  instead. store-cf7-file-uploads only saves images.
+- *Attribute lines.* They must be the only content of a top-level
+  block. Use one paragraph per line, or Shift-Enter line breaks within
+  one paragraph.
+- *No 'publish-date:'.* The post date floats, so it becomes the time
+  the post is approved and published rather than the submission
+  time. If you want the submission time fixed, that's a one-line
+  change.
+- *Other details.* Post author is 0. Categories and tags split on
+  commas and match by name or slug.
+- *Tests.* Your CodingStyle.org specifies shunit for bash only, so
+  the tests are two wp-cli scripts in 'test/' (usage is in
+  README.org). They are excluded from the dist zip. Because the CLI
+  can't do a real HTTP upload, the attachment test calls
+  store-cf7-file-uploads' own 'nmr_create_attachment()' at the same
+  hook it uses.
+- *Build files.* The Makefile is the pattern file with only the name
+  lines changed, and 'make' builds a correct zip. README.md and
+  README.html aren't included because your 'make build' generates them
+  with 'org2html.sh'.
+
+** Prompt 3
+
+- Modifiy contact-2-post.php plugin. The code can be found at:
+  https://github.com/TurtleEngr/WP-contact-2-post
+
+*** Change 1
+
+- fC2pGetAttrLines() can be simplified, because the post attributes
+  text will now be enclose between ATTR-BEGIN and ATTR-END.
+
+- For example:
+
+    ATTR-BEGIN
+    title: {your-subject}
+    categories: {category-1}
+    tags: {tags-1}
+    expire-date: {date-1}
+    expire-time: {time-end-1}
+    ATTR-END
+
+- The text may or may not be in the same block.
+- All the text between, and including, ATTR-BEGIN and ATTR-END should
+  not be copied to the generated post.
+
+*** Change 2
+
+- The expire date is not being added to the Meta box Expiry Date
+  field. See the ninja-auto-post-expire code for where to put the
+  date.
+
+*** Code locations
++ The code for this plugin contact-2-post.php
+  https://github.com/TurtleEngr/WP-contact-2-post
+
++ The code for "contact-form-7"
+  https://github.com/TurtleEngr/WP-contact-form-7-clone/tree/tags-6.1.7
+
++ The code for "flamingo"
+  https://github.com/TurtleEngr/WP-flamingo-clone/tree/tags-2.6.4
+
++ The code for "store-cf7-file-uploads"
+  https://github.com/TurtleEngr/WP-store-cf7-file-uploads
+
++ The code for plugin ninja-auto-post-expire
+  https://plugins.svn.wordpress.org/ninja-auto-post-expire/tags/1.2/
+
+*** Response
+- I'll start by pulling the plugin source and the related code.Now the
+  ninja-auto-post-expire code, to see where it actually stores the
+  date.The meta key '_njtape_expiration_date' already matches, so the
+  key isn't the problem. Let me check the expected format in the date
+  picker JS and the cron code.There's a GitHub mirror, which the
+  sandbox can reach.CF7 6.1.7 has no 'time' field type, so
+  '{time-end-1}' must be a text or select field. Let me check the repo
+  notes for context on the expire issue.There are wp-cli test scripts;
+  let me see what they exercise.To find the real cause of Change 2
+  rather than guess, I'll try to run the plugins in a real WordPress
+  in the sandbox.Now WordPress core, the SQLite driver, and wp-cli.Now
+  run the repo's own setup and submit scripts against the current
+  (unmodified) plugin to reproduce the expire-date problem.With the
+  repo's test template the meta *is* written correctly ('2026-11-01
+  09:30'). Let me confirm ninja's meta box renders it, then try the
+  user's real form fields from todo.txt.Now update the test fixture
+  template to the new syntax, with the section split across blocks and
+  an '&nbsp;' on the expire line, so both changes are exercised.Now
+  reset the site and run the repo's tests against the new plugin code,
+  plus extra cases (single-block section, the user's example, and
+  missing ATTR-END).The section spanning four blocks is fully removed,
+  the title/date are set, and the expire meta is written despite the
+  '&nbsp;'. Terms command needs separate calls:All cases behave as
+  intended. The CodingStyle asks for phptidy on PHP; let me run it on
+  the changed file to confirm formatting matches.I tested both changes
+  against a real WordPress 7.2-alpha site in the sandbox, using
+  SQLite, with CF7 6.1.7, Flamingo 2.6.4, store-cf7-file-uploads and
+  ninja-auto-post-expire 1.2. The repo's own 'setup.php' and
+  'submit.php' pass, and so do some extra edge cases.
+
+** Change 2:
+- the root cause.* Your meta key and format were already correct:
+  ninja's date picker uses 'Y-m-d H:i' and reads
+  '_njtape_expiration_date', and the meta box showed the value when
+  the template used plain spaces. I reproduced the bug when the
+  template has 'expire-date:&nbsp;{date-1}', which the block editor
+  often saves after a colon. In that case the title still worked, but
+  the value got a leading non-breaking space. 'trim()' in
+  'fC2pParseDate()' doesn't strip that space, so the date failed
+  validation and was dropped with no log. The fix converts '&nbsp;' to
+  a normal space before parsing. I also added an 'error_log()' when
+  expire-date is invalid, so a bad format such as '12/05/2026' is
+  visible now instead of silently ignored. If your template doesn't
+  contain '&nbsp;', that new log line should show what value is
+  actually arriving.
+
+** Change 1.
+- fC2pGetAttrLines()' now tracks whether it is inside the
+  ATTR-BEGIN/ATTR-END section, using a by-reference flag, so the
+  section can span blocks. Inside the section, lines that aren't
+  'attr: value' are ignored instead of disqualifying the block. I
+  tested these layouts:
+- all lines in one block;
+- markers in their own blocks;
+- the section split across four blocks with content before and after.
+
+- A missing ATTR-END is logged.
+
+** Assumptions to check:
+- *Whole blocks are removed.* Any top-level block containing a
+  marker, or lying between the markers, is removed entirely. So if you
+  type 'Intro text&lt;br>ATTR-BEGIN' in one paragraph, "Intro text" is
+  lost too. Removing only part of a block is doable but adds
+  complexity, so tell me if you need it.
+- *Old templates change behavior.* Templates without markers now
+  have their attribute lines copied into the post as content, as your
+  spec implies. Your live template page needs the markers added.
+- *Markers are exact.* They must be uppercase and on a line by
+  themselves, and only top-level blocks are scanned, the same as
+  before.
+
+*** Other files
+-I also updated 'setup.php' so its template uses the markers, split
+across blocks and with an '&nbsp;', and the "Template page" section of
+'readme.txt', since both described the old syntax. I did not run
+phptidy, because it would reformat the entire existing file.
+
+** Unrelated to this change.
+- Your form's 'time-end-1' is a free-text field, and 'fC2pParseTime()'
+  only accepts 'H:MM'/'HH:MM'. An entry like "5:00 PM" silently falls
+  back to 00:00.

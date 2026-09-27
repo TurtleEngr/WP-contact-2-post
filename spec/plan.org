@@ -1,0 +1,89 @@
+* Contact Form to Post
+
+** reCAPTCHA
+
++ Google Account: barafnel@gmail.com
+ + https://www.google.com/recaptcha/admin/site/768118940/setup
++ Adding reCAPTCHA to your site
+  + 'indivisiblepv' has been registered.
++ Use this site key in the HTML code your site serves to users.
+  + 6LeckMgtAAAAAMurbwriVVISO4DgM3dVU-uA6FLd
++ Use this secret key for communication between your site and reCAPTCHA.
+  + 6LeckMgtAAAAACrxnY7UEjXmtGTpmOV7mLc4Nb6B
+  + If you are using SiteVerify, we recommend migrating to CreateAssessment.
+
++ https://www.google.com/recaptcha/admin/site/768118940
++ https://www.google.com/recaptcha/admin/site/768118940/settings
++ https://console.cloud.google.com/security/recaptcha/6LeckMgtAAAAAMurbwriVVISO4DgM3dVU-uA6FLd/overview?project=plasma-envoy-389605&authuser=0&pli=1
++ https://console.cloud.google.com/security/recaptcha/6LeckMgtAAAAAMurbwriVVISO4DgM3dVU-uA6FLd/integration?project=plasma-envoy-389605
+
++ https://contactform7.com/recaptcha/
+
+** Contact Form 7 Plugin (free)
+  + https://wordpress.org/plugins/contact-form-7/
+  + https://github.com/wp-plugins/contact-form-7 - 2024
+
++ Code: https://wordpress.org/plugins/contact-form-7/#developers
+
++ Cloned code to: https://github.com/TurtleEngr/WP-contact-form-7-clone
+  + See README.md
+  + branch develop - latest (trunk/)
+    + https://github.com/TurtleEngr/WP-contact-form-7-clone/tree/develop
+  + branch tags-6.1.7 - tags/6.1.7/
+    + https://github.com/TurtleEngr/WP-contact-form-7-clone/tree/tags-6.1.7
+    
+** Flamingo (free)
++ Home: https://contactform7.com/save-submitted-messages-with-flamingo/
+
++ https://contactform7.com/additional-settings/
++ https://contactform7.com/save-submitted-messages-with-flamingo/
+
++ Flamingo stores submitted messages directly in your website's
+  WordPress database as custom post types.
++ Database Tables
+  + wp_posts: Stores the core message data (using a custom post type
+    for inbound messages).
+  + wp_postmeta: Stores the message metadata, such as sender details,
+    subject lines, and form fields. (Note: If you use a custom
+    database prefix other than wp_, replace wp_ with your specific
+    prefix).
+  + Stack Overflow
+    https://stackoverflow.com/questions/77888808/name-of-database-table-contact-form-7-flamingo-forms-are-stored-in
+
++ Code: https://wordpress.org/plugins/flamingo/#developers
+
++ Cloned code to: https://github.com/TurtleEngr/WP-flamingo-clone
+  + See README.md
+  + Branch develop - latest (trunk/)
+    + https://github.com/TurtleEngr/WP-flamingo-clone/tree/develop
+    + Source: https://plugins.svn.wordpress.org/flamingo/trunk/
+  + Branch tags-2.6.4 - tags/2.6.4
+    + https://github.com/TurtleEngr/WP-flamingo-clone/tree/tags-2.6.4
+    + Source: https://plugins.svn.wordpress.org/flamingo/tags/2.6.4/
+
+** Store Contact form 7 attachments
+  + https://wordpress.org/plugins/store-file-uploads-for-contact-form-7/
+  + https://plugins.svn.wordpress.org/store-file-uploads-for-contact-form-7/
+  + https://plugins.trac.wordpress.org/browser/store-file-uploads-for-contact-form-7/#branches
+  + https://plugins.trac.wordpress.org/browser/store-file-uploads-for-contact-form-7/trunk/store-file-uploads-for-contact-form-7.php
+  + License: GPLv2 or later
+
++ To do: normalize the file names (remove spaces, etc) prefix names,
+  check for collisions.
+
++ Code: https://plugins.svn.wordpress.org/store-file-uploads-for-contact-form-7/
+
++ Cloned code to: https://github.com/TurtleEngr/WP-store-file-uploads-for-contact-form-7/
+  + See README.md
+  + Branch develop - latest (trunk/)
+    + https://github.com/TurtleEngr/WP-store-file-uploads-for-contact-form-7/tree/develop
+    + Source: https://plugins.svn.wordpress.org/flamingo/trunk/
+  + Branch tags-2.6.4 - tags/2.6.4
+    + https://github.com/TurtleEngr/WP-store-file-uploads-for-contact-form-7/tree/tags-2.6.4
+    + Source: https://plugins.svn.wordpress.org/flamingo/tags/2.6.4/
+
+** Generate posts from contact forms
+
++ Post title: form title
++ Post date: date field
++ Expire date: event date
