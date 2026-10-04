@@ -2,7 +2,7 @@
 
 Claude Project: Contact to Form
 
-** Prmopt1
+** Prompt 1
 
 - Goal: Create a plugin named contact-2-post. A form filled in with
   contact-form-7 can be used to create a post with the form field
