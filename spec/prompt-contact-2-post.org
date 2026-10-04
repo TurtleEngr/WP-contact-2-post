@@ -85,7 +85,7 @@ Claude Project: Contact to Form
 + The code for plugin ninja-auto-post-expire
   https://plugins.svn.wordpress.org/ninja-auto-post-expire/tags/1.2/
 
-** Initial Response
+*** Initial Response
 
 - I'll start by studying the referenced code so my assumptions are
   grounded in what's actually there.Now the key question: order of
@@ -194,7 +194,7 @@ Claude Project: Contact to Form
   the same request. Each attachment gets the new post as its parent,
   and the first image becomes the featured image.
 
-** Test results.
+*** Test results.
 
 - Each case ran as a separate submission:
 
@@ -205,7 +205,7 @@ Claude Project: Contact to Form
 | 'do_not_store: true', no 'create_post', spam | No post                                                                                                                                                                  |
 | bad 'post_template' slug                     | No post, reason logged with 'error_log'                                                                                                                                  |
 
-** Security.
+*** Security.
 
 - Values are replaced in one pass, so a submitted '[x]' is never
   expanded again. In the post body, values are HTML-escaped, and '['
@@ -217,7 +217,7 @@ Claude Project: Contact to Form
   and core kses also filters the content. Categories and tags are
   looked up by ID so no new terms are ever created.
 
-** Things to know:
+*** Things to know:
 - *Expiry format.* ninja-auto-post-expire stores one string,
   '_njtape_expiration_date', and reads it with 'new DateTime(value,
   site timezone)'. I write 'YYYY-MM-DD HH:MM', which that parses
@@ -324,7 +324,7 @@ Claude Project: Contact to Form
   ninja-auto-post-expire 1.2. The repo's own 'setup.php' and
   'submit.php' pass, and so do some extra edge cases.
 
-** Change 2:
+*** Change 2:
 - the root cause.* Your meta key and format were already correct:
   ninja's date picker uses 'Y-m-d H:i' and reads
   '_njtape_expiration_date', and the meta box showed the value when
@@ -340,7 +340,7 @@ Claude Project: Contact to Form
   contain '&nbsp;', that new log line should show what value is
   actually arriving.
 
-** Change 1.
+*** Change 1.
 - fC2pGetAttrLines()' now tracks whether it is inside the
   ATTR-BEGIN/ATTR-END section, using a by-reference flag, so the
   section can span blocks. Inside the section, lines that aren't
@@ -352,7 +352,7 @@ Claude Project: Contact to Form
 
 - A missing ATTR-END is logged.
 
-** Assumptions to check:
+*** Assumptions to check:
 - *Whole blocks are removed.* Any top-level block containing a
   marker, or lying between the markers, is removed entirely. So if you
   type 'Intro text&lt;br>ATTR-BEGIN' in one paragraph, "Intro text" is
@@ -371,7 +371,166 @@ across blocks and with an '&nbsp;', and the "Template page" section of
 'readme.txt', since both described the old syntax. I did not run
 phptidy, because it would reformat the entire existing file.
 
-** Unrelated to this change.
+*** Unrelated to this change.
 - Your form's 'time-end-1' is a free-text field, and 'fC2pParseTime()'
   only accepts 'H:MM'/'HH:MM'. An entry like "5:00 PM" silently falls
   back to 00:00.
+** Check for required plugins
+- Yes. There are a few standard approaches, and which one you want
+  depends on whether you need WordPress to enforce the dependency or
+  just need your code to behave safely.
+
+*** 1. The `Requires Plugins` header (WordPress 6.5+)
+
+- Since WordPress 6.5 there's built-in dependency support. You declare
+  dependencies in your main plugin file's header using WordPress.org
+  slugs:
+
+```php
+/**
+ * Plugin Name: My Add-on
+ * Requires Plugins: woocommerce, advanced-custom-fields
+ */
+```
+
+- WordPress will then stop your plugin from being activated until the
+  required plugins are installed and active, show the dependency on
+  the Plugins screen, and prevent the required plugins from being
+  deactivated while yours is active.
+
+- This has some limits. It only understands slugs, which work best for
+  plugins hosted on WordPress.org. Premium or custom plugins can be
+  mapped with the `wp_plugin_dependencies_slug` filter. It also
+  doesn't check versions, and it can't help on sites running WordPress
+  older than 6.5.
+
+*** 2. Check for the plugin's code at runtime (most robust)
+
+- Even with the header, it's good practice to check that the other
+  plugin's code is actually loaded before you call it. Look for a
+  class, function, or constant it defines, and do the check on
+  `plugins_loaded` so every plugin has had a chance to load:
+
+```php
+add_action( 'plugins_loaded', function () {
+    if ( ! class_exists( 'WooCommerce' ) ) {
+        add_action( 'admin_notices', function () {
+            echo '<div class="notice notice-error"><p>My Add-on requires WooCommerce.</p></div>';
+        } );
+        return;
+    }
+
+    // Safe to bootstrap your plugin here.
+    require_once __DIR__ . '/includes/main.php';
+} );
+```
+
+- This approach doesn't depend on folder names, so it still works if
+  someone renamed the plugin directory. It also handles must-use
+  plugins and network activation, and it lets you check versions
+  through constants like `WC_VERSION` or `defined( 'ELEMENTOR_VERSION'
+  )`.
+
+*** 3. `is_plugin_active()`
+
+This checks by plugin path:
+
+```php
+if ( ! function_exists( 'is_plugin_active' ) ) {
+    require_once ABSPATH . 'wp-admin/includes/plugin.php';
+}
+
+if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
+    // ...
+}
+```
+
+- A few gotchas with this one. The function only exists by default in
+  the admin, so on the front end you need the `require_once` above. It
+  relies on the exact `folder/file.php` path, which breaks if the
+  plugin is installed under a different folder name. On multisite,
+  `is_plugin_active()` does cover network-activated plugins, and
+  there's also `is_plugin_active_for_network()` if you need to tell
+  the two cases apart.
+
+*** Recommended combination
+
+- For a modern plugin, use the `Requires Plugins` header so WordPress
+  handles activation order and shows the dependency to users. Then add
+  a `class_exists()`/`defined()` check on `plugins_loaded` as a
+  runtime guard, ideally with a version check and an admin notice when
+  something's missing or outdated. Reserve `is_plugin_active()` for
+  cases where you specifically care about activation state rather than
+  whether the code is available.
+
+** How to define and use "Requires Plugins"
+
+- *It doesn't use plugin names at all. It uses slugs.*
+
+*** What a slug is
+
+- For a plugin hosted on WordPress.org, the slug is the last part of
+  its directory URL:
+
+```
+https://wordpress.org/plugins/woocommerce/   →  slug: woocommerce
+```
+
+- For installed plugins, WordPress derives the slug from the plugin's
+  location on disk. It is the plugin's folder name
+  (`woocommerce/woocommerce.php` → `woocommerce`), or the filename
+  without `.php` for single-file plugins. The `Plugin Name:` header is
+  only a display label and plays no part in matching.
+
+- Slugs must be lowercase letters, numbers, and hyphens (for example
+  `my-addon`). Anything else in the header is ignored.
+
+*** How WordPress resolves a dependency
+
+1. It reads the `Requires Plugins:` slugs from the dependent plugin's
+   header.
+2. It compares them against the slugs of installed plugins, which come
+   from folder names.
+3. If a required slug isn't installed, the Plugins screen offers an
+   install link. That link looks the slug up in the WordPress.org
+   plugin directory, so it only works for plugins hosted there.
+
+*** Making your plugin usable as a dependency
+
+- *Public plugin:* Host it on WordPress.org. The slug you're
+  assigned at approval becomes the identifier others put in their
+  header. Keep your plugin's folder name identical to that slug, and
+  never change it afterward, because renaming would break everyone who
+  depends on you.
+
+- *Private or premium plugin:* You can't use the one-click install
+  flow, but dependency checking still works if two conditions are met:
+
+- The plugin's folder name matches the slug that others list.
+- Users install the plugin manually, since WordPress can't download it
+  from WordPress.org.
+
+- If the folder name can't match, for example because a zip download
+  adds a version suffix like `my-addon-1.2/`, you can bridge it with
+  the `wp_plugin_dependencies_slug` filter in the dependent plugin:
+
+```php
+add_filter( 'wp_plugin_dependencies_slug', function ( $slug ) {
+    if ( 'my-addon' === $slug ) {
+        return 'my-addon-pro'; // map to the slug/folder actually used
+    }
+    return $slug;
+} );
+```
+
+- Documentation on the exact behavior of this filter is thin, so test
+  it on your target WordPress version.
+
+*** Practical advice
+
+- Pick a distinctive, permanent slug early.
+- Document it for developers who want to depend on you: "Add `Requires
+  Plugins: my-addon` to your header."
+- Keep the runtime `class_exists()`/`defined()` guard from before,
+  since the header only controls activation, not whether your code is
+  actually loaded.
