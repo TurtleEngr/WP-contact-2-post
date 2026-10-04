@@ -1,0 +1,18 @@
+* Submit Pluging to wordpress.org
+
+** Prompt 1
+
+- Update the php file and the readme.txt files to comply with the
+  submition guidelines that are define below.
+
+*** Submition Guidelines
++ https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/
++ https://developer.wordpress.org/plugins/plugin-basics/
++ https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/
++ https://developer.wordpress.org/apis/security/
++ https://developer.wordpress.org/apis/security/escaping/
++ https://developer.wordpress.org/apis/security/nonces/ for a form
+
+*** Code locations
++ The code for this plugin contact-2-post.php
+  https://github.com/TurtleEngr/WP-contact-2-post
