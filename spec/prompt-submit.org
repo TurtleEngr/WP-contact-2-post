@@ -11,7 +11,8 @@
 + https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/
 + https://developer.wordpress.org/apis/security/
 + https://developer.wordpress.org/apis/security/escaping/
-+ https://developer.wordpress.org/apis/security/nonces/ for a form
++ https://developer.wordpress.org/apis/security/nonces/ - for a form
++ https://wordpress.org/plugins/files/2016/06/readme.txt - syntax example
 
 *** Code locations
 + The code for this plugin contact-2-post.php
