@@ -48,11 +48,13 @@ See: https://github.com/TurtleEngr/WP-save-cf7-file-uploads
 
 = How can I configure Contact Form 7 to use this? ==
 
-See: https://github.com/TurtleEngr/WP-save-cf7-file-uploads
+See:
+https://github.com/TurtleEngr/WP-contact-2-post#contact-form-settings
 
 = How can I define a template for posts?
 
-See: https://github.com/TurtleEngr/WP-save-cf7-file-uploads
+See:
+https://github.com/TurtleEngr/WP-contact-2-post#contact-form-settings
 
 = Where can I report bug or feature requests? =
 
@@ -62,8 +64,8 @@ See: https://github.com/TurtleEngr/WP-save-cf7-file-uploads Issues
 
 The latest "stable version" can be found as wordpress.org.
 
-See: https://github.com/TurtleEngr/WP-save-cf7-file-uploads The README
-will describe where to find the latest development versions.
+For development versions see:
+https://github.com/TurtleEngr/WP-contact-2-post#development-installs
 
 == Changelog ==
 
