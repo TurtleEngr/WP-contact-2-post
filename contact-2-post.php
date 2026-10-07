@@ -1,12 +1,17 @@
 <?php
 /*
-Plugin Name: Contact 2 Post
-Plugin URI: https://github.com/TurtleEngr/WP-contact-2-post
-Description: Create a pending post from a Contact Form 7 submission saved by Flamingo, using a page as the post template.
-Author: TurtleEngr
-Version: VERSION
-License: GPLv2 or later
-*/
+ * Plugin Name: Contact 2 Post
+ * Plugin URI: https://github.com/TurtleEngr/WP-contact-2-post
+ * Description: Create a pending post from a Contact Form 7 submission saved by Flamingo, using a page as the post template.
+ * Version: VERSION
+ * Requires at least: 6.0
+ * Tested up to: 7.1
+ * Requires PHP: 8.0
+ * Author: TurtleEngr
+ * Author URI: https://github.com/TurtleEngr
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ */
 
 if (!defined('ABSPATH')) {
     exit;
