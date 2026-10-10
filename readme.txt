@@ -28,6 +28,9 @@ Optional: save-cf7-file-uploads, ninja-auto-post-expire
 * save-cf7-file-uploads (or store-file-uploads-for-contact-form-7 Pro)
   - either of these plugins will save attached image files to the
   Media Library. The first image will be used for the Featured Image.
+  If save-cf7-file-uploads could not save an uploaded file, its error
+  messages for that submission are added to the end of the post,
+  after "Upload errors:".
 
 * ninja-auto-post-expire - If this plugin is insatlled the "expiry
   date" field for a post can be set with this (contact-2-post) plugin.

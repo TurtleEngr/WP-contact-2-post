@@ -11,11 +11,11 @@ foreach (WPCF7_ContactForm::find(['posts_per_page' => -1]) as $tF) {
 $_SERVER['HTTP_USER_AGENT'] = in_array('spam', $args, true) ? '' : 'Mozilla/5.0 test';
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 if (in_array('attach', $args, true)) {
-    // CLI can not do a real HTTP upload, so call store-cf7-file-uploads'
+    // CLI can not do a real HTTP upload, so call save-cf7-file-uploads'
     // own function at the same hook it uses.
     add_action('wpcf7_before_send_mail', function () {
         copy('/tmp/c2p-test.png', '/tmp/c2p-upload.png');
-        nmr_create_attachment('/tmp/c2p-upload.png');
+        scf7fu_create_attachment('/tmp/c2p-upload.png');
     });
 }
 $_POST = [
