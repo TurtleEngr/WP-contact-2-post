@@ -1,7 +1,7 @@
 WP-contact-2-post
 =================
 
-![version](https://img.shields.io/badge/version-1.0.1-orange.svg)
+![version](https://img.shields.io/badge/version-1.1.0-orange.svg)
 
 ![WordPress](https://img.shields.io/badge/WordPress-Compatible-blue.svg)
 
@@ -111,8 +111,17 @@ How it works
 ------------
 
 -   save-cf7-file-uploads saves images in `wpcf7_before_send_mail` and
-    fires `savecf7_create_attachment_id_generated`. This plugin collects
-    those IDs.
+    fires `scf7fu_create_attachment_id_generated`. This plugin collects
+    those IDs. It also collects the IDs from
+    `nmr_create_attachment_id_generated`, fired by
+    store-file-uploads-for-contact-form-7.
+-   save-cf7-file-uploads also saves its error messages (for example, a
+    file that is not an image) with `scf7fu_error_log()`. This plugin
+    gets them by calling `scf7fu_error_log()` with no argument, and adds
+    them to the end of the post in a paragraph that starts with \"Upload
+    errors:\". The messages are kept in memory for one request (one
+    submission), so a post only gets the errors from its own submission,
+    even when several people submit at the same time.
 -   Flamingo saves the message in `wpcf7_submit`, then fires
     `wpcf7_after_flamingo` with `flamingo_inbound_id`. This plugin hooks
     that action, so no post is made when Flamingo does not store the

@@ -66,7 +66,7 @@
   <hr />
   <h1 id="wp-contact-2-post">WP-contact-2-post</h1>
   <p><a href=
-  "https://img.shields.io/badge/version-1.0.1-orange.svg">version</a></p>
+  "https://img.shields.io/badge/version-1.1.0-orange.svg">version</a></p>
   <p><a href=
   "https://img.shields.io/badge/WordPress-Compatible-blue.svg">WordPress</a></p>
   <p>Create a "Pending" post from a Contact Form 7 submission, after Flamingo
@@ -169,8 +169,17 @@ ATTR-END
   <ul>
     <li>save-cf7-file-uploads saves images in
     <code>wpcf7_before_send_mail</code> and fires
-    <code>savecf7_create_attachment_id_generated</code>. This plugin collects
-    those IDs.</li>
+    <code>scf7fu_create_attachment_id_generated</code>. This plugin collects
+    those IDs. It also collects the IDs from
+    <code>nmr_create_attachment_id_generated</code>, fired by
+    store-file-uploads-for-contact-form-7.</li>
+    <li>save-cf7-file-uploads also saves its error messages (for example, a
+    file that is not an image) with <code>scf7fu_error_log()</code>. This
+    plugin gets them by calling <code>scf7fu_error_log()</code> with no
+    argument, and adds them to the end of the post in a paragraph that starts
+    with "Upload errors:". The messages are kept in memory for one request
+    (one submission), so a post only gets the errors from its own submission,
+    even when several people submit at the same time.</li>
     <li>Flamingo saves the message in <code>wpcf7_submit</code>, then fires
     <code>wpcf7_after_flamingo</code> with <code>flamingo_inbound_id</code>.
     This plugin hooks that action, so no post is made when Flamingo does not

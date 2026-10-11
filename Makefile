@@ -19,6 +19,8 @@ mDocList = \
     README.html \
     README.md
 
+mBranch = $$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+
 mServer = moria.whyayh.com
 mPubDev = /rel/development/software/own/$(mProj)
 mPubRel = /rel/released/software/own/$(mProj)
@@ -39,20 +41,20 @@ usage :
 	@git st
 
 update :
-	git co develop
-	git pull origin develop
+	git co $(mBranch)
+	git pull origin $(mBranch)
 
 build : dist-clean update $(mDocList) $(mProduct)
 	@echo 'If OK, make save'
 
 save development : check-dev
 	-git ci -am Updated
-	git push origin develop
+	git push origin $(mBranch)
 	-ssh $(mServer) mkdir -p $(mPubDev)
 	rsync -a $(mDocList) readme.txt dist/$(mName)-$$(cat VERSION).zip $(mServer):$(mPubDev)
 	cp VERSION VERSION-dev
 	git ci -am Updated
-	git push origin develop
+	git push origin $(mBranch)
 	@echo 'If OK, make publish'
 
 publish release : check-rel
