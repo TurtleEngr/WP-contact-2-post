@@ -105,23 +105,22 @@ post_template: PageSlug
 </code></pre>
   <ul>
     <li>
-      <p><code class="verbatim">skip_mail</code> - this has no effect on this
-      plugin, but you can decide if you want to send an email of the form, in
-      addition to making a post.</p>
+      <p><code>skip_mail</code> - this has no effect on this plugin, but you
+      can decide if you want to send an email of the form, in addition to
+      making a post.</p>
     </li>
     <li>
-      <p><code class="verbatim">create_post</code> - if 'true' that activates
-      this plugin</p>
+      <p><code>create_post</code> - if 'true' that activates this plugin</p>
     </li>
     <li>
-      <p><code class="verbatim">do_not_store</code> - this is a Flamingo
-      option. The default is 'false'. If it is set to 'true', the form data
-      will not be stored and this plugin will not work.</p>
+      <p><code>do_not_store</code> - this is a Flamingo option. The default
+      is 'false'. If it is set to 'true', the form data will not be stored
+      and this plugin will not work.</p>
     </li>
     <li>
-      <p><code class="verbatim">post_template</code> - this is the slug-name
-      for a "page" that will be used as a template for the posts. See
-      "Template Page" for details.</p>
+      <p><code>post_template</code> - this is the slug-name for a "page" that
+      will be used as a template for the posts. See "Template Page" for
+      details.</p>
     </li>
   </ul>
   <p>Even though this plugin does not "publish" the posts, you should turn on
@@ -157,51 +156,45 @@ ATTR-END
     when the post is published (a future date makes it "Scheduled"). Default:
     the time the post is published.</li>
     <li>expire-date - YYYY-MM-DD. Saved in the ninja-auto-post-expire meta
-    (<code class="verbatim">_njtape_expiration_date</code>). Default: not
-    set.</li>
+    (<code>_njtape_expiration_date</code>). Default: not set.</li>
     <li>expire-time - HH:MM. Default: 00:00</li>
   </ul>
   <p>ninja-auto-post-expire only acts on posts if its "Post" option is set to
   "Yes" in it's settings, Post Expire Settings.</p>
-  <p>Invalid dates or times are ignored and logged to <code class=
-  "verbatim">error_log()</code>. Use a plugin such as debug-log-manager to
-  look at the <code class="verbatim">error_log</code>.</p>
+  <p>Invalid dates or times are ignored and logged to
+  <code>error_log()</code>. Use a plugin such as debug-log-manager to look at
+  the <code>error_log</code>.</p>
   <hr />
   <h2 id="how-it-works">How it works</h2>
   <ul>
-    <li>save-cf7-file-uploads saves images in <code class=
-    "verbatim">wpcf7_before_send_mail</code> and fires <code class=
-    "verbatim">savecf7_create_attachment_id_generated</code>. This plugin
-    collects those IDs.</li>
-    <li>Flamingo saves the message in <code class=
-    "verbatim">wpcf7_submit</code>, then fires <code class=
-    "verbatim">wpcf7_after_flamingo</code> with <code class=
-    "verbatim">flamingo_inbound_id</code>. This plugin hooks that action, so
-    no post is made when Flamingo does not store the message (<code class=
-    "verbatim">do_not_store: true</code>), or for spam.</li>
-    <li>The form's "<code class="verbatim">create_post</code>" and
-    "<code class="verbatim">post_template</code>" Additional Settings are
-    read with <code class="verbatim">WPCF7_ContactForm::is_true()</code> and
-    <code class="verbatim">pref()</code>.</li>
-    <li>The template page is split with <code class=
-    "verbatim">parse_blocks()</code>. Attribute blocks are removed,
-    <cite>{field}</cite> is replaced only in the block HTML (not in the block
-    comment JSON), then <code class=
-    "verbatim">serialize_blocks()</code>.</li>
+    <li>save-cf7-file-uploads saves images in
+    <code>wpcf7_before_send_mail</code> and fires
+    <code>savecf7_create_attachment_id_generated</code>. This plugin collects
+    those IDs.</li>
+    <li>Flamingo saves the message in <code>wpcf7_submit</code>, then fires
+    <code>wpcf7_after_flamingo</code> with <code>flamingo_inbound_id</code>.
+    This plugin hooks that action, so no post is made when Flamingo does not
+    store the message (<code>do_not_store: true</code>), or for spam.</li>
+    <li>The form's "<code>create_post</code>" and
+    "<code>post_template</code>" Additional Settings are read with
+    <code>WPCF7_ContactForm::is_true()</code> and <code>pref()</code>.</li>
+    <li>The template page is split with <code>parse_blocks()</code>.
+    Attribute blocks are removed, <cite>{field}</cite> is replaced only in
+    the block HTML (not in the block comment JSON), then
+    <code>serialize_blocks()</code>.</li>
   </ul>
   <hr />
   <h2 id="notes">Notes</h2>
   <ul>
     <li>File fields: CF7 saves a hash of the file as the field value, so
-    <code class="verbatim"><cite>{file-field}</cite></code> in a template
-    shows that hash. The images are attached to the post instead.</li>
+    <code><cite>{file-field}</cite></code> in a template shows that hash. The
+    images are attached to the post instead.</li>
     <li>save-cf7-file-uploads only saves image files.</li>
-    <li>Post author is the user with the site's <code class=
-    "verbatim">admin_email</code>, else the lowest ID administrator. Content
-    is still filtered by core kses, because kses checks the submitter (not
-    logged in), not the author.</li>
-    <li>If publish-date is valid, the date is fixed (<code class=
-    "verbatim">post_date_gmt</code> is set), so publishing keeps it; a future
+    <li>Post author is the user with the site's <code>admin_email</code>,
+    else the lowest ID administrator. Content is still filtered by core kses,
+    because kses checks the submitter (not logged in), not the author.</li>
+    <li>If publish-date is valid, the date is fixed
+    (<code>post_date_gmt</code> is set), so publishing keeps it; a future
     date makes the post "Scheduled". If there is no valid publish-date, the
     post date "floats": it is set when the post is published.</li>
     <li>ninja-auto-post-expire only acts on posts if its "Post" option is set
@@ -215,45 +208,29 @@ ATTR-END
        id="cb3">
     <pre class="sourceCode bash"><code class="sourceCode bash"><span id=
     "cb3-1"><a href="#cb3-1"
-   aria-hidden="true"
-   tabindex="-1"></a><span class=
+   aria-hidden="true"></a><span class=
    "ex">wp</span> eval-file test/setup.php</span>
 <span id="cb3-2"><a href="#cb3-2"
-   aria-hidden="true"
-   tabindex="-1"></a><span class=
-   "ex">wp</span> eval-file test/submit.php full attach   <span class=
-   "co"># post, attachment, expiry</span></span>
+   aria-hidden="true"></a><span class=
+   "ex">wp</span> eval-file test/submit.php full attach   # post, attachment, expiry</span>
 <span id="cb3-3"><a href="#cb3-3"
-   aria-hidden="true"
-   tabindex="-1"></a><span class=
-   "ex">wp</span> eval-file test/submit.php notitle       <span class=
-   "co"># title UNDEFINED</span></span>
+   aria-hidden="true"></a><span class=
+   "ex">wp</span> eval-file test/submit.php notitle       # title UNDEFINED</span>
 <span id="cb3-4"><a href="#cb3-4"
-   aria-hidden="true"
-   tabindex="-1"></a><span class=
-   "ex">wp</span> eval-file test/submit.php nostore       <span class=
-   "co"># no post</span></span>
+   aria-hidden="true"></a><span class=
+   "ex">wp</span> eval-file test/submit.php nostore       # no post</span>
 <span id="cb3-5"><a href="#cb3-5"
-   aria-hidden="true"
-   tabindex="-1"></a><span class=
-   "ex">wp</span> eval-file test/submit.php nocreate      <span class=
-   "co"># no post</span></span>
+   aria-hidden="true"></a><span class=
+   "ex">wp</span> eval-file test/submit.php nocreate      # no post</span>
 <span id="cb3-6"><a href="#cb3-6"
-   aria-hidden="true"
-   tabindex="-1"></a><span class=
-   "ex">wp</span> eval-file test/submit.php badslug       <span class=
-   "co"># no post, error_log</span></span>
+   aria-hidden="true"></a><span class=
+   "ex">wp</span> eval-file test/submit.php badslug       # no post, error_log</span>
 <span id="cb3-7"><a href="#cb3-7"
-   aria-hidden="true"
-   tabindex="-1"></a><span class=
-   "ex">wp</span> eval-file test/submit.php full spam     <span class=
-   "co"># no post</span></span>
+   aria-hidden="true"></a><span class=
+   "ex">wp</span> eval-file test/submit.php full spam     # no post</span>
 <span id="cb3-8"><a href="#cb3-8"
-   aria-hidden="true"
-   tabindex="-1"></a><span class="ex">wp</span> post list <span class=
-   "at">--post_type</span><span class="op">=</span>post <span class=
-   "at">--post_status</span><span class=
-   "op">=</span>pending</span></code></pre>
+   aria-hidden="true"></a><span class=
+   "ex">wp</span> post list --post_type=post --post_status=pending</span></code></pre>
   </div>
 </body>
 </html>
