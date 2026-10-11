@@ -37,10 +37,11 @@ Optional: save-cf7-file-uploads, ninja-auto-post-expire
 
 == Installation ==
 
+Install these plugins in this order.
+
 1. Install and activate contact-form-7 plugin.
 1. Install and activate flamingo plugin.
-1. Optional: Install and activate save-cf7-file-uploads plugin
-1. Optional: Install and activate ninja-auto-post-expire plugin
+1. Install and activate save-cf7-file-uploads plugin
 1. Install and activate this plugin contact-2-post
 
 == Frequently Asked Questions ==
