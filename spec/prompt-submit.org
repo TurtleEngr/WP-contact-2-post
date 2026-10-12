@@ -79,3 +79,70 @@ post from a template page.
 Your == Description == section also passes, though only narrowly
 (0.348 against the 0.3 threshold). If you reword it later, keep it in
 full sentences so it doesn't slip under the line.
+** Prompt 3
+
++ Merge the code in save-cf7-uploads.php to contact-2-post.php.
+
++ Also merge the readme.txt and README.org files from
+  WP-save-cf7-uploads to WP-contact-2-post. (remove any duplication)
+
++ The functions in save-cf7-uploads.php would be triggered first, then
+  the functions in contact-2-post.php will be run to create the post.
+
++ Output downloads for the files modified in WP-save-cf7-uploads.
+
++ In addtion, the prefix for code in save-cf7-uploads.php should be
+  changed to the contact-2-post.php prefix.
+
+*** Code locations
+- contact-2-post.php location: https://github.com/TurtleEngr/WP-contact-2-post/tree/feature/merge-in-store-uploads
+- save-cf7-uploads.php location: https://github.com/TurtleEngr/WP-save-cf7-file-uploads
+
+** Response 3
+
+The merge is finished. All four modified files are complete and
+attached, and =contact-2-post.php= passes =php -l=. I haven't run it
+on a WordPress site. Nothing is committed or pushed.
+
+*** contact-2-post.php
+- All the upload code now uses the =cx2p_= prefix and your =p=/=t=
+  variable naming. For example, =scf7fu_fCreateAttachment= is now
+  =cx2p_fCreateAttachment= and =scf7fu_fErrorLog= is now
+  =cx2p_fErrorLog=.
+- The three filters are renamed too, for example
+  =scf7fu_before_insert_attachment= is now
+  =cx2p_before_insert_attachment=.
+- The upload code runs on =wpcf7_before_send_mail=, so the images are
+  saved before =wpcf7_after_flamingo= creates the post.
+- Each saved image's ID now goes straight to
+  =cx2p_fSaveAttachId()=. This fixes the old hook-name mismatch, so
+  images are now attached to the post and the first one becomes the
+  featured image.
+- =save-cf7-file-uploads= is removed from the "Requires Plugins"
+  header.
+- The missing-plugin notice is now shown only to users who can
+  activate plugins, as the upload plugin did.
+- Images are still saved for every form, not only forms with
+  =create_post: true=, as before. If Flamingo is not active, uploads
+  are now skipped too, because both features are turned off together.
+
+*** readme.txt= and =README.org
+- The upload details (images only, file-name rules, =_N= suffixes,
+  "Upload errors:") now appear once in each file. =README.org= also
+  has a new "Uploaded Files" section.
+- The install steps now say to deactivate and delete
+  =save-cf7-file-uploads=. If both stay active, each image would be
+  saved twice.
+- The FAQ links now point to WP-contact-2-post.
+- The 1.1.0 changelog entry notes the merge and the fix.
+- I removed the claim that the plugin collects IDs from
+  =nmr_create_attachment_id_generated=, because the code never did
+  that.
+
+*** submit.php
+- The test called =scf7fu_create_attachment()=, which no longer
+  exists. It now calls =cx2p_fCreateAttachment()=.
+
+- =README.md= and =README.html= are generated from =README.org= by
+  your Makefile, so I didn't edit them. =make build= will regenerate
+  them.

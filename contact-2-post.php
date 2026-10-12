@@ -2,11 +2,11 @@
 /*
  * Plugin Name: Contact 2 Post
  * Plugin URI: https://github.com/TurtleEngr/WP-contact-2-post
- * Description: When a Contact Form 7 form is submitted, this plugin can create a pending post from a template post page.
+ * Description: When a Contact Form 7 form is submitted, this plugin saves uploaded images to the Media Library, and can create a pending post from a template post page.
  * Version: VERSION
  * Requires at least: 6.0
  * Tested up to: 7.1
- * Requires Plugins: contact-form-7, flamingo, save-cf7-file-uploads
+ * Requires Plugins: contact-form-7, flamingo
  * Requires PHP: 8.0
  * Author: TurtleEngr
  * Author URI: https://github.com/TurtleEngr
@@ -37,16 +37,141 @@ const cx2p_cExpireMetaKey = '_njtape_expiration_date';
 add_action('plugins_loaded', function () {
     if (!class_exists('WPCF7') || !class_exists('Flamingo_Inbound_Message')) {
         add_action('admin_notices', function () {
+            if (!current_user_can('activate_plugins')) {
+                return;
+            }
             echo '<div class="notice notice-error"><p>';
             echo '<strong>Contact 2 Post</strong> requires the Contact Form 7 and Flamingo plugins to be installed and active.';
             echo '</p></div>';
         });
         return;
     }
-    // save-cf7-file-uploads (scf7fu) saves the message in the same request.
-    add_action('scf7fu_fCreateAttachmentIdGenerated', 'cx2p_fSaveAttachId');
+    // Uploads are saved first (wpcf7_before_send_mail), then the post is
+    // created after Flamingo saves the message (wpcf7_after_flamingo).
+    // Both run in the same request.
+    add_action('wpcf7_before_send_mail', 'cx2p_fOnBeforeCf7SendMail');
     add_action('wpcf7_after_flamingo', 'cx2p_fAfterFlamingo');
 });
+
+// ----------------------------------------
+// Save an error message for the current submission, and write it to
+// the PHP error log. Call with no argument to get the saved list.
+// The list is kept in memory for this request (one form submission).
+function cx2p_fErrorLog($pMsg = null)
+{
+    static $tMsgList = [];
+
+    if ($pMsg !== null) {
+        $tMsgList[] = $pMsg;
+        error_log(cx2p_cSlug . ': ' . $pMsg);
+    }
+    return $tMsgList;
+}
+
+// ----------------------------------------
+// Replace chars not in [a-zA-Z0-9._-] with "_", then collapse
+// repeated "_".
+function cx2p_fNormalizeFileName($pFileName)
+{
+    $pFileName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $pFileName);
+    return preg_replace('/_+/', '_', $pFileName);
+}
+
+// ----------------------------------------
+// If the file exists, insert "_N" before the extension, N = 1, 2,
+// ... until unused.
+function cx2p_fUniqueFileName($pFilePath)
+{
+    if (!file_exists($pFilePath)) {
+        return $pFilePath;
+    }
+    $tInfo = pathinfo($pFilePath);
+    $tExt = isset($tInfo['extension']) ? '.' . $tInfo['extension'] : '';
+    $tN = 1;
+    do {
+        $tNewPath = $tInfo['dirname'] . '/' . $tInfo['filename'] . '_' . $tN . $tExt;
+        $tN++;
+    } while (file_exists($tNewPath));
+    return $tNewPath;
+}
+
+// ----------------------------------------
+// Copy an uploaded image to the uploads dir and add it to the Media
+// Library. Returns the attachment metadata, or false if the file was
+// not added to the Media Library.
+function cx2p_fCreateAttachment($pFileName)
+{
+    // The extension must also be an allowed image type, so a file is
+    // never saved with an extension the web server would run or serve
+    // as a page.
+    $tExtType = wp_check_filetype(basename($pFileName));
+    if (!$tExtType['type'] || strpos($tExtType['type'], 'image/') !== 0) {
+        cx2p_fErrorLog('file extension not allowed, not saved: ' . basename($pFileName));
+        return false;
+    }
+    // Only image types allowed by WordPress, detected from the file content.
+    $tMimeType = wp_get_image_mime($pFileName);
+    if (!$tMimeType || !in_array($tMimeType, get_allowed_mime_types(), true)) {
+        cx2p_fErrorLog('file type not allowed, not saved: ' . basename($pFileName));
+        return false;
+    }
+    $tUploadDir = wp_upload_dir();
+
+    $tAttachFileName = $tUploadDir['path'] . '/' . cx2p_fNormalizeFileName(basename($pFileName));
+    $tAttachFileName = apply_filters('cx2p_fCreateAttachment_file_name', $tAttachFileName);
+    $tAttachFileName = cx2p_fUniqueFileName($tAttachFileName);
+    if (!copy($pFileName, $tAttachFileName)) {
+        cx2p_fErrorLog('copy failed, not saved: ' . $tAttachFileName);
+        return false;
+    }
+
+    $tSkipMediaLibrary = apply_filters('cx2p_should_skip_save_attachment_to_media_library', false);
+    if ($tSkipMediaLibrary) {
+        return false;
+    }
+
+    $tAttachment = [
+        'guid'           => str_replace($tUploadDir['basedir'], $tUploadDir['baseurl'], $tAttachFileName),
+        'post_mime_type' => $tMimeType,
+        'post_title'     => preg_replace('/\.[^.]+$/', '', basename($tAttachFileName)),
+        'post_content'   => '',
+        'post_status'    => 'inherit',
+    ];
+    $tAttachment = apply_filters('cx2p_before_insert_attachment', $tAttachment);
+    $tAttachId = wp_insert_attachment($tAttachment, $tAttachFileName, 0, true);
+    if (is_wp_error($tAttachId) || !$tAttachId) {
+        $tReason = is_wp_error($tAttachId) ? ': ' . $tAttachId->get_error_message() : '';
+        cx2p_fErrorLog('not added to Media Library, file removed: ' . $tAttachFileName . $tReason);
+        wp_delete_file($tAttachFileName);
+        return false;
+    }
+    require_once(ABSPATH . 'wp-admin/includes/image.php');
+    require_once(ABSPATH . 'wp-admin/includes/media.php');
+    $tAttachData = wp_generate_attachment_metadata($tAttachId, $tAttachFileName);
+    wp_update_attachment_metadata($tAttachId, $tAttachData);
+
+    cx2p_fSaveAttachId($tAttachId);
+    return $tAttachData;
+}
+
+// ----------------------------------------
+// Save all the uploaded files for the current submission.
+function cx2p_fOnBeforeCf7SendMail()
+{
+    $tSubmission = WPCF7_Submission::get_instance();
+    if (!$tSubmission) {
+        return;
+    }
+    foreach ((array) $tSubmission->uploaded_files() as $tFilePath) {
+        if (is_array($tFilePath)) {
+            foreach ($tFilePath as $tValue) {
+                cx2p_fCreateAttachment($tValue);
+            }
+        } else {
+            cx2p_fCreateAttachment($tFilePath);
+        }
+    }
+}
 
 // ----------------------------------------
 // Collect attachment IDs saved for the current submission.
@@ -90,9 +215,9 @@ function cx2p_fAfterFlamingo($pResult)
     $tMsg = new Flamingo_Inbound_Message((int) $pResult['flamingo_inbound_id']);
     $tFields = is_array($tMsg->fields) ? $tMsg->fields : [];
 
-    // Errors saved by save-cf7-file-uploads. They are kept in memory for
-    // this request only, so they are from this submission only.
-    $tErrorList = function_exists('scf7fu_fErrorLog') ? scf7fu_fErrorLog() : [];
+    // Upload errors are kept in memory for this request only, so they
+    // are from this submission only.
+    $tErrorList = cx2p_fErrorLog();
 
     cx2p_fCreatePost($tPage->post_content, $tFields, cx2p_fSaveAttachId(), $tErrorList);
 }

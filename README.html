@@ -66,24 +66,33 @@
   <hr />
   <h1 id="wp-contact-2-post">WP-contact-2-post</h1>
   <p><a href=
-  "https://img.shields.io/badge/version-1.1.0-orange.svg">version</a></p>
+  "https://img.shields.io/badge/version-1.2.0-orange.svg">version</a></p>
   <p><a href=
   "https://img.shields.io/badge/WordPress-Compatible-blue.svg">WordPress</a></p>
-  <p>When a Contact Form 7 form is submitted, Flamingo saves it. This plugin
-  can then create a "pending post" from a template post page.</p>
+  <p>When a Contact Form 7 form is submitted, this plugin saves the uploaded
+  image files to the Media Library. Then, after Flamingo saves the message,
+  this plugin can create a "pending post" from a template post page. The
+  images are attached to the post.</p>
+  <p>The upload code was merged in from <a href=
+  "https://github.com/TurtleEngr/WP-save-cf7-file-uploads">save-cf7-file-uploads</a>,
+  which added enhancements to <a href=
+  "https://wordpress.org/plugins/store-file-uploads-for-contact-form-7/">Store
+  file uploads for Contact Form 7</a> by Mircea N. (version 1.3.0).
+  save-cf7-file-uploads is no longer needed.</p>
   <p>See readme.txt for the user documentation.</p>
   <hr />
   <h2 id="installation">Installation</h2>
   <ol>
     <li>Install and activate contact-form-7 plugin.</li>
     <li>Install and activate flamingo plugin.</li>
-    <li>Optional: Install and activate save-cf7-file-uploads plugin</li>
     <li>Optional: Install and activate ninja-auto-post-expire plugin</li>
+    <li>If save-cf7-file-uploads is installed, deactivate and delete it. Its
+    code is now in this plugin, and both would save each image.</li>
     <li>Install and activate this plugin contact-2-post</li>
   </ol>
   <h3 id="development-installs">Development Installs</h3>
   <ol>
-    <li>Follow install steps 1 to 4.</li>
+    <li>Follow install steps 1 to 4 above.</li>
     <li>Go to: <a href=
     "https://moria.whyayh.com/rel/released/software/own/WP-contact-2-post">https://moria.whyayh.com/rel/released/software/own/WP-contact-2-post</a>
     </li>
@@ -96,6 +105,8 @@
   See "Contact Form Settings" section.</p>
   <p>Also, you need to define a template for your posts. See "Template Page"
   section.</p>
+  <p>Uploaded images are saved for every form, even without
+  <code>create_post</code>. See "Uploaded Files" section.</p>
   <h3 id="contact-form-settings">Contact Form Settings</h3>
   <p>In a form's "Additional Settings" tab, add these settings:</p>
   <pre class="example"><code>skip_mail: on
@@ -164,33 +175,68 @@ ATTR-END
   <p>Invalid dates or times are ignored and logged to
   <code>error_log()</code>. Use a plugin such as debug-log-manager to look at
   the <code>error_log</code>.</p>
+  <h3 id="uploaded-files">Uploaded Files</h3>
+  <p>Files uploaded with the Contact Form 7 <code>[file NAME]</code> field
+  are saved to the Media Library before the email is sent.</p>
+  <ol>
+    <li>Only image files are saved. The type is checked from the file
+    content, and the file extension must also be an allowed image type. Other
+    files are skipped and logged.</li>
+    <li>File names are normalized. File names can only contain letters in the
+    set: [a-zA-Z0-9._-]. Any letters not in the set are converted to a
+    "<span class="underline">", and repeated "</span>" are collapsed.</li>
+    <li>Existing files are never overwritten. "<sub>1</sub>", "<sub>2</sub>",
+    … is added to the base name instead.</li>
+  </ol>
+  <p>If a post is created, the images are attached to it, and the first image
+  is the post's Featured Image.</p>
+  <p>If an uploaded file could not be saved, the error messages for that
+  submission are added to the end of the post, in a paragraph that starts
+  with "Upload errors:". They are also written to the PHP error log.</p>
   <hr />
   <h2 id="how-it-works">How it works</h2>
   <ul>
-    <li>save-cf7-file-uploads saves images in
-    <code>wpcf7_before_send_mail</code> and fires
-    <code>scf7fu_create_attachment_id_generated</code>. This plugin collects
-    those IDs. It also collects the IDs from
-    <code>nmr_create_attachment_id_generated</code>, fired by
-    store-file-uploads-for-contact-form-7.</li>
-    <li>save-cf7-file-uploads also saves its error messages (for example, a
-    file that is not an image) with <code>scf7fu_error_log()</code>. This
-    plugin gets them by calling <code>scf7fu_error_log()</code> with no
-    argument, and adds them to the end of the post in a paragraph that starts
-    with "Upload errors:". The messages are kept in memory for one request
-    (one submission), so a post only gets the errors from its own submission,
-    even when several people submit at the same time.</li>
-    <li>Flamingo saves the message in <code>wpcf7_submit</code>, then fires
-    <code>wpcf7_after_flamingo</code> with <code>flamingo_inbound_id</code>.
-    This plugin hooks that action, so no post is made when Flamingo does not
-    store the message (<code>do_not_store: true</code>), or for spam.</li>
-    <li>The form's "<code>create_post</code>" and
-    "<code>post_template</code>" Additional Settings are read with
-    <code>WPCF7_ContactForm::is_true()</code> and <code>pref()</code>.</li>
-    <li>The template page is split with <code>parse_blocks()</code>.
-    Attribute blocks are removed, <cite>{field}</cite> is replaced only in
-    the block HTML (not in the block comment JSON), then
-    <code>serialize_blocks()</code>.</li>
+    <li>
+      <p><code>cx2p_fOnBeforeCf7SendMail()</code> is hooked to
+      <code>wpcf7_before_send_mail</code>. It saves each uploaded image with
+      <code>cx2p_fCreateAttachment()</code>, and collects the attachment IDs
+      with <code>cx2p_fSaveAttachId()</code>.</p>
+    </li>
+    <li>
+      <p>Upload error messages are saved with <code>cx2p_fErrorLog()</code>,
+      which also writes them to the PHP error log. Calling
+      <code>cx2p_fErrorLog()</code> with no argument returns the list. The
+      list is a <code>static</code> variable, and each form submission is one
+      PHP request with its own memory, so a post only gets the errors from
+      its own submission, even when several people submit at the same time.
+      The messages are not kept after the request ends; the PHP error log
+      still has them.</p>
+    </li>
+    <li>
+      <p>These filters can change how uploads are saved:
+      <code>cx2p_fCreateAttachment_file_name</code> (the destination path),
+      <code>cx2p_should_skip_save_attachment_to_media_library</code> (return
+      true to only copy the file), and
+      <code>cx2p_before_insert_attachment</code> (the attachment array).</p>
+    </li>
+    <li>
+      <p>Flamingo saves the message in <code>wpcf7_submit</code>, then fires
+      <code>wpcf7_after_flamingo</code> with
+      <code>flamingo_inbound_id</code>. This plugin hooks that action, so no
+      post is made when Flamingo does not store the message
+      (<code>do_not_store: true</code>), or for spam.</p>
+    </li>
+    <li>
+      <p>The form's "<code>create_post</code>" and
+      "<code>post_template</code>" Additional Settings are read with
+      <code>WPCF7_ContactForm::is_true()</code> and <code>pref()</code>.</p>
+    </li>
+    <li>
+      <p>The template page is split with <code>parse_blocks()</code>.
+      Attribute blocks are removed, <cite>{field}</cite> is replaced only in
+      the block HTML (not in the block comment JSON), then
+      <code>serialize_blocks()</code>.</p>
+    </li>
   </ul>
   <hr />
   <h2 id="notes">Notes</h2>
@@ -198,7 +244,6 @@ ATTR-END
     <li>File fields: CF7 saves a hash of the file as the field value, so
     <code><cite>{file-field}</cite></code> in a template shows that hash. The
     images are attached to the post instead.</li>
-    <li>save-cf7-file-uploads only saves image files.</li>
     <li>Post author is the user with the site's <code>admin_email</code>,
     else the lowest ID administrator. Content is still filtered by core kses,
     because kses checks the submitter (not logged in), not the author.</li>
