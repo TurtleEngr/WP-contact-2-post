@@ -8,7 +8,8 @@ Stable tag: VERSION
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Create a "pending post" from a Contact Form 7 submission, post template page.
+When a Contact Form 7 form is submitted, this plugin can create a
+"pending post" from a template post page.
 
 == Description ==
 

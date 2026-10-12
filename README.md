@@ -5,8 +5,8 @@ WP-contact-2-post
 
 ![WordPress](https://img.shields.io/badge/WordPress-Compatible-blue.svg)
 
--   Create a \"Pending\" post from a Contact Form 7 submission, after
-    Flamingo saves it. The post content comes from a template page.
+-   When a Contact Form 7 form is submitted, Flamingo saves it. This
+    plugin can then create a \"pending post\" from a template post page.
 
 -   See readme.txt for the user documentation.
 

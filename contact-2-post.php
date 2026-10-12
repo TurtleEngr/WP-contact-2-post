@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Contact 2 Post
  * Plugin URI: https://github.com/TurtleEngr/WP-contact-2-post
- * Description: Create a pending post from a Contact Form 7 submission saved by Flamingo, using a page as the post template.
+ * Description: When a Contact Form 7 form is submitted, this plugin can create a pending post from a template post page.
  * Version: VERSION
  * Requires at least: 6.0
  * Tested up to: 7.1
