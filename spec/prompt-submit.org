@@ -17,3 +17,65 @@
 *** Code locations
 + The code for this plugin contact-2-post.php
   https://github.com/TurtleEngr/WP-contact-2-post
+
+** Prompt 2
+
++ The code for this plugin contact-2-post.php is at:
+  https://github.com/TurtleEngr/WP-contact-2-post/tree/feature/save-error-log
+
++ The Plugin Check for contact-2-post says this: "The readme short
+  description contains unofficial language. It must be written in
+  standard English."
+
++ Looking at the readme.txt file at:
+  https://raw.githubusercontent.com/TurtleEngr/WP-contact-2-post/refs/heads/feature/save-error-log/readme.txt
+  Why does Plugin Check think this is not english? What is the fix?
+
+** Response 2
+
+I'll pull the readme and look at the short description line.
+
+Now the language helper that does the actual decision:
+
+- Plugin Check uses an n‑gram language detector on the short
+  description. I'll run that same library on your line and on some
+  rewrites to see what it scores.
+
+- **Why:** Plugin Check isn't checking grammar. It runs a statistical
+  language guesser (the `patrickschur/language-detection` n‑gram
+  library) on the short description and fails it unless English scores
+  above 0.3. I ran that same library on your line:
+
+#+begin_example
+Create a "pending post" from a Contact Form 7 submission, post template page.
+→ Latin 0.466, Interlingua 0.459, French 0.443, English: not in the results → FAIL
+#+end_example
+
+- The sentence is short and made almost entirely of Latin‑rooted words
+  that are spelled the same in French and Latin: *create, pending,
+  post, contact, form, submission, template, page*. It has almost no
+  English "glue" words like *and, a, the, this, using*. On top of
+  that, the ending ", post template page" is a dangling noun
+  phrase. That makes it read like a list of keywords to the detector,
+  so English never registers.
+
+- **Fix:** Write the line as a complete English sentence with a few
+  function words. I scored each of these with the same library, and
+  all of them pass:
+
+| Short description                                                                                    | English score                            |
+|------------------------------------------------------------------------------------------------------+------------------------------------------|
+| =When a Contact Form 7 form is submitted, this plugin creates a pending post from a template page.=  | 0.459 (English is the only match)        |
+| =Creates a pending post from each Contact Form 7 submission, using a template page for the content.= | 0.451 (English ranks first)              |
+| =Create a "pending post" from a Contact Form 7 submission and a post template page.=                 | 0.459 (passes, but Latin still edges it) |
+
+I'd use the first one. It is the most clearly English to the detector and stays under the 150‑character limit. The edit to readme.txt is just that one line, directly under the header block:
+
+#+begin_example
+When a Contact Form 7 form is submitted, this plugin creates a pending
+post from a template page.
+#+end_example
+
+Your == Description == section also passes, though only narrowly
+(0.348 against the 0.3 threshold). If you reword it later, keep it in
+full sentences so it doesn't slip under the line.
