@@ -9,44 +9,36 @@ License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 When a Contact Form 7 form is submitted, this plugin saves uploaded
-images to the Media Library, and can create a "pending post" from a
-template post page.
+images to the Media Library, and it can create a "pending post" from a
+post page template.
 
 == Description ==
 
 When a Contact Form 7 form is submitted and Flamingo saves the
-message, this plugin will create a post with status "Pending". The
-post content is copied from a template page, where each {field} is
-replaced by the submitted form's value. The post author is the user
-with the site's Administration Email Address, or else the first
-administrator.
+message, this plugin will create a post with status "Pending," when
+"create_post: true" is in the "Additional Settings" for the form.
+
+Required plugins: contact-form-7, flamingo.
+
+Optional plugin: ninja-auto-post-expire - If this plugin is installed
+the "expiry date" field for a post can be set with this
+(contact-2-post) plugin.
 
 This plugin assumes you are using Gutenberg Blocks for editing.
 
-Files uploaded with the Contact Form 7 `[file NAME]` field are saved
+Files uploaded with the Contact Form 7 "[file NAME]" fields are saved
 to the Media Library before the email is sent. Only image files are
 saved. The type is checked from the file content, and the file
 extension must also be an allowed image type. Other files are
 skipped, and a line is written to the PHP error log. File names are
 reduced to the characters a-z, A-Z, 0-9, ".", "_" and "-", and
 existing files are never overwritten: "_1", "_2", and so on is added
-to the name instead.
+to the name.
 
 The images are attached to the created post, and the first image is
 used for the Featured Image. If an uploaded file could not be saved,
 the error messages for that submission are added to the end of the
 post, after "Upload errors:".
-
-The upload code is from the Save CF7 File Uploads plugin, which
-added enhancements to version 1.3.0 of
-[Store file uploads for Contact Form 7](https://wordpress.org/plugins/store-file-uploads-for-contact-form-7/)
-by Mircea N.
-
-Required plugins: contact-form-7, flamingo.
-
-Optional: ninja-auto-post-expire - If this plugin is installed the
-"expiry date" field for a post can be set with this (contact-2-post)
-plugin.
 
 == Installation ==
 
@@ -56,15 +48,15 @@ Install these plugins in this order.
 1. Install and activate flamingo plugin.
 1. Install and activate this plugin contact-2-post
 
-If the save-cf7-file-uploads plugin is installed, deactivate and
-delete it. Its code is now in this plugin.
+If the save-cf7-file-uploads plugin is installed, delete it. That
+functionallity is handled by this plugin.
 
 In the "Additional Settings" tab for a contact form make sure
-"do_not_store:" is not "true".
+"do_not_store: true" is not defined.
 
 == Frequently Asked Questions ==
 
-= Where can I get documentation =
+= Where can I get more documentation =
 
 See: https://github.com/TurtleEngr/WP-contact-2-post
 
@@ -73,7 +65,7 @@ See: https://github.com/TurtleEngr/WP-contact-2-post
 See:
 https://github.com/TurtleEngr/WP-contact-2-post#contact-form-settings
 
-= How can I define a template for posts?
+= How can I define a template for the posts?
 
 See:
 https://github.com/TurtleEngr/WP-contact-2-post#contact-form-settings
