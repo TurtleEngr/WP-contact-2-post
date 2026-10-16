@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
 <title>Contact 2 Post</title>
 <link rel="stylesheet"
-      href="doc.css" />* Examples
+      href="doc.css" />
 </head>
 <body>
 #+END_EXPORT
@@ -14,6 +14,8 @@
 [[https://img.shields.io/badge/version-VERSION-orange.svg][version]]
 
 [[https://img.shields.io/badge/WordPress-Compatible-blue.svg][WordPress]]
+
+ver-VERSION
 
 - When a Contact Form 7 form is submitted, this plugin saves the
   uploaded image files to the Media Library. Then, after Flamingo
