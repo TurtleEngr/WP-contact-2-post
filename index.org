@@ -1,4 +1,15 @@
-* Contact 2 Post
+#+BEGIN_EXPORT html
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+<title>Contact 2 Post Documentation</title>
+<link rel="stylesheet"
+      href="doc.css" />* Examples
+</head>
+<body>
+#+END_EXPORT
+* Contact 2 Post Documentation
 ** Documentation
 <a href="README.html">README</a>
 

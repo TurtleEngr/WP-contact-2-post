@@ -16,7 +16,6 @@ mBuildList = \
     dist/$(mName)/LICENSE
 
 mDocList = \
-	README.html \
 	README.md \
 	docs/README.html \
 	docs/example.html \
@@ -96,7 +95,7 @@ $(mProduct) : $(mBuildList)
 	cd dist; zip -r $(mName)-$$(cat ../VERSION).zip $(mName)
 	-touch $@
 
-README.html : README.org VERSION
+docs/README.html : README.org VERSION
 	org2html.sh -i README.org -o $@ -s 2
 	sed -i "s/VERSION/$$(cat VERSION)/" $@
 	rm-trailing-sp $@
@@ -148,9 +147,6 @@ dist/$(mName)/readme.txt : VERSION readme.txt
 
 dist/$(mName)/LICENSE : LICENSE
 	-cp $? $@
-
-docs/README.html : README.html
-	cp $? $@
 
 docs/example.html : example.org
 	org2html.sh -i $? -o $@ -s 2

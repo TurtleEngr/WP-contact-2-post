@@ -1,6 +1,6 @@
-# WP-contact-2-post
+# Contact 2 Post
 
-![version](https://img.shields.io/badge/version-1.2.1-orange.svg)
+![version](https://img.shields.io/badge/version-1.2.2-orange.svg)
 
 ![WordPress](https://img.shields.io/badge/WordPress-Compatible-blue.svg)
 
