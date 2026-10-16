@@ -1,7 +1,6 @@
-WP-contact-2-post
-=================
+# WP-contact-2-post
 
-![version](https://img.shields.io/badge/version-1.2.0-orange.svg)
+![version](https://img.shields.io/badge/version-1.2.1-orange.svg)
 
 ![WordPress](https://img.shields.io/badge/WordPress-Compatible-blue.svg)
 
@@ -19,8 +18,7 @@ WP-contact-2-post
 
 -   See readme.txt for the user documentation.
 
-Installation
-------------
+## Installation
 
 1.  Install and activate contact-form-7 plugin.
 2.  Install and activate flamingo plugin.
@@ -37,8 +35,7 @@ Installation
 3.  Then download the contact-2-VER.zip file you want.
 4.  In WordPress, install with upload plugin, then activate.
 
-Usage
------
+## Usage
 
 To use this plugin, you need to add some things to your contact forms.
 See \"Contact Form Settings\" section.
@@ -46,32 +43,33 @@ See \"Contact Form Settings\" section.
 Also, you need to define a template for your posts. See \"Template
 Page\" section.
 
-Uploaded images are saved for every form, even without `create_post`.
-See \"Uploaded Files\" section.
+Uploaded images are saved for every form, even without
+`create_post`{.verbatim}. See \"Uploaded Files\" section.
 
 ### Contact Form Settings
 
 In a form\'s \"Additional Settings\" tab, add these settings:
 
-``` {.example}
+``` example
 skip_mail: on
 create_post: true
 do_not_store: false
 post_template: PageSlug
 ```
 
--   `skip_mail` - this has no effect on this plugin, but you can decide
-    if you want to send an email of the form, in addition to making a
-    post.
+-   `skip_mail`{.verbatim} - this has no effect on this plugin, but you
+    can decide if you want to send an email of the form, in addition to
+    making a post.
 
--   `create_post` - if \'true\' that activates this plugin
+-   `create_post`{.verbatim} - if \'true\' that activates this plugin
 
--   `do_not_store` - this is a Flamingo option. The default is
-    \'false\'. If it is set to \'true\', the form data will not be
+-   `do_not_store`{.verbatim} - this is a Flamingo option. The default
+    is \'false\'. If it is set to \'true\', the form data will not be
     stored and this plugin will not work.
 
--   `post_template` - this is the slug-name for a \"page\" that will be
-    used as a template for the posts. See \"Template Page\" for details.
+-   `post_template`{.verbatim} - this is the slug-name for a \"page\"
+    that will be used as a template for the posts. See \"Template Page\"
+    for details.
 
 Even though this plugin does not \"publish\" the posts, you should turn
 on reCAPTCHA in contact-form-7 settings.
@@ -92,7 +90,7 @@ Every top-level block from the one with ATTR-BEGIN to the one with
 ATTR-END is not copied. They are used to set the post\'s attributes.
 FYI, all these are optional.
 
-``` {.example}
+``` example
 ATTR-BEGIN
 title: {your-subject}
 categories: {field}
@@ -111,19 +109,20 @@ ATTR-END
     when the post is published (a future date makes it \"Scheduled\").
     Default: the time the post is published.
 -   expire-date - YYYY-MM-DD. Saved in the ninja-auto-post-expire meta
-    (`_njtape_expiration_date`). Default: not set.
+    (`_njtape_expiration_date`{.verbatim}). Default: not set.
 -   expire-time - HH:MM. Default: 00:00
 
 ninja-auto-post-expire only acts on posts if its \"Post\" option is set
 to \"Yes\" in it\'s settings, Post Expire Settings.
 
-Invalid dates or times are ignored and logged to `error_log()`. Use a
-plugin such as debug-log-manager to look at the `error_log`.
+Invalid dates or times are ignored and logged to
+`error_log()`{.verbatim}. Use a plugin such as debug-log-manager to look
+at the `error_log`{.verbatim}.
 
 ### Uploaded Files
 
-Files uploaded with the Contact Form 7 `[file NAME]` field are saved to
-the Media Library before the email is sent.
+Files uploaded with the Contact Form 7 `[file NAME]`{.verbatim} field
+are saved to the Media Library before the email is sent.
 
 1.  Only image files are saved. The type is checked from the file
     content, and the file extension must also be an allowed image type.
@@ -141,62 +140,67 @@ If an uploaded file could not be saved, the error messages for that
 submission are added to the end of the post, in a paragraph that starts
 with \"Upload errors:\". They are also written to the PHP error log.
 
-How it works
-------------
+## How it works
 
--   `cx2p_fOnBeforeCf7SendMail()` is hooked to `wpcf7_before_send_mail`.
-    It saves each uploaded image with `cx2p_fCreateAttachment()`, and
-    collects the attachment IDs with `cx2p_fSaveAttachId()`.
+-   `cx2p_fOnBeforeCf7SendMail()`{.verbatim} is hooked to
+    `wpcf7_before_send_mail`{.verbatim}. It saves each uploaded image
+    with `cx2p_fCreateAttachment()`{.verbatim}, and collects the
+    attachment IDs with `cx2p_fSaveAttachId()`{.verbatim}.
 
--   Upload error messages are saved with `cx2p_fErrorLog()`, which also
-    writes them to the PHP error log. Calling `cx2p_fErrorLog()` with no
-    argument returns the list. The list is a `static` variable, and each
-    form submission is one PHP request with its own memory, so a post
-    only gets the errors from its own submission, even when several
-    people submit at the same time. The messages are not kept after the
-    request ends; the PHP error log still has them.
+-   Upload error messages are saved with `cx2p_fErrorLog()`{.verbatim},
+    which also writes them to the PHP error log. Calling
+    `cx2p_fErrorLog()`{.verbatim} with no argument returns the list. The
+    list is a `static`{.verbatim} variable, and each form submission is
+    one PHP request with its own memory, so a post only gets the errors
+    from its own submission, even when several people submit at the same
+    time. The messages are not kept after the request ends; the PHP
+    error log still has them.
 
 -   These filters can change how uploads are saved:
-    `cx2p_fCreateAttachment_file_name` (the destination path),
-    `cx2p_should_skip_save_attachment_to_media_library` (return true to
-    only copy the file), and `cx2p_before_insert_attachment` (the
-    attachment array).
+    `cx2p_fCreateAttachment_file_name`{.verbatim} (the destination
+    path),
+    `cx2p_should_skip_save_attachment_to_media_library`{.verbatim}
+    (return true to only copy the file), and
+    `cx2p_before_insert_attachment`{.verbatim} (the attachment array).
 
--   Flamingo saves the message in `wpcf7_submit`, then fires
-    `wpcf7_after_flamingo` with `flamingo_inbound_id`. This plugin hooks
-    that action, so no post is made when Flamingo does not store the
-    message (`do_not_store: true`), or for spam.
+-   Flamingo saves the message in `wpcf7_submit`{.verbatim}, then fires
+    `wpcf7_after_flamingo`{.verbatim} with
+    `flamingo_inbound_id`{.verbatim}. This plugin hooks that action, so
+    no post is made when Flamingo does not store the message
+    (`do_not_store: true`{.verbatim}), or for spam.
 
--   The form\'s \"`create_post`\" and \"`post_template`\" Additional
-    Settings are read with `WPCF7_ContactForm::is_true()` and `pref()`.
+-   The form\'s \"`create_post`{.verbatim}\" and
+    \"`post_template`{.verbatim}\" Additional Settings are read with
+    `WPCF7_ContactForm::is_true()`{.verbatim} and `pref()`{.verbatim}.
 
--   The template page is split with `parse_blocks()`. Attribute blocks
-    are removed, {field} is replaced only in the block HTML (not in the
-    block comment JSON), then `serialize_blocks()`.
+-   The template page is split with `parse_blocks()`{.verbatim}.
+    Attribute blocks are removed, {field} is replaced only in the block
+    HTML (not in the block comment JSON), then
+    `serialize_blocks()`{.verbatim}.
 
-Notes
------
+## Notes
 
 -   File fields: CF7 saves a hash of the file as the field value, so
-    `{file-field}` in a template shows that hash. The images are
-    attached to the post instead.
--   Post author is the user with the site\'s `admin_email`, else the
-    lowest ID administrator. Content is still filtered by core kses,
-    because kses checks the submitter (not logged in), not the author.
--   If publish-date is valid, the date is fixed (`post_date_gmt` is
-    set), so publishing keeps it; a future date makes the post
-    \"Scheduled\". If there is no valid publish-date, the post date
-    \"floats\": it is set when the post is published.
+    `{file-field}`{.verbatim} in a template shows that hash. The images
+    are attached to the post instead.
+-   Post author is the user with the site\'s `admin_email`{.verbatim},
+    else the lowest ID administrator. Content is still filtered by core
+    kses, because kses checks the submitter (not logged in), not the
+    author.
+-   If publish-date is valid, the date is fixed
+    (`post_date_gmt`{.verbatim} is set), so publishing keeps it; a
+    future date makes the post \"Scheduled\". If there is no valid
+    publish-date, the post date \"floats\": it is set when the post is
+    published.
 -   ninja-auto-post-expire only acts on posts if its \"Post\" option is
     set to \"Yes\" in Settings, Post Expire Settings.
 
-Test
-----
+## Test
 
 -   test/setup.php and test/submit.php are run with wp-cli on a test
     site with all the plugins active. They are not in the dist zip.
 
-``` {.bash}
+``` bash
 wp eval-file test/setup.php
 wp eval-file test/submit.php full attach   # post, attachment, expiry
 wp eval-file test/submit.php notitle       # title UNDEFINED
