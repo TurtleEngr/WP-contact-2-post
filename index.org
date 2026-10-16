@@ -1,0 +1,6 @@
+* Contact 2 Post
+** Documentation
+<a href="README.html">README</a>
+
+** Examples
+<a href="example.html">examples</a>

@@ -16,8 +16,11 @@ mBuildList = \
     dist/$(mName)/LICENSE
 
 mDocList = \
-    README.html \
-    README.md
+	README.html \
+	README.md \
+	docs/README.html \
+	docs/example.html \
+	docs/index.html
 
 mBranch = $$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 
@@ -44,8 +47,10 @@ update :
 	git co $(mBranch)
 	git pull origin $(mBranch)
 
-build : dist-clean update $(mDocList) $(mProduct)
+build : dist-clean update doc $(mProduct)
 	@echo 'If OK, make save'
+
+doc : $(mDocList)
 
 save development : check-dev
 	-git ci -am Updated
@@ -143,3 +148,12 @@ dist/$(mName)/readme.txt : VERSION readme.txt
 
 dist/$(mName)/LICENSE : LICENSE
 	-cp $? $@
+
+docs/README.html : README.html
+	cp $? $@
+
+docs/example.html : example.org
+	org2html.sh -i $? -o $@ -s 2
+
+docs/index.html : index.org
+	org2html.sh -i $? -o $@ -s 2
