@@ -1,0 +1,24 @@
+* To Do
+** How to add documentation, and support links to plugin page description?
+
+- To add links next to the Version and Author text inside the plugin
+  description row, use the plugin_row_meta filter hook.
+
+- For example: add the following code to your main plugin file:
+
+#+begin_example
+function my_plugin_custom_meta_links( $pLinks, $pFile ) {
+    // Target only your specific plugin file
+    if ( $pFile === plugin_basename( __FILE__ ) ) {
+        $row_meta = array(
+            'docs'    => '<a href="https://example.com" target="_blank" rel="noopener noreferrer">Documentation</a>',
+            'support' => '<a href="https://example.com" target="_blank" rel="noopener noreferrer">Support Forum</a>',
+        );
+
+        return array_merge( $pLinks, $row_meta );
+    }
+
+    return $pLinks;
+}
+add_filter( 'plugin_row_meta', 'my_plugin_custom_meta_links', 10, 2 );
+#+end_example

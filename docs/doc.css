@@ -1,0 +1,244 @@
+/*
+$Revision: 1.2 $ $Date: 2024/12/11 18:47:15 $ UTC
+$Source: /repo/per-bruce.cvs/public_html/template/template.css,v $
+
+To use put this in head tag (see template.org)
+  <link rel="stylesheet"
+      href="template.css" />
+*/
+
+.justify {
+    text-align: justify;
+}
+
+.left {
+    text-indent: 0px;
+}
+
+.right {
+    text-align: right;
+}
+
+blockquote {
+    margin-left: 15%;
+    margin-right: 0%;
+    font-family: Times, serif;
+    font-style: italic;
+    text-indent: 0px;
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+blockquote p {
+    text-indent: 0px;
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+blockquote.indent {
+    margin-left: 25%;
+}
+
+blockquote.na {
+    margin-left: 15%;
+    margin-right: 0%;
+    font-family: Times, serif;
+    font-style: italic;
+    text-align: left;
+    background: lightgrey;
+    color: black;
+}
+
+blockquote.normal p {
+    margin-left: 10%;
+    margin-right: 0%;
+    font-family: Times, serif;
+    font-style: normal;
+    text-align: left;
+    text-indent: -30px;
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+body {
+    margin-left: 5%;
+    margin-right: 5%;
+    font-family: Times, serif;
+    font-size: 100%;
+    text-align: justify;
+    background: white;
+    color: black;
+}
+
+body.tradebook {
+    width: 306pt;
+    margin-left: 54pt;
+    margin-right: 72pt;
+    font-family: Times, serif;
+    font-size: 100%;
+    text-align: justify;
+    background: #EED;
+    color: black;
+}
+
+body.test {
+    width: 360pt;
+    margin-left: 5%;
+    margin-right: 5%;
+    font-family: Times, serif;
+    font-size: 100%;
+    text-align: justify;
+    background: white;
+    color: black;
+}
+
+cite {
+    vertical-align: sub;
+    font-size: 70%;
+    font-style: normal;
+    font-weight: normal;
+}
+
+dd {
+    text-align: justify;
+}
+
+del {
+    color: red;
+}
+
+div.bcbc {
+    margin-left: 15%;
+    margin-right: 0%;
+    font-family: Times, serif;
+    font-style: italic;
+    font-weight: bold;
+    text-align: left;
+}
+
+div.red {
+    color: red;
+}
+
+dt {
+    font-weight: bold;
+    text-align: left;
+}
+
+figure {
+    text-indent: 0px;
+    text-align: left;
+    margin: 0px;
+    margin-top: 8pt;
+    margin-bottom: 8pt;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    text-indent: 0px;
+    text-align: left;
+}
+
+img {
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+}
+
+img.border {
+    border: 3px solid black;
+    padding: 1px;
+    vertical-align: text-top;
+}
+
+ins {
+    color: green;
+}
+
+li {
+    margin-bottom:0.2em
+}
+
+li p {
+    text-indent: 0px;
+    margin-top: 8pt;
+    margin-bottom: 8pt;
+}
+
+h1 + p, h2 + p, h3 + p, h4 + p, h5 + p, blockquote + p, table + p,
+  ul + p, ol + p, figure + p {
+  text-indent: 0px;
+}
+
+p {
+    margin: 0px;
+}
+
+p.block {
+    text-indent: 0px;
+    text-align: left;
+    margin: 0px;
+    margin-top: 8pt;
+    margin-bottom: 8pt;
+}
+
+p.emph {
+        color: blue;
+}
+
+p.indent {
+    text-indent: 50px;
+    margin: 0px;
+}
+
+p.qtd {
+    font-style: italic;
+    text-align: left;
+}
+p.red {
+    color: red;
+}
+pre {
+    font-size: 100%;
+    line-height: 100%;
+    font-family: Courier New, monospace;
+    text-align: left;
+}
+
+span.normal {
+    font-style: normal;
+}
+
+span.red {
+    color: red;
+}
+
+span.tbd {
+    background: lightgrey;
+}
+
+span.title {
+    font-style: italic;
+}
+
+table pre {
+    margin-left: 2%;
+    font-family: Courier New, monospace;
+    font-weight: bold;
+    text-align: left;
+}
+
+td p {
+    text-indent: 0px;
+    text-align: left;
+    margin-bottom: 1em;
+}
+
+td {
+    text-indent: 0px;
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+th {
+    font-weight: bold;
+    text-align: left;
+}

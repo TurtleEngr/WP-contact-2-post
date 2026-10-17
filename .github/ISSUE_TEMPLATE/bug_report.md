@@ -21,14 +21,25 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Screenshots**
-If applicable, add screenshots to help explain your problem.
+If applicable, attach screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
+**WordPress Versions**
+See: Tools -> Site Health
+ - WordPress Version:  [?.?.?]
+ - PHP Version: [?.?.?]
+ - Server: [e.g. LiteSpeed]
+ - Theme and version:
+Plugins
+ - Contact 2 Post plugin: [?.?.?]
+ - Contact Form 7 plugin: [?.?.?]
+ - Flamingo plugin: [?.?.?]
+
+**You Desktop (if relevant)**
  - OS: [e.g. iOS]
  - Browser [e.g. chrome, safari]
  - Version [e.g. 22]
 
-**Smartphone (please complete the following information):**
+**Smartphone (if relevant)**
  - Device: [e.g. iPhone6]
  - OS: [e.g. iOS8.1]
  - Browser [e.g. stock browser, safari]
