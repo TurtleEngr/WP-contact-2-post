@@ -17,7 +17,6 @@ mBuildList = \
 
 mDocList = \
 	README.md \
-	docs/README.html \
 	docs/example.html \
 	docs/index.html
 
@@ -95,7 +94,7 @@ $(mProduct) : $(mBuildList)
 	cd dist; zip -r $(mName)-$$(cat ../VERSION).zip $(mName)
 	-touch $@
 
-docs/README.html : README.org VERSION
+docs/index.html : README.org VERSION
 	org2html.sh -i README.org -o $@ -s 2
 	sed -i "s/VERSION/$$(cat VERSION)/" $@
 	rm-trailing-sp $@

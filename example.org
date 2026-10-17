@@ -12,19 +12,30 @@
 * Contact 2 Post Examples
 ** Add Post
 *** Contact
-**** Form add-post
+Create contact form: add-post
+**** Form
 **** Mail
 **** Message
 **** Additional
 *** Page
 *** Template
+Create a page named: template-post
 *** Note
+If you have defined the publish-date, when you look at the generated
+post, its publish date it might show "immediately" which looks like it
+didn't get the date from the form. Click on the "immediately" so you
+can see if the date has been correctly set.
+
 ** Add Event
 *** Contact
-**** Form add-event
+Create contact form: add-event
+**** Form
 **** Mail
 **** Message
 **** Additional
 *** Page
+
 *** Template
+Create a page named: template-event
+
 *** Note

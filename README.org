@@ -50,6 +50,9 @@ Page" section.
 Uploaded images are saved for every form, even without =create_post=.
 See "Uploaded Files" section.
 
+If you installed ninja-auto-post-expire, you will the "Post" option
+needs to be set to "Yes" in its Post Expire Settings.
+
 *** Contact Form Settings
 
 In a form's "Additional Settings" tab, add these settings:
@@ -141,6 +144,9 @@ If an uploaded file could not be saved, the error messages for that
 submission are added to the end of the post, in a paragraph that
 starts with "Upload errors:". They are also written to the PHP error
 log.
+
+** Examples
+Complete examples can be found at "[[example.html][Contact 2 Post Examples]]."
 
 ** How it works
 
