@@ -149,6 +149,3 @@ dist/$(mName)/LICENSE : LICENSE
 
 docs/example.html : example.org
 	org2html.sh -i $? -o $@ -s 2
-
-docs/index.html : index.org
-	org2html.sh -i $? -o $@ -s 2

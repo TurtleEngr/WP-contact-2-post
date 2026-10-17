@@ -6,6 +6,7 @@
 
 - For example: add the following code to your main plugin file:
 
+*** Code example
 #+begin_example
 function my_plugin_custom_meta_links( $pLinks, $pFile ) {
     // Target only your specific plugin file
@@ -22,3 +23,14 @@ function my_plugin_custom_meta_links( $pLinks, $pFile ) {
 }
 add_filter( 'plugin_row_meta', 'my_plugin_custom_meta_links', 10, 2 );
 #+end_example
+
+*** Links
+
++ Documentation
+https://turtleengr.github.io/WP-contact-2-post/
+
++ Support
+https://github.com/TurtleEngr/WP-contact-2-post/issues
+
++ Examples
+https://turtleengr.github.io/WP-contact-2-post/example.html
