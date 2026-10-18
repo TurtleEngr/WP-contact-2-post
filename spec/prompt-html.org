@@ -1,0 +1,150 @@
+* Allow HTML in text boxes
+
+** Prompt 1
+
++ Goal: Modify contact-2-post.php textboxes so that it is possible to
+  paste html cut text into the text box area.
+
++ If needed, it is OK to use JavaScript code. Put that code in a js/
+  directory.
+
++ Any HTML text pasted into text boxes needs to be modified:
+  + Only allow these tags:   h1, h2, h3, h4, a, p, b, strong, i, em,
+  + Remove all other tags.
+  + Remove all attributes from the tags.
+  + Remove any javascript
+
++ The code for this plugin is at:
+  https://github.com/TurtleEngr/WP-contact-2-post
+
++ Follow the directions in CLAUDE.org
+
+** Response 1
+I'll pull the plugin code, look at how the text boxes are built, then
+write the paste-sanitizing changes as complete files.
+
+Thanks — going with safe =href= on links, raw clean tags in the
+textarea, and server-side filtering for textarea fields only. Let me
+check what I can run here for testing.
+
+Now I'll write the code. First the browser-side paste filter:
+
+Now the PHP changes: enqueue the script, add a server-side filter, and
+use it for textarea fields only.
+
+The clone landed in /root; I'll move it into the working directory and
+continue.
+
+Now testing the PHP filter against real WordPress core functions.
+
+The main case already works (=javascript:= neutralized, =[gallery]=
+encoded, block comments and =<img>= removed, unclosed =<i>=
+balanced). Loading one more core file for the remaining cases:
+
+PHP behaves correctly, and non-textarea fields and plain-text
+textareas keep the old escaping. Now testing the JavaScript in a
+simulated browser:
+
+Both layers work. Now the build and docs: the Makefile must ship =js/=
+in the zip, and README.org's "Values are HTML escaped" statement is no
+longer complete.
+
+Diff is clean and every change traces to the request. Sending the
+complete files.
+
+Pasting HTML into a form's text boxes now works, and the pasted HTML
+is cleaned in the browser and again on the server. Nothing was written
+to GitHub; these are complete replacement files.
+
+*** =js/cx2p-paste.js= (new):
+- Runs only on textareas inside a Contact Form 7 form, and only when
+  the clipboard has HTML. Plain-text pastes work as before.
+- Keeps h1, h2, h3, h4, a, p, b, strong and i/em, with all attributes
+  removed. The one exception is =href= on =<a>=, and only for http,
+  https or mailto links.
+- Other tags are removed but their text is kept; script, style, iframe
+  and similar tags are removed with their content.
+- The box shows the kept tags, for example =<p>A <b>bold</b> <a
+  href="...">link</a></p>=.
+
+*** =contact-2-post.php=:
+- Loads the script through CF7's =wpcf7_enqueue_scripts= hook.
+- Adds =cx2p_fCleanHtml()=, which applies the same tag rules with
+  =wp_kses=. It also removes script and style content, strips HTML
+  comments (so nobody can inject =<!-- wp:... -->= block markup) and
+  closes unclosed tags (so a stray =<b>= can't bold the rest of the
+  post).
+- Uses this cleaning only for textarea fields, which it finds with
+  =scan_form_tags(['basetype' => 'textarea'])=.
+- Escapes all other fields exactly as before, and the =[= =]=
+  shortcode encoding still applies. A textarea value with none of the
+  allowed tags also stays on the old escaped path with its line
+  breaks.
+
+*** =Makefile=
+now copies =js/cx2p-paste.js= into the zip, and **=README.org=** has a
+paragraph describing the textarea behavior.
+
+*** Tested:
+- The PHP functions against current WordPress core functions
+  (=wp_kses=, =force_balance_tags=). A =javascript:= link, =onclick=,
+  =<img onerror>=, =<script>=, block comments and =[gallery]= were all
+  neutralized.
+- The JavaScript in jsdom: no script ran, textareas outside a CF7 form
+  were left alone, and plain pastes were untouched.
+- I did not run a full WordPress plus CF7 submission. Running
+  =setup.php= and =submit.php= on your test site is the remaining
+  check.
+
+*** Things to know:
+- In a value that contains HTML tags, typed line breaks don't become
+  =<br>=, because =<br>= isn't on the allowed list. Text needs =<p>=
+  tags to get separate lines.
+- Pasted list items (=<li>=) come through as plain lines of text,
+  since lists aren't allowed either.
+
+I'm leaving these changes uncommitted and not pushing them, even
+though the session's git-check hook asked me to. Your CLAUDE.org says
+not to write to any GitHub repository and to return results as
+complete files, and your instructions take priority over the hook.
+
+The four complete files are already in the conversation for you to
+review and commit yourself:
+
+- =contact-2-post.php=
+- =js/cx2p-paste.js=
+- =Makefile=
+- =README.org=
+
+If you do want me to make a commit in this session's local copy, without pushing, just say so.
+
+** Prompt 2
+
+OK, modify the code to also allow the HTML tags li, ul, ol, br
+
+** Response 2
+Reflowing those comment lines, then testing.
+
+Both layers now keep =ul=, =ol=, =li= and =br= with attributes
+stripped, and an unclosed =<li>= gets closed. Sending the updated
+files.
+
+=ul=, =ol=, =li= and =br= are now allowed in both the browser filter
+and the server filter, with all attributes removed.
+
+- =contact-2-post.php=: I added the four tags to =cx2p_cHtmlTagList=.
+
+- =js/cx2p-paste.js=: I added the four tags to the allowed list. In
+  the textarea, a new line now follows each list tag and each =<br>=,
+  so pasted lists are easy to read before submitting.
+
+- =README.org=: The tag list is updated.
+
+Tested: in both the browser and server filters, a pasted list kept its
+tags with attributes such as =class= and =style= removed. An unclosed
+=<li>= was closed on the server. A =<div>= was still removed with its
+text kept.
+
+One behavior from before has changed. Pasted line breaks and lists now
+carry through to the post. Line breaks you type yourself in an HTML
+value still don't become =<br>=.
