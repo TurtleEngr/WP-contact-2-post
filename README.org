@@ -161,4 +161,4 @@ You can also make Feature Requests there.
 ** For Developers
 
 If you want to modify the plugin's code, you can find
-the directions at: [[development.html][Plugin Development]]
+the directions at: <a href="development.html">Plugin Development</a>
