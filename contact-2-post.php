@@ -34,6 +34,14 @@ const cx2p_cAttrEnd = 'ATTR-END';
 // Meta key used by the "ninja-auto-post-expire" plugin. Format: "Y-m-d H:i"
 const cx2p_cExpireMetaKey = '_njtape_expiration_date';
 
+// HTML allowed in textarea values. Only <a> has an attribute (href).
+const cx2p_cHtmlTagList = [
+    'h1' => [], 'h2' => [], 'h3' => [], 'h4' => [], 'p' => [],
+    'b' => [], 'strong' => [], 'i' => [], 'em' => [], 'a' => ['href' => true],
+    'ul' => [], 'ol' => [], 'li' => [], 'br' => [],
+];
+const cx2p_cHtmlProtocolList = ['http', 'https', 'mailto'];
+
 add_action('plugins_loaded', function () {
     if (!class_exists('WPCF7') || !class_exists('Flamingo_Inbound_Message')) {
         add_action('admin_notices', function () {
@@ -51,7 +59,28 @@ add_action('plugins_loaded', function () {
     // Both run in the same request.
     add_action('wpcf7_before_send_mail', 'cx2p_fOnBeforeCf7SendMail');
     add_action('wpcf7_after_flamingo', 'cx2p_fAfterFlamingo');
+    // Clean HTML pasted into the form's textareas.
+    add_action('wpcf7_enqueue_scripts', 'cx2p_fEnqueuePasteScript');
 });
+
+// ----------------------------------------
+function cx2p_fEnqueuePasteScript()
+{
+    $tFile = 'js/cx2p-paste.js';
+    wp_enqueue_script(cx2p_cSlug . '-paste', plugins_url($tFile, __FILE__), [],
+        (string) filemtime(plugin_dir_path(__FILE__) . $tFile), true);
+}
+
+// ----------------------------------------
+// Keep only the cx2p_cHtmlTagList tags, with no attributes except a
+// safe href on <a>. Script and style elements are removed with their
+// content, and HTML comments are removed (they could add block markup).
+function cx2p_fCleanHtml($pHtml)
+{
+    $pHtml = preg_replace('@<(script|style)[^>]*?>.*?</\\1>@si', '', $pHtml);
+    $pHtml = preg_replace('/<!--.*?(-->|$)/s', '', $pHtml);
+    return force_balance_tags(wp_kses($pHtml, cx2p_cHtmlTagList, cx2p_cHtmlProtocolList));
+}
 
 // ----------------------------------------
 // Save an error message for the current submission, and write it to
@@ -219,11 +248,17 @@ function cx2p_fAfterFlamingo($pResult)
     // are from this submission only.
     $tErrorList = cx2p_fErrorLog();
 
-    cx2p_fCreatePost($tPage->post_content, $tFields, cx2p_fSaveAttachId(), $tErrorList);
+    // Textarea values can have some HTML. See cx2p_fCleanHtml.
+    $tHtmlFieldList = [];
+    foreach ($tForm->scan_form_tags(['basetype' => 'textarea']) as $tTag) {
+        $tHtmlFieldList[] = $tTag->name;
+    }
+
+    cx2p_fCreatePost($tPage->post_content, $tFields, cx2p_fSaveAttachId(), $tErrorList, $tHtmlFieldList);
 }
 
 // ----------------------------------------
-function cx2p_fCreatePost($pTemplate, $pFields, $pAttachIdList, $pErrorList = [])
+function cx2p_fCreatePost($pTemplate, $pFields, $pAttachIdList, $pErrorList = [], $pHtmlFieldList = [])
 {
     $tAttr = [];
     $tBlockList = [];
@@ -242,7 +277,7 @@ function cx2p_fCreatePost($pTemplate, $pFields, $pAttachIdList, $pErrorList = []
             $tAttr = array_merge($tAttr, $tLineAttr);
             continue;
         }
-        $tBlockList[] = cx2p_fReplaceInBlock($tBlock, $pFields);
+        $tBlockList[] = cx2p_fReplaceInBlock($tBlock, $pFields, $pHtmlFieldList);
     }
     if ($tInAttr) {
         error_log(cx2p_cSlug . ': ' . cx2p_cAttrEnd . ' not found in the template');
@@ -338,16 +373,16 @@ function cx2p_fGetAttrLines($pBlock, $pFields, &$pInAttr)
 // ----------------------------------------
 // Replace {field} in the block's HTML (and its inner blocks). Block
 // attributes (the JSON in the block comment) are not changed.
-function cx2p_fReplaceInBlock($pBlock, $pFields)
+function cx2p_fReplaceInBlock($pBlock, $pFields, $pHtmlFieldList = [])
 {
-    $pBlock['innerHTML'] = cx2p_fReplaceFields((string) $pBlock['innerHTML'], $pFields, true);
+    $pBlock['innerHTML'] = cx2p_fReplaceFields((string) $pBlock['innerHTML'], $pFields, true, $pHtmlFieldList);
     foreach ($pBlock['innerContent'] as $tKey => $tChunk) {
         if (is_string($tChunk)) {
-            $pBlock['innerContent'][$tKey] = cx2p_fReplaceFields($tChunk, $pFields, true);
+            $pBlock['innerContent'][$tKey] = cx2p_fReplaceFields($tChunk, $pFields, true, $pHtmlFieldList);
         }
     }
     foreach ($pBlock['innerBlocks'] as $tKey => $tInner) {
-        $pBlock['innerBlocks'][$tKey] = cx2p_fReplaceInBlock($tInner, $pFields);
+        $pBlock['innerBlocks'][$tKey] = cx2p_fReplaceInBlock($tInner, $pFields, $pHtmlFieldList);
     }
     return $pBlock;
 }
@@ -355,10 +390,12 @@ function cx2p_fReplaceInBlock($pBlock, $pFields)
 // ----------------------------------------
 // Single pass, so a value containing "{x}" is not expanded again.
 // Unknown {x} are left as is. For HTML: escape the value, and encode
-// "[" "]" so submitted text can not become a shortcode.
-function cx2p_fReplaceFields($pText, $pFields, $pIsHtml)
+// "[" "]" so submitted text can not become a shortcode. A field in
+// pHtmlFieldList keeps the tags allowed by cx2p_fCleanHtml; if it has
+// none of them, it is escaped like other fields.
+function cx2p_fReplaceFields($pText, $pFields, $pIsHtml, $pHtmlFieldList = [])
 {
-    return preg_replace_callback('/\{([A-Za-z0-9_-]+)\}/', function ($pMatch) use ($pFields, $pIsHtml) {
+    return preg_replace_callback('/\{([A-Za-z0-9_-]+)\}/', function ($pMatch) use ($pFields, $pIsHtml, $pHtmlFieldList) {
         if (!array_key_exists($pMatch[1], $pFields)) {
             return $pMatch[0];
         }
@@ -366,7 +403,11 @@ function cx2p_fReplaceFields($pText, $pFields, $pIsHtml)
         if (!$pIsHtml) {
             return $tValue;
         }
-        return str_replace(['[', ']'], ['&#91;', '&#93;'], nl2br(esc_html($tValue), false));
+        $tHtml = in_array($pMatch[1], $pHtmlFieldList, true) ? cx2p_fCleanHtml($tValue) : '';
+        if ($tHtml === strip_tags($tHtml)) {
+            $tHtml = nl2br(esc_html($tValue), false);
+        }
+        return str_replace(['[', ']'], ['&#91;', '&#93;'], $tHtml);
     }, $pText);
 }
 
