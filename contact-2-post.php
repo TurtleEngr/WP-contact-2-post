@@ -277,7 +277,7 @@ function cx2p_fCreatePost($pTemplate, $pFields, $pAttachIdList, $pErrorList = []
             $tAttr = array_merge($tAttr, $tLineAttr);
             continue;
         }
-        $tBlockList[] = cx2p_fReplaceInBlock($tBlock, $pFields, $pHtmlFieldList);
+        $tBlockList = array_merge($tBlockList, cx2p_fReplaceInBlock($tBlock, $pFields, $pHtmlFieldList));
     }
     if ($tInAttr) {
         error_log(cx2p_cSlug . ': ' . cx2p_cAttrEnd . ' not found in the template');
@@ -373,26 +373,236 @@ function cx2p_fGetAttrLines($pBlock, $pFields, &$pInAttr)
 // ----------------------------------------
 // Replace {field} in the block's HTML (and its inner blocks). Block
 // attributes (the JSON in the block comment) are not changed.
+// Returns a list of blocks, because a paragraph with a {field} that
+// has block HTML (p, h1-h4, ul, ol) is split into several blocks.
 function cx2p_fReplaceInBlock($pBlock, $pFields, $pHtmlFieldList = [])
 {
-    $pBlock['innerHTML'] = cx2p_fReplaceFields((string) $pBlock['innerHTML'], $pFields, true, $pHtmlFieldList);
-    foreach ($pBlock['innerContent'] as $tKey => $tChunk) {
-        if (is_string($tChunk)) {
-            $pBlock['innerContent'][$tKey] = cx2p_fReplaceFields($tChunk, $pFields, true, $pHtmlFieldList);
+    if ($pBlock['blockName'] === 'core/paragraph') {
+        $tSplitList = cx2p_fSplitParagraph($pBlock, $pFields, $pHtmlFieldList);
+        if ($tSplitList !== null) {
+            return $tSplitList;
         }
     }
-    foreach ($pBlock['innerBlocks'] as $tKey => $tInner) {
-        $pBlock['innerBlocks'][$tKey] = cx2p_fReplaceInBlock($tInner, $pFields, $pHtmlFieldList);
+    $pBlock['innerHTML'] = cx2p_fReplaceFields((string) $pBlock['innerHTML'], $pFields, true, $pHtmlFieldList);
+    $tContentList = [];
+    $tInnerList = [];
+    $tN = 0;
+    foreach ($pBlock['innerContent'] as $tChunk) {
+        if (is_string($tChunk)) {
+            $tContentList[] = cx2p_fReplaceFields($tChunk, $pFields, true, $pHtmlFieldList);
+            continue;
+        }
+        // One null in innerContent for each inner block.
+        foreach (cx2p_fReplaceInBlock($pBlock['innerBlocks'][$tN++], $pFields, $pHtmlFieldList) as $tInner) {
+            $tInnerList[] = $tInner;
+            $tContentList[] = null;
+        }
     }
-    return $pBlock;
+    $pBlock['innerContent'] = $tContentList;
+    $pBlock['innerBlocks'] = $tInnerList;
+    return [$pBlock];
+}
+
+// ----------------------------------------
+// If the paragraph has a {field} whose value has block HTML, return
+// the list of blocks: the paragraph text before the {field}, the
+// blocks made from the value, the text after it. Else null.
+function cx2p_fSplitParagraph($pBlock, $pFields, $pHtmlFieldList)
+{
+    if (!preg_match('#^(\s*<p\b[^>]*>)(.*)(</p>\s*)$#is', (string) $pBlock['innerHTML'], $tMatch)) {
+        return null;
+    }
+    $tPartList = preg_split('/(\{[A-Za-z0-9_-]+\})/', $tMatch[2], -1, PREG_SPLIT_DELIM_CAPTURE);
+    $tBlockList = [];
+    $tText = '';
+    $tFound = false;
+    foreach ($tPartList as $tI => $tPart) {
+        $tHtml = ($tI % 2) ? cx2p_fBlockHtmlValue(substr($tPart, 1, -1), $pFields, $pHtmlFieldList) : '';
+        if ($tHtml === '') {
+            $tText .= $tPart;
+            continue;
+        }
+        $tFound = true;
+        $tBlockList = array_merge($tBlockList, cx2p_fTextBlock($pBlock, $tMatch, $tText, $pFields, $pHtmlFieldList),
+            cx2p_fHtmlToBlocks($tHtml));
+        $tText = '';
+    }
+    if (!$tFound) {
+        return null;
+    }
+    return array_merge($tBlockList, cx2p_fTextBlock($pBlock, $tMatch, $tText, $pFields, $pHtmlFieldList));
+}
+
+// ----------------------------------------
+// A copy of the paragraph block with pText (its {field} replaced) as
+// its text. Returns [] if there is no text.
+function cx2p_fTextBlock($pBlock, $pMatch, $pText, $pFields, $pHtmlFieldList)
+{
+    $tEdge = '(\s|&nbsp;|<br\s*/?>)*';
+    $pText = preg_replace("#^$tEdge|$tEdge\$#i", '', $pText);
+    $pText = force_balance_tags(cx2p_fReplaceFields($pText, $pFields, true, $pHtmlFieldList));
+    if (trim(str_replace('&nbsp;', ' ', strip_tags($pText))) === '') {
+        return [];
+    }
+    $tHtml = $pMatch[1] . $pText . $pMatch[3];
+    $pBlock['innerHTML'] = $tHtml;
+    $pBlock['innerContent'] = [$tHtml];
+    return [$pBlock];
+}
+
+// ----------------------------------------
+// The cleaned value of an HTML field, if it has block HTML. Else "".
+function cx2p_fBlockHtmlValue($pName, $pFields, $pHtmlFieldList)
+{
+    if (!in_array($pName, $pHtmlFieldList, true) || !array_key_exists($pName, $pFields)) {
+        return '';
+    }
+    $tHtml = cx2p_fCleanHtml(cx2p_fValueToString($pFields[$pName]));
+    return preg_match('#<(p|h[1-4]|ul|ol|li)\b#i', $tHtml) ? $tHtml : '';
+}
+
+// ----------------------------------------
+// Make editor blocks from cleaned HTML: p => paragraph, h1-h4 =>
+// heading, ul/ol => list. Text between them becomes a paragraph.
+function cx2p_fHtmlToBlocks($pHtml)
+{
+    $tDoc = cx2p_fLoadHtml($pHtml);
+    $tBlockList = [];
+    $tInline = '';
+    foreach ($tDoc->getElementsByTagName('body')->item(0)->childNodes as $tNode) {
+        $tName = ($tNode instanceof DOMElement) ? strtolower($tNode->nodeName) : '';
+        if (!preg_match('/^(p|h[1-4]|ul|ol)$/', $tName)) {
+            $tInline .= ($tName === 'li') ? cx2p_fNodeHtml($tDoc, $tNode, false) . '<br>' : $tDoc->saveHTML($tNode);
+            continue;
+        }
+        $tBlockList = array_merge($tBlockList, cx2p_fParagraphBlock(cx2p_fTidyInline($tInline)));
+        $tInline = '';
+        if ($tName === 'ul' || $tName === 'ol') {
+            $tBlockList[] = cx2p_fListBlock($tDoc, $tNode);
+        } elseif ($tName === 'p') {
+            $tBlockList = array_merge($tBlockList, cx2p_fParagraphBlock(cx2p_fNodeHtml($tDoc, $tNode, false)));
+        } else {
+            $tText = cx2p_fNodeHtml($tDoc, $tNode, false);
+            $tLevel = (int) substr($tName, 1);
+            if ($tText !== '') {
+                $tBlockList[] = cx2p_fMakeBlock('core/heading', $tLevel === 2 ? [] : ['level' => $tLevel],
+                    "\n<$tName class=\"wp-block-heading\">$tText</$tName>\n");
+            }
+        }
+    }
+    return array_merge($tBlockList, cx2p_fParagraphBlock(cx2p_fTidyInline($tInline)));
+}
+
+// ----------------------------------------
+// Returns [paragraph block], or [] if pHtml is empty.
+function cx2p_fParagraphBlock($pHtml)
+{
+    return $pHtml === '' ? [] : [cx2p_fMakeBlock('core/paragraph', [], "\n<p>$pHtml</p>\n")];
+}
+
+// ----------------------------------------
+// A list block, with a list-item block for each li. A ul/ol right
+// inside the list is put in the item before it.
+function cx2p_fListBlock($pDoc, $pList)
+{
+    $tTag = strtolower($pList->nodeName);
+    $tItemList = []; // [[text, [nested list blocks]], ...]
+    foreach ($pList->childNodes as $tNode) {
+        $tName = ($tNode instanceof DOMElement) ? strtolower($tNode->nodeName) : '';
+        if ($tName === 'ul' || $tName === 'ol') {
+            if (!$tItemList) {
+                $tItemList[] = ['', []];
+            }
+            $tItemList[count($tItemList) - 1][1][] = cx2p_fListBlock($pDoc, $tNode);
+        } elseif ($tName === 'li') {
+            $tNestedList = [];
+            foreach ($tNode->childNodes as $tChild) {
+                if (in_array(strtolower($tChild->nodeName), ['ul', 'ol'], true)) {
+                    $tNestedList[] = cx2p_fListBlock($pDoc, $tChild);
+                }
+            }
+            $tItemList[] = [cx2p_fNodeHtml($pDoc, $tNode, true), $tNestedList];
+        } else {
+            $tText = cx2p_fTidyInline($pDoc->saveHTML($tNode));
+            if ($tText !== '') {
+                $tItemList[] = [$tText, []];
+            }
+        }
+    }
+    $tBlockList = [];
+    foreach ($tItemList as $tItem) {
+        $tBlockList[] = cx2p_fMakeBlock('core/list-item', [], "\n<li>" . $tItem[0], $tItem[1], "</li>\n");
+    }
+    return cx2p_fMakeBlock('core/list', $tTag === 'ol' ? ['ordered' => true] : [],
+        "\n<$tTag class=\"wp-block-list\">", $tBlockList, "</$tTag>\n");
+}
+
+// ----------------------------------------
+// The inline HTML in pNode. Block tags inside it (p, h1-h4, li) are
+// removed, with a <br> after their text. Lists are skipped if
+// pSkipList (a list-item has them as inner blocks), else their items
+// are lines.
+function cx2p_fNodeHtml($pDoc, $pNode, $pSkipList)
+{
+    $tHtml = '';
+    foreach ($pNode->childNodes as $tChild) {
+        $tName = ($tChild instanceof DOMElement) ? strtolower($tChild->nodeName) : '';
+        if ($tName === 'ul' || $tName === 'ol') {
+            $tHtml .= $pSkipList ? '' : '<br>' . cx2p_fNodeHtml($pDoc, $tChild, false) . '<br>';
+        } elseif (preg_match('/^(p|h[1-4]|li)$/', $tName)) {
+            $tHtml .= cx2p_fNodeHtml($pDoc, $tChild, $pSkipList) . '<br>';
+        } else {
+            $tHtml .= $pDoc->saveHTML($tChild);
+        }
+    }
+    return cx2p_fTidyInline($tHtml);
+}
+
+// ----------------------------------------
+// Collapse white space and repeated <br>, remove them at the ends, and
+// encode "[" "]" so the text can not become a shortcode.
+function cx2p_fTidyInline($pHtml)
+{
+    $pHtml = preg_replace('/\s+/', ' ', $pHtml);
+    $pHtml = preg_replace('#\s*<br\s*/?>\s*#i', '<br>', $pHtml);
+    $pHtml = preg_replace('#(<br>)+#', '<br>', $pHtml);
+    $pHtml = trim(preg_replace('#^(<br>|\s)+|(<br>|\s)+$#', '', $pHtml));
+    return str_replace(['[', ']'], ['&#91;', '&#93;'], $pHtml);
+}
+
+// ----------------------------------------
+// Parse an HTML fragment (UTF-8) into a DOMDocument. The fragment is
+// the body's content.
+function cx2p_fLoadHtml($pHtml)
+{
+    $tDoc = new DOMDocument();
+    $tDoc->loadHTML('<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">'
+        . '</head><body>' . $pHtml . '</body></html>', LIBXML_NOERROR | LIBXML_NOWARNING);
+    return $tDoc;
+}
+
+// ----------------------------------------
+// A parsed block array, as from parse_blocks(). pInnerList blocks go
+// between pOpen and pClose.
+function cx2p_fMakeBlock($pName, $pAttrs, $pOpen, $pInnerList = [], $pClose = '')
+{
+    return [
+        'blockName'    => $pName,
+        'attrs'        => $pAttrs,
+        'innerBlocks'  => $pInnerList,
+        'innerHTML'    => $pOpen . $pClose,
+        'innerContent' => array_merge([$pOpen], array_fill(0, count($pInnerList), null), [$pClose]),
+    ];
 }
 
 // ----------------------------------------
 // Single pass, so a value containing "{x}" is not expanded again.
 // Unknown {x} are left as is. For HTML: escape the value, and encode
 // "[" "]" so submitted text can not become a shortcode. A field in
-// pHtmlFieldList keeps the tags allowed by cx2p_fCleanHtml; if it has
-// none of them, it is escaped like other fields.
+// pHtmlFieldList keeps the inline tags allowed by cx2p_fCleanHtml
+// (block tags were split into blocks by cx2p_fSplitParagraph, or are
+// changed to <br> here); if it has none of them, it is escaped like
+// other fields.
 function cx2p_fReplaceFields($pText, $pFields, $pIsHtml, $pHtmlFieldList = [])
 {
     return preg_replace_callback('/\{([A-Za-z0-9_-]+)\}/', function ($pMatch) use ($pFields, $pIsHtml, $pHtmlFieldList) {
@@ -405,9 +615,10 @@ function cx2p_fReplaceFields($pText, $pFields, $pIsHtml, $pHtmlFieldList = [])
         }
         $tHtml = in_array($pMatch[1], $pHtmlFieldList, true) ? cx2p_fCleanHtml($tValue) : '';
         if ($tHtml === strip_tags($tHtml)) {
-            $tHtml = nl2br(esc_html($tValue), false);
+            return str_replace(['[', ']'], ['&#91;', '&#93;'], nl2br(esc_html($tValue), false));
         }
-        return str_replace(['[', ']'], ['&#91;', '&#93;'], $tHtml);
+        $tDoc = cx2p_fLoadHtml($tHtml);
+        return cx2p_fNodeHtml($tDoc, $tDoc->getElementsByTagName('body')->item(0), false);
     }, $pText);
 }
 

@@ -101,6 +101,14 @@ style elements are removed with their content. The same cleaning is
 done again when the post is created. If a textarea value has none of
 the allowed tags, it is escaped like other fields.
 
+So the post can be edited in the block editor, a {field} with p,
+h1-h4, ul, or ol tags is changed to blocks: Paragraph, Heading, and
+List blocks. This only works when the {field} is in a Paragraph block
+in the template. Any text before or after the {field} in that
+paragraph is put in its own paragraph. In other blocks (for example a
+Heading), only the inline tags are kept, and the block tags are
+changed to line breaks.
+
 A post has attributes that are not blocks. This is how they are
 defined in the page template. After the page's title, put the post's
 attribute lines between ATTR-BEGIN and ATTR-END lines (one per line,

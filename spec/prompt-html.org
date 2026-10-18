@@ -148,3 +148,86 @@ text kept.
 One behavior from before has changed. Pasted line breaks and lists now
 carry through to the post. Line breaks you type yourself in an HTML
 value still don't become =<br>=.
+** Prompt 3
+
++ When the generated post is edited, WordPress reports the block text
+  that came from the text box is invalid.
+
++ A clue about how this might be fixed. I selected convert to HTML.
+  Then convert to blocks. That fixes most of the problem.
+
++ Maybe the solution is to convert <p> tag and other tags to
+  WordPress block?
+
+** Response 3
+
+Now testing end to end: parse a template, create the blocks, and
+serialize them.
+
+The structure is right. One fix: when an HTML value is flattened
+inside a heading, a nested list runs into the item text
+("morenested"), so I'll add a =<br>= before a list as well as after
+it.
+
+Now the real success test: run the output through the block editor's
+own validator (=@wordpress/blocks= with the core blocks registered).
+
+Every generated block passes the editor's validator. To confirm the
+check can actually detect the bug, I'll run the old-style output
+(block HTML inside one paragraph) through it:
+
+The validator flags the old output as invalid and passes the new
+output, so the test is meaningful. A final rerun to check the
+heading-flatten fix:
+
+All 26 blocks are valid. I'll add a short note to README.org about the
+block conversion, then send the files.
+
+Generated posts should now open in the block editor without the
+"invalid block" warning. The server converts the pasted HTML into real
+blocks, which is what you were doing by hand with "Convert to
+blocks". I haven't tried it in a real WordPress editor.
+
+*** How it converts:
+- =<p>= becomes a Paragraph block.
+- =<h1>=–=<h4>= become Heading blocks with the matching level.
+- =<ul>= and =<ol>= become List blocks with List Item blocks. Nested
+  lists stay nested.
+- Loose text between those becomes its own paragraph.
+- If the template paragraph has other text, such as =Details:
+  {details} more=, it is split. "Details:" stays its own paragraph,
+  then the new blocks follow, then "more".
+- This works in paragraphs inside groups or columns too.
+- A pasted value with only inline tags (=b=, =a=, =br= and so on)
+  still stays inside the paragraph, since that was already valid.
+- In a non-paragraph block, such as ={details}= in a heading, block
+  tags can't go there. Only the inline tags are kept and the block
+  tags become line breaks.
+
+*** Tested:
+I ran the generated post content through WordPress's own block
+validator (=@wordpress/blocks= with all core blocks registered). All
+26 generated blocks passed. The old output, with HTML inside one
+paragraph, failed with the same error you saw, so the test catches the
+real problem. The earlier security cases still behave the same.
+
+*** Things to know:
+- The plugin now uses PHP's DOM extension to read the HTML. Almost
+  every WordPress host has it.
+- The headings and lists use the markup current WordPress saves (the
+  =wp-block-heading= and =wp-block-list= classes). Your plugin header
+  says "Tested up to 7.1", so that matches.
+- In =contact-2-post.php= the change is larger than before, about 200
+  new lines. That size is needed because each block type must match
+  the editor's exact markup.
+- =js/cx2p-paste.js= and the =Makefile= are unchanged. README.org has
+  a new paragraph describing the conversion.
+
+I'm leaving these changes uncommitted again and not pushing them, for
+the same reason as before. Your CLAUDE.org says not to write to any
+GitHub repository and to return complete files, and that takes
+priority over the hook.
+
+The updated =contact-2-post.php= and =README.org= are already in the
+conversation for you to commit. =js/cx2p-paste.js= and the =Makefile=
+from the earlier rounds haven't changed.
