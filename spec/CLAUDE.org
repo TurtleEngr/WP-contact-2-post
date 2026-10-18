@@ -70,6 +70,9 @@
   and variable naming.
 - Or, if there is an embedded coding style, found in a comment or internal
   documentation, follow that.
-- Or, if therre is a CodingStyle.org file, then follow that, for new code.
+- Or, if there is a CodingStyle.org file, then follow that, for NEW code.
   
 ** 7. Return results as complte files, not patches.
+- Do not write to any GitHub repository. And do not ask for write access.
+- You do have read-only permission to access any GitHub repositories
+  or web pages defined in a user's prompt.

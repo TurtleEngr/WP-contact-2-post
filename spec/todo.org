@@ -38,3 +38,10 @@ https://turtleengr.github.io/WP-contact-2-post/example.html
 https://turtleengr.github.io/WP-contact-2-post/index.html#support
 or
 https://github.com/TurtleEngr/WP-contact-2-post/issues
+
+** Bugs
+
++ Notes requires minimal text
+
++ Can it be made easier to cut/paste links (and some HTML) into the
+  text box?
