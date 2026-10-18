@@ -29,8 +29,12 @@ add_filter( 'plugin_row_meta', 'my_plugin_custom_meta_links', 10, 2 );
 + Documentation
 https://turtleengr.github.io/WP-contact-2-post/
 
-+ Support
-https://github.com/TurtleEngr/WP-contact-2-post/issues
-
 + Examples
+https://turtleengr.github.io/WP-contact-2-post/index.html#examples
+or
 https://turtleengr.github.io/WP-contact-2-post/example.html
+
++ Support
+https://turtleengr.github.io/WP-contact-2-post/index.html#support
+or
+https://github.com/TurtleEngr/WP-contact-2-post/issues
