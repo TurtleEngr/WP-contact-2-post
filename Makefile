@@ -12,6 +12,7 @@ mProduct = dist/$(mName)-VERSION.zip
 mBuildList = \
     dist/$(mName) \
     dist/$(mName)/$(mName).php \
+    dist/$(mName)/js/cx2p-paste.js \
     dist/$(mName)/readme.txt \
     dist/$(mName)/LICENSE
 
@@ -149,6 +150,10 @@ dist/$(mName) :
 
 dist/$(mName)/$(mName).php : VERSION $(mName).php
 	sed "s/VERSION/$$(cat VERSION)/" <$(mName).php >$@
+
+dist/$(mName)/js/cx2p-paste.js : js/cx2p-paste.js
+	-mkdir -p $(@D)
+	cp $? $@
 
 dist/$(mName)/readme.txt : VERSION readme.txt
 	sed "s/VERSION/$$(cat VERSION)/" <$? >$@

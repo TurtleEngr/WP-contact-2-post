@@ -91,6 +91,24 @@ name. Values are HTML escaped, and "[" "]" in values are encoded so
 they cannot run a shortcode. Checkbox values are joined with ", ". If
 there is no field with that name, {field} is left as is.
 
+Textarea fields are the exception: they can have some HTML. When
+HTML text is pasted into a form's textarea, it is cleaned, and the
+textarea shows the HTML tags that are kept. Only these tags are kept:
+h1, h2, h3, h4, a, p, b, strong, i, em, ul, ol, li, br. All
+attributes are removed, except href on "a" tags, and only for http,
+https, or mailto URLs. Other tags are removed (their text is kept), and script and
+style elements are removed with their content. The same cleaning is
+done again when the post is created. If a textarea value has none of
+the allowed tags, it is escaped like other fields.
+
+So the post can be edited in the block editor, a {field} with p,
+h1-h4, ul, or ol tags is changed to blocks: Paragraph, Heading, and
+List blocks. This only works when the {field} is in a Paragraph block
+in the template. Any text before or after the {field} in that
+paragraph is put in its own paragraph. In other blocks (for example a
+Heading), only the inline tags are kept, and the block tags are
+changed to line breaks.
+
 A post has attributes that are not blocks. This is how they are
 defined in the page template. After the page's title, put the post's
 attribute lines between ATTR-BEGIN and ATTR-END lines (one per line,
