@@ -63,6 +63,26 @@ add_action('plugins_loaded', function () {
     add_action('wpcf7_enqueue_scripts', 'cx2p_fEnqueuePasteScript');
 });
 
+// Documentation and Support links on the admin Plugins page. Added
+// even when the required plugins are not active.
+add_filter('plugin_row_meta', 'cx2p_fMetaLinks', 10, 2);
+
+// ----------------------------------------
+// Add links after the Version and Author in this plugin's row.
+function cx2p_fMetaLinks($pLinks, $pFile)
+{
+    if ($pFile !== plugin_basename(__FILE__)) {
+        return $pLinks;
+    }
+    $tRowMeta = [
+        'docs'    => '<a href="' . esc_url('https://turtleengr.github.io/WP-contact-2-post/')
+            . '" target="_blank" rel="noopener noreferrer">Documentation</a>',
+        'support' => '<a href="' . esc_url('https://turtleengr.github.io/WP-contact-2-post/index.html#support')
+            . '" target="_blank" rel="noopener noreferrer">Support</a>',
+    ];
+    return array_merge($pLinks, $tRowMeta);
+}
+
 // ----------------------------------------
 function cx2p_fEnqueuePasteScript()
 {

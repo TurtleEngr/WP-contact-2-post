@@ -1,0 +1,78 @@
+* prompt-doc-links
+
+** Prompt 1
+
++ Goal: Modify contact-2-post.php plugin, so documentation and support
+  links will show up in the plugin's description on the admin plugin
+  page.
+
++ Documentation: https://turtleengr.github.io/WP-contact-2-post/
++ Support: https://turtleengr.github.io/WP-contact-2-post/index.html#support
+
+*** Example code
+Insert this example function into contact-2-post.php. Fix it if it if
+the implementation is not correct.
+
+#+begin_example
+function cx2p_fMetaLinks( $pLinks, $pFile ) {
+    // Target only your specific plugin file
+    if ( $pFile === plugin_basename( __FILE__ ) ) {
+        $row_meta = array(
+            'docs'    => '<a href="https://turtleengr.github.io/WP-contact-2-post/" target="_blank" rel="noopener noreferrer">Documentation</a>',
+            'support' => '<a href="https://turtleengr.github.io/WP-contact-2-post/index.html#support" target="_blank" rel="noopener noreferrer">Support</a>',
+        );
+
+        return array_merge( $pLinks, $row_meta );
+    }
+
+    return $pLinks;
+}
+add_filter( 'plugin_row_meta', 'cx2p_fMetaLinks', 10, 2 );
+#+end_example
+
++ The code for this plugin is at:
+  https://github.com/TurtleEngr/WP-contact-2-post
+
++ Follow the directions in CLAUDE.org
+
+** Response 1
+
+I'll check whether the GitHub copy has changed since my earlier edits,
+so I build on the right version.
+
+GitHub now has my earlier changes merged, and its =contact-2-post.php=
+matches my local copy. I'll sync to the GitHub version and work from
+that.
+
+Now a quick test with WordPress core's own =plugin_basename()= and
+=apply_filters()=:
+
+The test harness is missing a global that WordPress normally sets at
+startup (=$wp_plugin_paths=). I'll add it to the test:
+
+The admin Plugins page will now show **Documentation** and **Support**
+links in the Contact 2 Post row, after "Version | By TurtleEngr". The
+updated =contact-2-post.php= is built on the current =develop= branch,
+which already had the HTML-paste work merged.
+
+Your example code was correct. I made three small changes when
+inserting it:
+
+- *Style:* I named the function =cx2p_fMetaLinks= and the variable
+  =$tRowMeta=, and used =[]= arrays and the file's spacing, to match
+  CodingStyle.org.
+
+- *Where the filter is registered:* it's at the top level, not inside
+  the =plugins_loaded= dependency check. Otherwise the links would
+  disappear when Contact Form 7 or Flamingo is inactive, which is
+  exactly when someone would want the docs.
+
+- *=esc_url()=* is applied to both links, the standard WordPress practice.
+
+*** Tested:
+I ran the filter with WordPress core's own =apply_filters()= and
+=plugin_basename()=. The two links were added to this plugin's row,
+and other plugins' rows were left unchanged.
+
+The "How to add documentation, and support links" item in
+=spec/todo.org= can be closed. I didn't edit that file.
