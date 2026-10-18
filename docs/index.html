@@ -11,10 +11,10 @@
   <hr />
   <h1 id="contact-2-post">Contact 2 Post</h1>
   <p><a href=
-  "https://img.shields.io/badge/version-1.2.2-orange.svg">version</a></p>
+  "https://img.shields.io/badge/version-1.3.0-orange.svg">version</a></p>
   <p><a href=
   "https://img.shields.io/badge/WordPress-Compatible-blue.svg">WordPress</a></p>
-  <p>ver-1.2.2</p>
+  <p>ver-1.3.0</p>
   <p>When a Contact Form 7 form is submitted, this plugin saves the uploaded
   image files to the Media Library. Then, after Flamingo saves the message,
   this plugin can create a "pending post" from a template post page. The
@@ -30,7 +30,7 @@
     <li>Install and activate this plugin contact-2-post</li>
   </ol>
   <h3 id="development-installs">Development Installs</h3>
-  <p>These are not stable versions. ver-1.2.2-rel is the current stable
+  <p>These are not stable versions. ver-1.3.0-rel is the current stable
   version.</p>
   <ol>
     <li>Follow Installation steps 1 to 4 above.</li>
@@ -85,6 +85,15 @@ post_template: PageSlug
   that name. Values are HTML escaped, and "[" "]" in values are encoded so
   they cannot run a shortcode. Checkbox values are joined with ", ". If there
   is no field with that name, <cite>{field}</cite> is left as is.</p>
+  <p>Textarea fields are the exception: they can have some HTML. When HTML
+  text is pasted into a form's textarea, it is cleaned, and the textarea
+  shows the HTML tags that are kept. Only these tags are kept: h1, h2, h3,
+  h4, a, p, b, strong, i, em, ul, ol, li, br. All attributes are removed,
+  except href on "a" tags, and only for http, https, or mailto URLs. Other
+  tags are removed (their text is kept), and script and style elements are
+  removed with their content. The same cleaning is done again when the post
+  is created. If a textarea value has none of the allowed tags, it is escaped
+  like other fields.</p>
   <p>A post has attributes that are not blocks. This is how they are defined
   in the page template. After the page's title, put the post's attribute
   lines between ATTR-BEGIN and ATTR-END lines (one per line, or separated

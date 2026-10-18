@@ -1,11 +1,11 @@
 Contact 2 Post
 ==============
 
-![version](https://img.shields.io/badge/version-1.2.2-orange.svg)
+![version](https://img.shields.io/badge/version-1.3.0-orange.svg)
 
 ![WordPress](https://img.shields.io/badge/WordPress-Compatible-blue.svg)
 
--   ver-1.2.2
+-   ver-1.3.0
 
 <!-- -->
 ```
@@ -27,7 +27,7 @@ Installation
 
 ### Development Installs
 
-These are not stable versions. ver-1.2.2-rel is the current stable
+These are not stable versions. ver-1.3.0-rel is the current stable
 version.
 
 1.  Follow Installation steps 1 to 4 above.
@@ -85,6 +85,16 @@ All the blocks of the \'PageSlug\' page are copied to the new post.
 Values are HTML escaped, and \"\[\" \"\]\" in values are encoded so they
 cannot run a shortcode. Checkbox values are joined with \", \". If there
 is no field with that name, {field} is left as is.
+
+Textarea fields are the exception: they can have some HTML. When HTML
+text is pasted into a form\'s textarea, it is cleaned, and the textarea
+shows the HTML tags that are kept. Only these tags are kept: h1, h2, h3,
+h4, a, p, b, strong, i, em, ul, ol, li, br. All attributes are removed,
+except href on \"a\" tags, and only for http, https, or mailto URLs.
+Other tags are removed (their text is kept), and script and style
+elements are removed with their content. The same cleaning is done again
+when the post is created. If a textarea value has none of the allowed
+tags, it is escaped like other fields.
 
 A post has attributes that are not blocks. This is how they are defined
 in the page template. After the page\'s title, put the post\'s attribute
