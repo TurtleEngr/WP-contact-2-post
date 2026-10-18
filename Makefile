@@ -17,6 +17,7 @@ mBuildList = \
 
 mDocList = \
 	README.md \
+	docs/development.html \
 	docs/example.html \
 	docs/index.html
 
@@ -154,6 +155,9 @@ dist/$(mName)/readme.txt : VERSION readme.txt
 
 dist/$(mName)/LICENSE : LICENSE
 	-cp $? $@
+
+docs/development.html : development.org
+	org2html.sh -i $? -o $@ -s 2
 
 docs/example.html : example.org
 	org2html.sh -i $? -o $@ -s 2
