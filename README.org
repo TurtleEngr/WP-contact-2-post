@@ -168,16 +168,15 @@ starts with "Upload errors:". They are also written to the PHP error
 log.
 
 ** Examples
-Complete examples can be found at <a href="example.html"> Contact 2
-Post Examples</a>
+Complete examples can be found at
+<a href="example.html" target="_blank"> Contact 2 Post Examples</a>
 
 ** Support
 
-Plugin bugs and documentation bugs can be filed at:
-<a href="https://github.com/TurtleEngr/WP-contact-2-post/issues"> Issues</a>
-You can also make Feature Requests there.
+Plugin bugs and documentation bugs can be filed at: [[https://github.com/TurtleEngr/WP-contact-2-post/issues][Issues]] You can
+also make Feature Requests there.
 
 ** For Developers
 
 If you want to modify the plugin's code, you can find the directions
-at: <a href="development.html"> Plugin Development</a>
+at: <a href="development.html" target="_blank"> Plugin Development</a>

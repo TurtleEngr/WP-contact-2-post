@@ -3,13 +3,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
-<title>Contact 2 Post</title>
+<title>Contact 2 Post Development</title>
 <link rel="stylesheet"
       href="doc.css" />
 </head>
 <body>
 #+END_EXPORT
-* Plugin Development
+* Contact 2 Post Development
 *** Requirements for building
 
 - First fork the https://turtleengr.github.io/WP-contact-2-post/

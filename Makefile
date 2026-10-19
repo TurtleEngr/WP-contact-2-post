@@ -38,6 +38,7 @@ usage :
 	@echo "save - ci, push develop to github, copy to $(mPubDev)"
 	@echo "publish - tag, ci, push to develop, merge to main,"
 	@echo "    push to main, copy to $(mPubRel)"
+	@echo "release - TBD"
 	@echo
 	@echo "VERSION VERSION-dev VERSION-pub VERSION-rel"
 	@echo $$(cat VERSION*)
@@ -82,7 +83,7 @@ publish : check-rel
 	@echo 'If done, make dist-clean'
 
 release : check-rel
-	# TBD - update subversion copy at wordpress.org
+	@echo TBD - update subversion copy at wordpress.org
 	#cp VERSION VERSION-rel
 	#@echo 'If done, make dist-clean'
 

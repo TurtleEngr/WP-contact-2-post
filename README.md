@@ -1,11 +1,11 @@
 Contact 2 Post
 ==============
 
-![version](https://img.shields.io/badge/version-1.3.4-orange.svg)
+![version](https://img.shields.io/badge/version-1.3.5-orange.svg)
 
 ![WordPress](https://img.shields.io/badge/WordPress-Compatible-blue.svg)
 
--   ver-1.3.4
+-   ver-1.3.5
 
 <!-- -->
 ```
@@ -27,7 +27,7 @@ Installation
 
 ### Development Installs
 
-These are not stable versions. ver-1.3.4-rel is the current stable
+These are not stable versions. ver-1.3.5-rel is the current stable
 version.
 
 1.  Follow Installation steps 1 to 4 above.
@@ -163,18 +163,19 @@ with \"Upload errors:\". They are also written to the PHP error log.
 Examples
 --------
 
-Complete examples can be found at \<a href=\"example.html\"\> Contact 2
-Post Examples\</a\>
+Complete examples can be found at \<a href=\"example.html\"
+target=\"~blank~\"\> Contact 2 Post Examples\</a\>
 
 Support
 -------
 
-Plugin bugs and documentation bugs can be filed at: \<a
-href=\"<https://github.com/TurtleEngr/WP-contact-2-post/issues>\"\>
-Issues\</a\> You can also make Feature Requests there.
+Plugin bugs and documentation bugs can be filed at:
+[Issues](https://github.com/TurtleEngr/WP-contact-2-post/issues) You can
+also make Feature Requests there.
 
 For Developers
 --------------
 
 If you want to modify the plugin\'s code, you can find the directions
-at: \<a href=\"development.html\"\> Plugin Development\</a\>
+at: \<a href=\"development.html\" target=\"~blank~\"\> Plugin
+Development\</a\>
