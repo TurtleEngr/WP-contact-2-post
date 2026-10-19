@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# --------------------
+fIsBinary() {
+    local pFile="$1"
+    grep -Hm1 '^' <"$pFile" | grep -q '^Binary'
+    # Copied from: https://unix.stackexchange.com/questions/275516/is-there-a-convenient-way-to-classify-files-as-binary-or-text
+}
+
+# ========================================
+# Main
+
+# ----------
+if [[ $# -eq 0 ]]; then
+    cat <<EOF
+Usage:
+    rm-trailing-sp [-t] FILE...
+
+Remove trailing whitespace. If -t, also convert tabs to spaces with
+"expand". This helps tracking differences between file versions.
+For normalizing indents, in scripts, see: shfmt (or bash-fmt)
+
+Only use this on text files. The script skips files when the "file"
+command does not show "ASCII text". But don't depend on this check.
+It is best to only specifiy text files in the command line.  Backup
+the files, if you want to be sure non-text files are not damaged.
+
+If gpForce is set to 1, this will force changes to the file.
+
+EOF
+    exit 1
+fi
+
+# ----------
+pTab=0
+if [[ "x$1" = "x-t" ]]; then
+    pTab=1
+    shift
+fi
+export gpForce=${gpForce:-0}
+
+for tFile in $*; do
+    if [[ ! -f $tFile ]]; then
+        echo "Skipping non-file $tFile [$LINENO]"
+        continue
+    fi
+
+    if [[ ! -w $tFile ]]; then
+        echo "Skipping non-writable $tFile [$LINENO]"
+        continue
+    fi
+
+    if fIsBinary $tFile; then
+        echo "Skipping binary $tFile [$LINENO]"
+        continue
+    fi
+
+    file $tFile | grep -q ' text'
+    if [[ $? -ne 0 ]]; then
+        echo "Possibile binary: $tFile [$LINENO]"
+        if [[ $gpForce -eq 0 ]]; then
+            echo "Skipping [$LINENO]"
+            continue
+        fi
+    fi
+
+    tExec=0
+    if [[ -x $tFile ]]; then
+        tExec=1
+    fi
+
+    if [[ ${pTab:-0} -eq 0 ]]; then
+        sed -E 's/[[:space:]]*$//' <$tFile >$tFile.tmp
+    else
+        expand <$tFile | sed -E 's/[[:space:]]*$//' >$tFile.tmp
+    fi
+
+    mv $tFile.tmp $tFile
+    if [[ $tExec -ne 0 ]]; then
+        chmod a+rx $tFile
+    fi
+done

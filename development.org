@@ -10,61 +10,101 @@
 <body>
 #+END_EXPORT
 * Contact 2 Post Development
-*** Requirements for building
 
 - First fork the https://turtleengr.github.io/WP-contact-2-post/
   repository.
 
-- Packages
-  + emacs (org-mode) - if you want to edit the *.org files
-  + git
-  + pandoc
-  + perl
-  + php - for the pod2* programs
-  + pod2markdown - libpod-markdown-perl pkg
-  + pod2pdf - optional
-  + sed
-  + tidy
-  + zip
+** Requirements for building
 
-- Custom Scripts - Located at [[https://github.com/TurtleEngr/my-utility-scripts/tree/main][my-utility-scripts]]
-  + org2html.sh
-  + rm-trailing-sp
+*** Packages
+- Install these packages
+  + =emacs= (org-mode) - if you want to edit the *.org files
+  + =git=
+  + =git-flow= - optional
+  + =make=
+  + =pandoc= - convert org files to markdown format
+  + =perl=
+  + =php= - for the pod2* programs
+  + =pod2markdown= - libpod-markdown-perl pkg
+  + =pod2pdf= - optional
+  + =sed=
+  + =tidy=
+  + =zip=
 
-- git aliases used - set in your .gitconfig
-  + br = branch
-  + ci = commit
-  + co = checkout
-  + df = diff
-  + st = status -s
+*** Custom Scripts
+- These scripts are in ./bin and are used in Makefile
+  + =bin/org2html.sh= - convert org files to html
+  + =bin/rm-trailing-sp= - an convert tabs to spaces
+  + =bin/pre-commit= - enforces some basic formatting (see [gitproj "hook"])
 
-*** To Build
+- Copy =bin/pre-commit= to =WP-contact-2-post/.git/hooks=
 
-+ =make=
-  - this will list the main steps to make and deploy the plugin
+*** git config
++ Append contents of =./bin/gitconfig= to =./.git/config=
 
-+ =make update=
-  - Pull the latest develop branch from github
+#+begin_example
+[alias]
+    br = branch
+    ci = commit
+    co = checkout
+    df = diff
+    st = status -s
 
-+ =make build=
-  - Create a branch, if there are major changes
-  - Build the zip file in the dist/ dir
-  - Change files and repeat until it is worth saving
+[gitproj "hook"]
+    verbose = true
+    pre-commit-enabled = true
+    check-file-names = true
+    check-in-raw = true
+    check-whitespace = true
+    check-for-tabs = true
+    tab-include-list = .sh .inc .pod .md .php
+    tab-exclude-list = Makefile .phar
+    check-for-big-files = true
+    binary-file-size = 40k
+#+end_example
 
-+ =make save=
-  - Save a development version for testing.
-  - Checkin all changes, push to github
-  - Publish to the release server (change mServer to your release server).
++ If using git-flow, first time setup, run:
+  + =git flow init=
 
-+ =make publish=
-  - This can only be done on the develop branch (i.e. merged branches)
-  - Save a stable (tested) development version
-  - Tag the version, push to develop
-  - Merge develop to main (which is a stable development version)
+** To Build
 
-+ =make release=
-  - if accepted by wordpress.org TBD
-  - copy the relevant files to SVN...
+*** Modify the Makefile
+- Define the location of where the plugin's zip file will be saved.
+
+#+begin_example
+mServer = moria.whyayh.com
+mPubDev = /rel/development/software/own/$(mProj)
+mPubRel = /rel/released/software/own/$(mProj)
+#+end_example
+
+*** Build steps
+
+**** =make=
++ This will verify the required package and files exist.
++ Then it will list the main steps to make and deploy the plugin.
+
+**** =make update=
++ Pull the latest develop branch from github
+
+**** =make build=
++ Create a branch, if there are major changes
++ Build the zip file in the dist/ dir
++ Change files and repeat until it is worth saving
+
+**** =make save=
++ Save a development version for testing.
++ Checkin all changes, push to github
++ Publish to the release server (change mServer to your release server).
+
+**** =make publish=
++ This can only be done on the develop branch (i.e. merged branches)
++ Save a stable (tested) development version
++ Tag the version, push to develop
++ Merge develop to main (which is a stable development version)
+
+**** =make release=
++ if accepted by wordpress.org TBD
++ copy the relevant files to SVN...
 
 *** How it works
 

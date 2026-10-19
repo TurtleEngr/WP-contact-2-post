@@ -11,10 +11,10 @@
   <hr />
   <h1 id="contact-2-post">Contact 2 Post</h1>
   <p><a href=
-  "https://img.shields.io/badge/version-1.3.6-orange.svg">version</a></p>
+  "https://img.shields.io/badge/version-1.3.7-orange.svg">version</a></p>
   <p><a href=
   "https://img.shields.io/badge/WordPress-Compatible-blue.svg">WordPress</a></p>
-  <p>ver-1.3.6</p>
+  <p>ver-1.3.7</p>
   <p>When a Contact Form 7 form is submitted, this plugin saves the uploaded
   image files to the Media Library. Then, after Flamingo saves the message,
   this plugin can create a "pending post" from a template post page. The
@@ -30,7 +30,7 @@
     <li>Install and activate this plugin contact-2-post</li>
   </ol>
   <h3 id="development-installs">Development Installs</h3>
-  <p>These are not stable versions. ver-1.3.6-rel is the current stable
+  <p>These are not stable versions. ver-1.3.7-rel is the current stable
   version.</p>
   <ol>
     <li>Follow Installation steps 1 to 4 above.</li>
@@ -46,8 +46,8 @@
   See "Contact Form Settings" section.</p>
   <p>Also, you need to define a template for your posts. See "Template Page"
   section.</p>
-  <p>Uploaded images are saved for every form, even without
-  <code>create_post</code>. See "Uploaded Files" section.</p>
+  <p>Uploaded images are saved for every form, even without <code class=
+  "verbatim">create_post</code>. See "Uploaded Files" section.</p>
   <p>If you installed ninja-auto-post-expire, you will the "Post" option
   needs to be set to "Yes" in its Post Expire Settings.</p>
   <h3 id="contact-form-settings">Contact Form Settings</h3>
@@ -59,22 +59,23 @@ post_template: PageSlug
 </code></pre>
   <ul>
     <li>
-      <p><code>skip_mail</code> - this has no effect on this plugin, but you
-      can decide if you want to send an email of the form, in addition to
-      making a post.</p>
+      <p><code class="verbatim">skip_mail</code> - this has no effect on this
+      plugin, but you can decide if you want to send an email of the form, in
+      addition to making a post.</p>
     </li>
     <li>
-      <p><code>create_post</code> - if 'true' that activates this plugin</p>
+      <p><code class="verbatim">create_post</code> - if 'true' that activates
+      this plugin</p>
     </li>
     <li>
-      <p><code>do_not_store</code> - this is a Flamingo option. The default
-      is 'false'. If it is set to 'true', the form data will not be stored
-      and this plugin will not work.</p>
+      <p><code class="verbatim">do_not_store</code> - this is a Flamingo
+      option. The default is 'false'. If it is set to 'true', the form data
+      will not be stored and this plugin will not work.</p>
     </li>
     <li>
-      <p><code>post_template</code> - this is the slug-name for a "page" that
-      will be used as a template for the posts. See "Template Page" for
-      details.</p>
+      <p><code class="verbatim">post_template</code> - this is the slug-name
+      for a "page" that will be used as a template for the posts. See
+      "Template Page" for details.</p>
     </li>
   </ul>
   <p>Even though this plugin does not "publish" the posts, you should turn on
@@ -118,34 +119,37 @@ expire-time: <cite>{field}</cite>
 ATTR-END
 </code></pre>
   <ul>
-    <li><code>title</code> - post title. See Flamingo documention for how to
-    change <cite>{your-subject}</cite> Default: UNDEFINED</li>
-    <li><code>categories</code>, <code>tags</code> - comma separated names or
-    slugs. Only existing categories and tags are used; others are ignored.
-    Default: empty</li>
-    <li><code>publish-date</code> - YYYY-MM-DD, time is set to 12:00. This
-    date is kept when the post is published (a future date makes it
-    "Scheduled"). Default: the time the post is published.</li>
-    <li><code>expire-date</code> - YYYY-MM-DD. Saved in the
-    ninja-auto-post-expire meta (<code>_njtape_expiration_date</code>).
-    Default: not set.</li>
-    <li><code>expire-time</code> - HH:MM. Default: 00:00</li>
+    <li><code class="verbatim">title</code> - post title. See Flamingo
+    documention for how to change <cite>{your-subject}</cite> Default:
+    UNDEFINED</li>
+    <li><code class="verbatim">categories</code>, <code class=
+    "verbatim">tags</code> - comma separated names or slugs. Only existing
+    categories and tags are used; others are ignored. Default: empty</li>
+    <li><code class="verbatim">publish-date</code> - YYYY-MM-DD, time is set
+    to 12:00. This date is kept when the post is published (a future date
+    makes it "Scheduled"). Default: the time the post is published.</li>
+    <li><code class="verbatim">expire-date</code> - YYYY-MM-DD. Saved in the
+    ninja-auto-post-expire meta (<code class=
+    "verbatim">_njtape_expiration_date</code>). Default: not set.</li>
+    <li><code class="verbatim">expire-time</code> - HH:MM. Default:
+    00:00</li>
   </ul>
   <p>ninja-auto-post-expire only acts on posts if its "Post" option is set to
   "Yes" in it's settings, Post Expire Settings.</p>
-  <p>Invalid dates or times are ignored and logged to
-  <code>error_log()</code>. Use a plugin such as "debug-log-manager" to look
-  at the <code>error_log</code>.</p>
+  <p>Invalid dates or times are ignored and logged to <code class=
+  "verbatim">error_log()</code>. Use a plugin such as "debug-log-manager" to
+  look at the <code class="verbatim">error_log</code>.</p>
   <h3 id="uploaded-files">Uploaded Files</h3>
-  <p>Files uploaded with the Contact Form 7 <code>[file NAME]</code> field
-  are saved to the Media Library before the email is sent.</p>
+  <p>Files uploaded with the Contact Form 7 <code class="verbatim">[file
+  NAME]</code> field are saved to the Media Library before the email is
+  sent.</p>
   <ol>
     <li>Only image files are saved. The type is checked from the file
     content, and the file extension must also be an allowed image type. Other
     files are skipped and logged.</li>
     <li>File names are normalized. File names can only contain letters in the
-    set: [a-zA-Z0-9._-]. Any letters not in the set are converted to a
-    "<span class="underline">", and repeated "</span>" are collapsed.</li>
+    set: [a-zA-Z0-9._-]. Any letters not in the set are converted to a "<u>",
+    and repeated "</u>" are collapsed.</li>
     <li>Existing files are never overwritten. "<sub>1</sub>", "<sub>2</sub>",
     … is added to the base name instead.</li>
   </ol>

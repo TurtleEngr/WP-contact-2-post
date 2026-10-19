@@ -5,10 +5,16 @@
 
 SHELL := /bin/bash
 
+# Plugin name (slug)
 mName = contact-2-post
+
+# Repository name
 mProj = WP-$(mName)
+
+# Plugin install files
 mProduct = dist/$(mName)-VERSION.zip
 
+# Files that go in the plugin's zip file
 mBuildList = \
     dist/$(mName) \
     dist/$(mName)/$(mName).php \
@@ -16,33 +22,68 @@ mBuildList = \
     dist/$(mName)/readme.txt \
     dist/$(mName)/LICENSE
 
+# Generated files that will be put in docs/
 mDocList = \
 	README.md \
 	docs/development.html \
 	docs/example.html \
 	docs/index.html
 
+# Get branch name
 mBranch = $$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 
+# Location for saving the built plugin. See the rsync commands.
 mServer = moria.whyayh.com
 mPubDev = /rel/development/software/own/$(mProj)
 mPubRel = /rel/released/software/own/$(mProj)
 
 # --------------------
 
-usage :
+usage : verify
+	@echo
+	@echo '===================='
+	@echo 'Usage'
 	@echo "update - get latest version from github"
 	@echo "build - $(mProduct)"
-	@echo "incPatch, incMinor, or incMajor - before save or publish"
-	@echo "    Update Changelog in readme.txt"
-	@echo "save - ci, push develop to github, copy to $(mPubDev)"
-	@echo "publish - tag, ci, push to develop, merge to main,"
-	@echo "    push to main, copy to $(mPubRel)"
+	@echo "incPatch, incMinor, or incMajor - do these before save or publish"
+	@echo "    Then update Changelog in readme.txt"
+	@echo "save - ci, push develop to github"
+	@echo "    copy to $(mPubDev)"
+	@echo "publish - tag, ci, push to develop, merge to main, push to main"
+	@echo "    copy to $(mPubRel)"
 	@echo "release - TBD"
 	@echo
-	@echo "VERSION VERSION-dev VERSION-pub VERSION-rel"
-	@echo $$(cat VERSION*)
+	@echo '===================='
+	@echo "VERSION: $$(cat VERSION)"
+	@echo "VERSION-dev: $$(cat VERSION-dev)"
+	@echo "VERSION-pub: $$(cat VERSION-pub)"
+	@echo "VERSION-rel: $$(cat VERSION-rel)"
+	@echo
+	@echo '===================='
 	@git st
+
+verify :
+	@echo
+	@echo '===================='
+	@echo 'Verify Requirements'
+	which emacs >/dev/null 2>&1
+	which git >/dev/null 2>&1
+	which make >/dev/null 2>&1
+	which pandoc >/dev/null 2>&1
+	which perl >/dev/null 2>&1
+	which php >/dev/null 2>&1
+	which pod2markdown >/dev/null 2>&1
+	which pod2pdf >/dev/null 2>&1
+	which sed >/dev/null 2>&1
+	which tidy >/dev/null 2>&1
+	which zip >/dev/null 2>&1
+	which ./.git/hooks/pre-commit >/dev/null 2>&1
+	grep -q 'ci = commit' ./.git/config ./.git/config
+	grep -q 'co = checkout' ./.git/config ./.git/config
+	grep -q 'st = status -s' ./.git/config ./.git/config
+	grep -q 'pre-commit-enabled = true' ./.git/config
+	grep -q 'check-whitespace = true' ./.git/config
+	grep -q 'check-for-tabs = true' ./.git/config
 
 update :
 	git co $(mBranch)
@@ -106,16 +147,16 @@ $(mProduct) : $(mBuildList)
 	-touch $@
 
 docs/index.html : README.org VERSION
-	org2html.sh -i README.org -o $@ -s 2
+	bin/org2html.sh -i README.org -o $@ -s 2
 	sed -i "s/VERSION/$$(cat VERSION)/" $@
-	rm-trailing-sp $@
+	bin/rm-trailing-sp $@
 
 README.md : README.org VERSION
-	pandoc -f org -t markdown <README.org | awk '/<!DOCTYPE html>/,/```/ {next} /```{=html}/ {next} {print $$0}' >$@
+	bin/pandoc -f org -t markdown <README.org | awk '/<!DOCTYPE html>/,/```/ {next} /```{=html}/ {next} {print $$0}' >$@
 	sed -i "s/VERSION/$$(cat VERSION)/" $@
 	sed -i 's/^\[version]/![version]/' $@
 	sed -i 's/^\[WordPress]/![WordPress]/' $@
-	rm-trailing-sp $@
+	bin/rm-trailing-sp $@
 
 check-dev :
 	if diff -q VERSION VERSION-dev >/dev/null 2>&1; then \
@@ -163,7 +204,7 @@ dist/$(mName)/LICENSE : LICENSE
 	-cp $? $@
 
 docs/development.html : development.org
-	org2html.sh -i $? -o $@ -s 2
+	bin/org2html.sh -i $? -o $@ -s 2
 
 docs/example.html : example.org
-	org2html.sh -i $? -o $@ -s 2
+	bin/org2html.sh -i $? -o $@ -s 2

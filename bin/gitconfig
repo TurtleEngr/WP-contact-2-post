@@ -1,0 +1,43 @@
+# Append to ./.git/config
+
+# Used in Makefile
+[alias]
+	br = branch
+	br-all = branch -r
+	ci = commit
+	co = checkout
+	df = diff
+	st = status -s
+
+# Used by pre-commit
+[gitproj "hook"]
+        verbose = true
+        pre-commit-enabled = true
+        check-file-names = true
+        check-in-raw = true
+        check-whitespace = true
+        check-for-tabs = true
+        tab-include-list = .sh .inc .pod .md .php
+        tab-exclude-list = Makefile .phar
+        check-for-big-files = true
+        binary-file-size = 40k
+
+# git-flow doc: https://nvie.com/posts/a-successful-git-branching-model/
+# git-flow is installed, add these
+[gitflow "branch"]
+	main = main
+	develop = develop
+	master = main
+[gitflow "prefix"]
+	# Start from develop branch
+	feature = feature/
+	# Start from develop branch (use major.minor.fix numbers)
+	release = release/
+	# Start from main branch
+	hotfix = hotfix/
+	# Start from develop or release branch
+	bugfix = bug/
+	# Start from main branch (manually merged back, if needed)
+	support = support/
+	# Added to release name, on "finish". Confusing, best to leave blank
+	versiontag =
