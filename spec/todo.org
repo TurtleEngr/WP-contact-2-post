@@ -41,7 +41,16 @@ https://github.com/TurtleEngr/WP-contact-2-post/issues
 
 ** Bugs
 
-+ Notes requires minimal text
++  Notes requires minimal text - fixed
 
 + Can it be made easier to cut/paste links (and some HTML) into the
-  text box?
+  text box? - implemented
+
+** How can errors be reported? Other than error_log()
+
++ Put the error in the DB, then show to admin when they login.
+
++ When contact-form-7 triggers contact-2post, send that error back,
+  and pop-up the error.
+
++ email the error to the user's email entered in the form.

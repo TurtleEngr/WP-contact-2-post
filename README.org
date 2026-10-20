@@ -26,12 +26,16 @@
 
 ** Installation
 
-1. Install and activate contact-form-7 plugin.
-2. Install and activate flamingo plugin.
-3. Optional: Install and activate ninja-auto-post-expire plugin
-4. If save-cf7-file-uploads is installed, delete it. It is not
+1. Install contact-form-7 plugin.
+   + Rollback to version 6.1.7, if date fields don't work. For why see
+     issue: https://github.com/TurtleEngr/WP-contact-2-post/issues/1
+     Install "WP Rollback" plugin to rollback.
+2. Install flamingo plugin.
+3. Optional: Install ninja-auto-post-expire plugin
+4. Optional: Install debug-log-manager plugin
+5. If save-cf7-file-uploads is installed, delete it. It is not
    compatible with this plugin.
-5. Install and activate this plugin contact-2-post
+6. Install and activate this plugin contact-2-post
 
 *** Development Installs
 
