@@ -18,7 +18,7 @@
   <p>When a Contact Form 7 form is submitted, this plugin saves the uploaded
   image files to the Media Library. Then, after Flamingo saves the message,
   this plugin can create a "pending post" from a template post page. The
-  images copied to the Media Libray, and they are attached to the post.</p>
+  first uploaded image is attached as the post's featured image</p>
   <hr />
   <h2 id="installation">Installation</h2>
   <ol>
@@ -52,34 +52,37 @@
   needs to be set to "Yes" in its Post Expire Settings.</p>
   <h3 id="contact-form-settings">Contact Form Settings</h3>
   <p>In a form's "Additional Settings" tab, add these settings:</p>
-  <pre class="example"><code>skip_mail: on
-create_post: true
-do_not_store: false
+  <pre class="example"><code>create_post: true
 post_template: PageSlug
+skip_mail: on
+do_not_store: false
 </code></pre>
   <ul>
     <li>
-      <p><code class="verbatim">skip_mail</code> - this has no effect on this
-      plugin, but you can decide if you want to send an email of the form, in
-      addition to making a post.</p>
+      <p><code class="verbatim">create_post</code> - this contact-2-post
+      plugin option. If 'true' that activates this plugin</p>
     </li>
     <li>
-      <p><code class="verbatim">create_post</code> - if 'true' that activates
-      this plugin</p>
+      <p><code class="verbatim">post_template</code> - this contact-2-post
+      plugin option. This is the "slug-name" for a "page" that will be used
+      as a template to generate a "Pending" post from a form. See "Template
+      Page" for details.</p>
     </li>
     <li>
-      <p><code class="verbatim">do_not_store</code> - this is a Flamingo
-      option. The default is 'false'. If it is set to 'true', the form data
-      will not be stored and this plugin will not work.</p>
+      <p><code class="verbatim">skip_mail</code> - contact-form-7 plugin
+      option. This has no effect on the contact-2-post plugin, but you can
+      decide if you want to send an email of the form, in addition to making
+      a post.</p>
     </li>
     <li>
-      <p><code class="verbatim">post_template</code> - this is the slug-name
-      for a "page" that will be used as a template for the posts. See
-      "Template Page" for details.</p>
+      <p><code class="verbatim">do_not_store</code> - flamingo plugin option.
+      The default is 'false'. If it is set to 'true', the form data will not
+      be stored and this contact-2-post plugin will not work.</p>
     </li>
   </ul>
-  <p>Even though this plugin does not "publish" the posts, you should turn on
-  reCAPTCHA in contact-form-7 settings.</p>
+  <p>While this plugin does not "publish" the posts, you should turn on
+  reCAPTCHA in contact-form-7 settings so your admin doesn't get spammed with
+  bot submitted "Pending" posts.</p>
   <h3 id="template-page">Template Page</h3>
   <p>All the blocks of the 'PageSlug' page are copied to the new post.
   <cite>{field}</cite> is replaced with the value of the form 'field' with
@@ -120,7 +123,7 @@ ATTR-END
 </code></pre>
   <ul>
     <li><code class="verbatim">title</code> - post title. See Flamingo
-    documention for how to change <cite>{your-subject}</cite> Default:
+    documentation for how to change <cite>{your-subject}</cite> Default:
     UNDEFINED</li>
     <li><code class="verbatim">categories</code>, <code class=
     "verbatim">tags</code> - comma separated names or slugs. Only existing
