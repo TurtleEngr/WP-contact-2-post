@@ -103,7 +103,7 @@ mPubRel = /rel/released/software/own/$(mProj)
 + Merge develop to main (which is a stable development version)
 
 **** =make release=
-+ if accepted by wordpress.org TBD
++ if accepted by WordPress.org TBD
 + copy the relevant files to SVN...
 
 *** How it works

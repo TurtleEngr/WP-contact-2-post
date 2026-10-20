@@ -21,8 +21,8 @@
 - When a Contact Form 7 form is submitted, this plugin saves the
   uploaded image files to the Media Library. Then, after Flamingo
   saves the message, this plugin can create a "pending post" from a
-  template post page. The images copied to the Media Libray, and they
-  are attached to the post.
+  template post page. The first uploaded image is attached as the
+  post's featured image
 
 ** Installation
 
@@ -62,26 +62,30 @@ needs to be set to "Yes" in its Post Expire Settings.
 In a form's "Additional Settings" tab, add these settings:
 
 #+begin_example
-skip_mail: on
 create_post: true
-do_not_store: false
 post_template: PageSlug
+skip_mail: on
+do_not_store: false
 #+end_example
 
-+ =skip_mail= - this has no effect on this plugin, but you can decide if
-  you want to send an email of the form, in addition to making a post.
++ =create_post= - this contact-2-post plugin option. If 'true' that
+  activates this plugin
 
-+ =create_post= - if 'true' that activates this plugin
++ =post_template= - this contact-2-post plugin option.  This is the
+  "slug-name" for a "page" that will be used as a template to generate
+  a "Pending" post from a form. See "Template Page" for details.
 
-+ =do_not_store= - this is a Flamingo option. The default is 'false'. If
++ =skip_mail= - contact-form-7 plugin option. This has no effect on
+  the contact-2-post plugin, but you can decide if you want to send an
+  email of the form, in addition to making a post.
+
++ =do_not_store= - flamingo plugin option. The default is 'false'. If
   it is set to 'true', the form data will not be stored and this
-  plugin will not work.
+  contact-2-post plugin will not work.
 
-+ =post_template= - this is the slug-name for a "page" that will be used
-  as a template for the posts. See "Template Page" for details.
-
-Even though this plugin does not "publish" the posts, you should turn
-on reCAPTCHA in contact-form-7 settings.
+While this plugin does not "publish" the posts, you should turn
+on reCAPTCHA in contact-form-7 settings so your admin doesn't get
+spammed with bot submitted "Pending" posts.
 
 *** Template Page
 
@@ -128,7 +132,7 @@ expire-time: {field}
 ATTR-END
 #+end_example
 
-+ =title= - post title. See Flamingo documention for how to change
++ =title= - post title. See Flamingo documentation for how to change
   {your-subject} Default: UNDEFINED
 + =categories=, =tags= - comma separated names or slugs. Only existing
   categories and tags are used; others are ignored. Default: empty
