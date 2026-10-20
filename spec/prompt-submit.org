@@ -230,10 +230,8 @@ The specs in =spec/= (prompt-submit.org, prompt-doc-links.org) still
 describe the old behavior. I left them alone because they read like
 records of past prompts.
 
-
-
 ** Prompt 5
-+ The code for this plugin contact-2-post.php
++ The code for this plugin contact-2-post is at
   https://github.com/TurtleEngr/WP-contact-2-post
   develop branch
 
@@ -245,3 +243,38 @@ records of past prompts.
 + Follow the directions in CLAUDE.org
 
 ** Response 5
+
+I'll test the second call site, using WordPress's own
+=wp_strip_all_tags()= body. The test compares the old check, a plain
+swap, and a swap that trims the left side too.
+
+The search tools come back empty even though the diff shows the
+change. I'll read the file directly to make sure it's what I expect.
+
+The file is correct: both call sites now use
+=wp_strip_all_tags()=. The empty search results were a shell output
+glitch, not a problem with the file.
+
+The updated contact-2-post.php is attached as a complete file, based
+on the latest =develop= (4450c4a). There were two =strip_tags()=
+calls, and both now use =wp_strip_all_tags()=:
+
+- *Line 495, =cx2p_fTextBlock=:* a direct swap. The result was already
+  passed through =trim()=, so =wp_strip_all_tags()= trimming it too
+  changes nothing.
+
+- *Line 670, =cx2p_fReplaceFields=:* this needed one extra
+  change. =wp_strip_all_tags()= trims its result, so a direct swap
+  would break the "has no tags" check for values with white space at
+  either end.
+  + A textarea value like "line 1\nline 2\n" would go down the HTML
+    path, and its line breaks would collapse to spaces.
+  + I changed the check to =trim($tHtml) ===
+    wp_strip_all_tags($tHtml)=, with a short comment saying why.
+  + I tested 11 sample values against WordPress's own
+    =wp_strip_all_tags()= body. The new check gave the same result as
+    the old one every time. A plain swap was wrong for 2 of them.
+
+The script/style removal in =wp_strip_all_tags()= doesn't change
+anything at line 670, because =cx2p_fCleanHtml()= has already removed
+those. =php -l= passes.
