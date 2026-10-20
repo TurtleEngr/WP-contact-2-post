@@ -130,13 +130,29 @@ mPubRel = /rel/released/software/own/$(mProj)
   =cx2p_fCreateAttachment()=, and collects the attachment IDs with
   =cx2p_fSaveAttachId()=.
 
-+ Upload error messages are saved with =cx2p_fErrorLog()=, which also
-  writes them to the PHP error log. Calling =cx2p_fErrorLog()= with no
-  argument returns the list. The list is a =static= variable, and
-  each form submission is one PHP request with its own memory, so a
-  post only gets the errors from its own submission, even when
-  several people submit at the same time. The messages are not kept
-  after the request ends; the PHP error log still has them.
++ Error messages are saved with =cx2p_fErrorLog($pMsg, $pAdminOnly)=.
+  Calling =cx2p_fErrorLog()= with no argument returns the list:
+  =[[msg, adminOnly], ...]=. The list is a =static= variable, and
+  each form submission is one PHP request with its own memory, so an
+  email only has the errors from its own submission, even when
+  several people submit at the same time. The errors are not saved
+  in the database, not added to the post, and not written to the PHP
+  error log.
+  + Submission errors (uploaded file not saved, invalid expire-date)
+    use =$pAdminOnly= false.
+  + Site setup errors (=post_template= not set, template page not
+    found, ATTR-END not found, =wp_insert_post= failed) use
+    =$pAdminOnly= true.
+
++ =cx2p_fSendErrors()= is hooked to =wpcf7_submit= at priority 20,
+  after Flamingo (priority 10, which fires =wpcf7_after_flamingo=), so
+  all errors are collected. It runs even when =create_post= is not set
+  or Flamingo does not store the message. If there are errors, it
+  sends them with =wp_mail()=:
+  + to the site's =admin_email=: all errors.
+  + to the form's =your-email= field: only the errors that are not
+    admin-only. Not sent for spam, if the address is not valid
+    (=is_email()=), or if it is the same as the admin email.
 
 + These filters can change how uploads are saved:
   =cx2p_fCreateAttachment_file_name= (the destination path),
@@ -166,7 +182,7 @@ wp eval-file test/submit.php full attach   # post, attachment, expiry
 wp eval-file test/submit.php notitle       # title UNDEFINED
 wp eval-file test/submit.php nostore       # no post
 wp eval-file test/submit.php nocreate      # no post
-wp eval-file test/submit.php badslug       # no post, error_log
+wp eval-file test/submit.php badslug       # no post, error emailed to admin
 wp eval-file test/submit.php full spam     # no post
 wp post list --post_type=post --post_status=pending
 #+END_SRC

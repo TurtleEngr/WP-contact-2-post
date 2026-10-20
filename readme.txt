@@ -8,15 +8,13 @@ Stable tag: VERSION
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-When a Contact Form 7 form is submitted, this plugin saves uploaded
-images to the Media Library, and it can create a "pending post" from a
-post page template.
+When a contact-form-7 form is submitted, this plugin saves uploaded
+images to Media Library, then it creates a post from a template page.
 
 == Description ==
 
-When a Contact Form 7 form is submitted and Flamingo saves the
-message, this plugin will create a post with status "Pending," when
-"create_post: true" is in the "Additional Settings" for the form.
+The created post will have a "Pending" status. See the documentation
+for how to configure this plugin, contact-form-7, and flamingo.
 
 Required plugins: contact-form-7, flamingo.
 
@@ -76,20 +74,34 @@ See: https://github.com/TurtleEngr/WP-contact-2-post Issues
 
 = Where can I find newer versions? =
 
-The latest "stable version" can be found as wordpress.org.
+
+The latest "stable version" can be found at
+https://moria.whyayh.com/rel/released/software/own/WP-contact-2-post/
+(or if accepted, at wordpress.org.)
 
 For development versions see:
 https://github.com/TurtleEngr/WP-contact-2-post#development-installs
 
 == Changelog ==
 
+= 1.4.0 =
+
+- Errors are mailed to admin and the "your-email" address (if it is not
+  flagged as Spam)
+
+- Identified problem and a workaround with the "date" type in
+  contact-form-7.
+
 = 1.1.0 =
 
-1. Changed to follow the wordpress.org plugin guidelines.
-2. Merged in the save-cf7-file-uploads plugin. The function and
-   filter prefix is now cx2p_. That plugin is no longer needed.
-3. Fixed: uploaded images were not attached to the post (hook name
-   mismatch).
+- Changed to follow the wordpress.org plugin guidelines.
+
+- Merged in the save-cf7-file-uploads plugin functionallity. The
+  function and filter prefix is now cx2p_. That plugin is no longer
+  needed.
+
+- Fixed: uploaded images were not attached to the post (hook name
+  mismatch).
 
 = 0.1.0 =
 
