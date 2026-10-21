@@ -146,3 +146,237 @@ on a WordPress site. Nothing is committed or pushed.
 - =README.md= and =README.html= are generated from =README.org= by
   your Makefile, so I didn't edit them. =make build= will regenerate
   them.
+
+** Prompt 4
++ The code for this plugin contact-2-post.php is at:
+  https://github.com/TurtleEngr/WP-contact-2-post/tree/feature/save-error-log
+
++ Goal: Change the error reporting in contact-2-post.php. Do not save
+  the errors in the DB or in error_log(). Collect any errors found,
+  then email them to the email address found in the "your-email"
+  field, and to the site's admin email.
+
++ Also, update README.org to describe how errors are handled.
+
++ Follow the directions in CLAUDE.org
+
+*** Questions asked and answered
+
++ don't send to your-email if it is flagged as Spam, only send to admin
++ if errors are related to configuration, e.g. missing template page,
+  then only send to admin.
+
+** Response 4
+
+I'll pull the feature/save-error-log branch and look at its current error handling and README before changing anything.
+
+Now the phase-2 changes in =cx2p_fAfterFlamingo= and =cx2p_fCreatePost=:
+
+Every case routes correctly. Now README.org:
+
+The updated contact-2-post.php and README.org are attached as complete files, based on =develop=. I didn't write to the repo.
+
+*** How errors are handled now:
+- All errors go through =cx2p_fErrorLog()=, which only keeps them in memory. It has a new =$pAdminOnly= flag, and it no longer calls =error_log()=.
+- All five direct =error_log()= calls now go through =cx2p_fErrorLog()= instead. Four are setup errors and are marked admin-only. The invalid expire-date error is sent to both addresses.
+- The new =cx2p_fSendErrors()= runs on =wpcf7_submit= at priority 20, after Flamingo. It always emails the full list to the site's admin email.
+- It sends the submitter's errors (uploads, expire-date) to =your-email=. It skips that copy if the submission is spam, the address is invalid, or the address is the admin address.
+- Because it hooks =wpcf7_submit=, upload errors are emailed even when =create_post= is off.
+- I removed =cx2p_fErrorBlock= and the =$pErrorList= parameter of =cx2p_fCreatePost=, so nothing goes into the post or the DB.
+
+*** README.org:
+- New "Error Reports" section describing all of the above.
+- The three places that mentioned =error_log= now point to that section.
+- I dropped the "Optional: Install debug-log-manager" step, since the plugin no longer writes to the log, and renumbered the steps after it.
+
+*** Testing: =php -l= passes.
+I ran 7 scenarios with stubbed WordPress functions: no errors, mixed errors, admin-only, spam, bad address, address equal to the admin email, and no =your-email= field. Each one emailed the right addresses. I haven't tested it on a real WordPress site.
+
+*** Things to know, not changed:
+- Two messages include full server paths: "copy failed" and "not added
+  to Media Library". The submitter now receives these. If you'd rather
+  they only see the file name, I can switch those two to =basename()=.
+
+- An invalid =publish-date= or =expire-time= is still ignored without
+  any error, as before. I didn't add new error checks.
+
+- If =wp_mail()= fails, nothing reports it.
+
+- development.org (around line 133) and the specs in =spec/= still say
+  =cx2p_fErrorLog= writes to the PHP log. I left them alone because
+  you only asked for README.org. Say if you want them updated too.
+
+*** Prompt update
+- Also, update development.org with this change.
+
+*** Response
+I updated development.org from `develop`; the complete file is
+attached. Two places changed in "How it works" and the test list:
+
+- *=cx2p_fErrorLog= description:* it now describes the new
+  =$pAdminOnly= flag and the list format. It says which errors are
+  submitter errors and which are admin-only, and that nothing goes to
+  the DB, the post, or the PHP log.
+
+- *New =cx2p_fSendErrors= entry:* it covers the =wpcf7_submit=
+  priority-20 hook and why it runs after Flamingo. It also says who
+  gets which errors and when the submitter copy is skipped.
+
+*** Test list:
+the =badslug= comment changed from "error_log" to "error emailed to
+admin".
+
+The specs in =spec/= (prompt-submit.org, prompt-doc-links.org) still
+describe the old behavior. I left them alone because they read like
+records of past prompts.
+
+** Prompt 5
++ The code for this plugin contact-2-post is at
+  https://github.com/TurtleEngr/WP-contact-2-post
+  develop branch
+
++ Goal: Change contact-2-post.php so that it uses wp_strip_all_tags()
+  not strip_tags()
+
++ You can ignore all the text in the spec/ directory.
+
++ Follow the directions in CLAUDE.org
+
+** Response 5
+
+I'll test the second call site, using WordPress's own
+=wp_strip_all_tags()= body. The test compares the old check, a plain
+swap, and a swap that trims the left side too.
+
+The search tools come back empty even though the diff shows the
+change. I'll read the file directly to make sure it's what I expect.
+
+The file is correct: both call sites now use
+=wp_strip_all_tags()=. The empty search results were a shell output
+glitch, not a problem with the file.
+
+The updated contact-2-post.php is attached as a complete file, based
+on the latest =develop= (4450c4a). There were two =strip_tags()=
+calls, and both now use =wp_strip_all_tags()=:
+
+- *Line 495, =cx2p_fTextBlock=:* a direct swap. The result was already
+  passed through =trim()=, so =wp_strip_all_tags()= trimming it too
+  changes nothing.
+
+- *Line 670, =cx2p_fReplaceFields=:* this needed one extra
+  change. =wp_strip_all_tags()= trims its result, so a direct swap
+  would break the "has no tags" check for values with white space at
+  either end.
+  + A textarea value like "line 1\nline 2\n" would go down the HTML
+    path, and its line breaks would collapse to spaces.
+  + I changed the check to =trim($tHtml) ===
+    wp_strip_all_tags($tHtml)=, with a short comment saying why.
+  + I tested 11 sample values against WordPress's own
+    =wp_strip_all_tags()= body. The new check gave the same result as
+    the old one every time. A plain swap was wrong for 2 of them.
+
+The script/style removal in =wp_strip_all_tags()= doesn't change
+anything at line 670, because =cx2p_fCleanHtml()= has already removed
+those. =php -l= passes.
+
+** Prompt 6
+VERSION-dev: 1.4.1
+
++ The code for this plugin contact-2-post is at
+  https://github.com/TurtleEngr/WP-contact-2-post
+  develop branch
+
++ When testing contact-2-post.php, I gave a URL for an image that does
+  not exist. When I submitted the form it did not return, and no email
+  was sent. Is there some way for errors to be reflected back to the
+  contact-form-7 when there is an error found when submitting a form?
+  Can a "timeout" be set to return some kind of response, if functions
+  are not returning?
+
++ You can ignore all the text in the spec/ directory.
+
++ Follow the directions in CLAUDE.org
+
+** Response 6
+I'll read CLAUDE.org and pull the latest =develop= to see how image
+URLs are handled now.
+
+The plugin never fetches a URL, so I'll look at how the example form
+and template use URLs.
+
+The plugin has no code that fetches a URL. I'll check in the CF7
+source how a plugin can send a message back to the form.
+
+You can do both, but I don't think a slow function is what stopped
+your form. Nothing in contact-2-post.php downloads or checks an image
+URL, so a missing image can't make the plugin wait. I read through CF7
+itself, and the likelier cause is a PHP error that CF7's browser code
+never handles.
+
+**Why the form never returned**
+- CF7's browser code sends the form and waits for the answer with no
+  timeout. It also has no error handler (=await apiFetch(...)= in
+  =submit.js=).
+- If the server answers with an error (HTTP 500 from a PHP fatal
+  error, or a broken JSON reply), that code throws and stops. The
+  spinner then keeps going forever, which matches what you saw.
+- The error email is sent last in the request (=wpcf7_submit=,
+  priority 20). So a fatal error anywhere earlier also means no email.
+- A second possibility: the site is slow or stuck sending mail. With
+  =skip_mail: on=, =wp_mail()= is only called when there are errors,
+  so only error cases would stall. If an SMTP plugin is set up,
+  PHPMailer waits up to 300 seconds by default.
+
+**How to find which it is**
+1. In the browser, open DevTools → Network, submit the form, and click
+   the =feedback= request.
+   - Status 500 means a PHP error.
+   - "Pending" for a long time means the server is stuck.
+2. Turn on =WP_DEBUG_LOG= and look in =wp-content/debug.log=. PHP
+   still logs fatal errors there; only the plugin's own logging was
+   removed.
+3. Send me the result and say which field held the URL (url, text or
+   textarea) and where its ={field}= is in the template. Then I can
+   reproduce it.
+
+**Sending errors back to the form.** CF7 offers three hooks:
+- **Validation (=wpcf7_validate_url= and similar):** runs before
+  anything is saved. It shows a message next to the field and the form
+  isn't submitted. This is the place to reject a bad URL; checking the
+  image actually exists would need an HTTP request with a short
+  timeout.
+- **Abort in =wpcf7_before_send_mail=:** set =$abort = true= and call
+  =$submission->set_response('…')=. The form shows that
+  message. Flamingo doesn't store aborted submissions, so no post is
+  made.
+- **=wpcf7_feedback_response= filter:** runs after everything else,
+  just before the answer goes back. It can add the submitter's errors
+  to the message, for example "Sent, but image x.exe was not
+  saved". The post is still created. This fits the current design
+  best.
+
+None of these helps when PHP dies with a fatal error, because the
+request stops before any answer is built.
+
+**A timeout**
+- **On the server, it won't work reliably.** On Linux, PHP's
+  =max_execution_time= doesn't count time spent waiting on the
+  network, mail or the database. When it does trigger, it is itself a
+  fatal error, so the form gets no usable answer anyway. What you can
+  do is put timeouts on the calls that can block:
+  - The =timeout= argument of =wp_remote_get()=, if the plugin ever
+    checks URLs.
+  - =$phpmailer->Timeout= through the =phpmailer_init= hook, for SMTP.
+- **In the browser, it works.** The plugin already loads
+  =js/cx2p-paste.js= on CF7 pages, and a small addition there could
+  act as a watchdog:
+  - Start a timer on CF7's =wpcf7beforesubmit= event.
+  - If =wpcf7submit= doesn't arrive within about 60 seconds, or the
+    request fails, show a message and stop the spinner. The message
+    would say the submission may not have gone through, and not to
+    resend it yet.
+  - This covers both the PHP-error case and the stuck-server case.
+
+My suggestion is to find the actual cause first. Then I'd add the
+=wpcf7_feedback_response= message and the browser watchdog. Want me to
+write those two, or wait until you've checked the Network tab?
