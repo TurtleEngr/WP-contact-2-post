@@ -12,6 +12,9 @@
  * tags. The server filters the value again, so this is only a
  * convenience for the user, not the security check.
  *
+ * Also, after a form is submitted, any errors the plugin found are
+ * shown in a popup (cx2p_fShowErrors).
+ *
  * Function prefix: cx2p_f
  */
 (function () {
@@ -110,5 +113,18 @@
         tArea.dispatchEvent(new Event('input', { bubbles: true }));
     }
 
+    // ----------------------------------------
+    // CF7 fires wpcf7submit when its reply comes back. The plugin adds
+    // its errors to the reply as cx2p_errors (cx2p_fFeedbackResponse).
+    function cx2p_fShowErrors(pEvent) {
+        const tResponse = pEvent.detail ? pEvent.detail.apiResponse : null;
+        const tErrorList = tResponse ? tResponse.cx2p_errors : null;
+        if (!Array.isArray(tErrorList) || !tErrorList.length) {
+            return;
+        }
+        alert('Contact 2 Post errors (post not created):\n- ' + tErrorList.join('\n- '));
+    }
+
     document.addEventListener('paste', cx2p_fOnPaste);
+    document.addEventListener('wpcf7submit', cx2p_fShowErrors);
 }());

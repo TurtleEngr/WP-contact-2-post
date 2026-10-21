@@ -32,17 +32,16 @@
      Install "WP Rollback" plugin to rollback.
 2. Install flamingo plugin.
 3. Optional: Install ninja-auto-post-expire plugin
-4. Optional: Install debug-log-manager plugin
-5. If save-cf7-file-uploads is installed, delete it. It is not
+4. If save-cf7-file-uploads is installed, delete it. It is not
    compatible with this plugin.
-6. Install and activate this plugin contact-2-post
+5. Install and activate this plugin contact-2-post
 
 *** Development Installs
 
 These are not stable versions. ver-VERSION-rel is the current stable
 version.
 
-1. Follow Installation steps 1 to 4 above.
+1. Follow Installation steps 1 to 3 above.
 2. Go to: https://moria.whyayh.com/rel/released/software/own/WP-contact-2-post
 3. Then download the contact-2-VER.zip file you want.
 4. In WordPress, install with Upload Plugin, then activate.
@@ -150,8 +149,8 @@ ATTR-END
 ninja-auto-post-expire only acts on posts if its "Post" option is set
 to "Yes" in it's settings, Post Expire Settings.
 
-Invalid dates or times are ignored and logged to =error_log()=.  Use a
-plugin such as "debug-log-manager" to look at the =error_log=.
+Invalid dates or times are ignored. An invalid expire-date is also
+shown in the error popup. See "Error Popup".
 
 *** Uploaded Files
 
@@ -160,7 +159,7 @@ to the Media Library before the email is sent.
 
 1. Only image files are saved. The type is checked from the file
    content, and the file extension must also be an allowed image
-   type. Other files are skipped and logged.
+   type. Other files are skipped and shown in the error popup.
 2. File names are normalized. File names can only contain letters in
    the set: [a-zA-Z0-9._-]. Any letters not in the set are converted
    to a "_", and repeated "_" are collapsed.
@@ -170,10 +169,57 @@ to the Media Library before the email is sent.
 If a post is created, the images are attached to it, and the first
 image is the post's Featured Image.
 
-If an uploaded file could not be saved, the error messages for that
-submission are added to the end of the post, in a paragraph that
-starts with "Upload errors:". They are also written to the PHP error
-log.
+*** Error Popup
+
+Errors found while a form submission is processed are collected in
+memory. When Contact Form 7 sends its reply back to the browser, the
+errors are added to it, and the browser shows them in a popup
+(=alert()=). The form's normal message is shown after the popup is
+closed.
+
+#+begin_example
+Contact 2 Post errors:
+- file type not allowed, not saved: photo.exe
+- invalid expire-date: "2026-13-01"
+#+end_example
+
+The errors are not saved in the database, not added to the post, and
+not written to the PHP error log. They are only shown to the person
+who submitted the form, so watch for the popup when you test a form.
+
+The popup is not shown if:
++ there were no errors.
++ JavaScript is turned off in the browser.
++ PHP stopped with a fatal error. Then the form does not get a reply
+  at all.
+
+These are all the errors that can be in the popup. NAME is the
+uploaded file's name, PATH is where it was to be saved on the server.
+
++ Uploaded files. These can happen with any form, even without
+  =create_post=. The other uploaded files are still saved.
+  + =file extension not allowed, not saved: NAME= - the file
+    extension is not an allowed image type.
+  + =file type not allowed, not saved: NAME= - the file content is
+    not an allowed image type.
+  + =copy failed, not saved: PATH= - the file could not be copied to
+    the uploads directory.
+  + =not added to Media Library, file removed: PATH: REASON= - the
+    file was copied, but could not be added to the Media Library.
++ Form settings and template. No post is made, except for the
+  ATTR-END error.
+  + =post_template is not set for form ID= - the form has
+    =create_post: true=, but no =post_template=.
+  + =post_template page not found: SLUG= - there is no page with
+    that slug.
+  + =ATTR-END not found in the template= - the template has an
+    ATTR-BEGIN line with no ATTR-END line. The post is still made,
+    but all the blocks after ATTR-BEGIN are left out.
++ Creating the post.
+  + =wp_insert_post failed: REASON= - WordPress could not create the
+    post.
+  + =invalid expire-date: "VALUE"= - expire-date is not YYYY-MM-DD.
+    The post is made, with no expiry date.
 
 ** Examples
 Complete examples can be found at

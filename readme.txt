@@ -83,13 +83,22 @@ https://github.com/TurtleEngr/WP-contact-2-post#development-installs
 
 == Changelog ==
 
+= 1.4.2 =
+
+- Report errors with a popup.
+
+- Identified problem and a workaround with the "date" type in
+  contact-form-7. (See Issue 1)
+
 = 1.1.0 =
 
-1. Changed to follow the wordpress.org plugin guidelines.
-2. Merged in the save-cf7-file-uploads plugin. The function and
-   filter prefix is now cx2p_. That plugin is no longer needed.
-3. Fixed: uploaded images were not attached to the post (hook name
-   mismatch).
+- Changed to follow the wordpress.org plugin guidelines.
+
+- Merged in the save-cf7-file-uploads plugin. The function and filter
+  prefix is now cx2p_. That plugin is no longer needed.
+
+- Fixed: uploaded images were not attached to the post (hook name
+  mismatch).
 
 = 0.1.0 =
 

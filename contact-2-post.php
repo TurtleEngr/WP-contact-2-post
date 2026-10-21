@@ -59,6 +59,9 @@ add_action('plugins_loaded', function () {
     // Both run in the same request.
     add_action('wpcf7_before_send_mail', 'cx2p_fOnBeforeCf7SendMail');
     add_action('wpcf7_after_flamingo', 'cx2p_fAfterFlamingo');
+    // Errors are added to the reply to the browser, which shows them
+    // in a popup (js/cx2p-paste.js). This runs after both of the above.
+    add_filter('wpcf7_feedback_response', 'cx2p_fFeedbackResponse');
     // Clean HTML pasted into the form's textareas.
     add_action('wpcf7_enqueue_scripts', 'cx2p_fEnqueuePasteScript');
 });
@@ -103,18 +106,28 @@ function cx2p_fCleanHtml($pHtml)
 }
 
 // ----------------------------------------
-// Save an error message for the current submission, and write it to
-// the PHP error log. Call with no argument to get the saved list.
-// The list is kept in memory for this request (one form submission).
+// Save an error message for the current submission. Call with no
+// argument to get the saved list. The list is kept in memory for this
+// request (one form submission), and is shown with cx2p_fFeedbackResponse.
 function cx2p_fErrorLog($pMsg = null)
 {
     static $tMsgList = [];
 
     if ($pMsg !== null) {
         $tMsgList[] = $pMsg;
-        error_log(cx2p_cSlug . ': ' . $pMsg);
     }
     return $tMsgList;
+}
+
+// ----------------------------------------
+// Add the saved errors to CF7's reply to the browser, as cx2p_errors.
+function cx2p_fFeedbackResponse($pResponse)
+{
+    $tErrorList = cx2p_fErrorLog();
+    if ($tErrorList) {
+        $pResponse['cx2p_errors'] = $tErrorList;
+    }
+    return $pResponse;
 }
 
 // ----------------------------------------
@@ -252,21 +265,17 @@ function cx2p_fAfterFlamingo($pResult)
 
     $tSlug = sanitize_title((string) $tForm->pref('post_template'));
     if ($tSlug === '') {
-        error_log(cx2p_cSlug . ': post_template is not set for form ' . $tForm->id());
+        cx2p_fErrorLog('post_template is not set for form ' . $tForm->id());
         return;
     }
     $tPage = get_page_by_path($tSlug, OBJECT, 'page');
     if (!$tPage) {
-        error_log(cx2p_cSlug . ': post_template page not found: ' . $tSlug);
+        cx2p_fErrorLog('post_template page not found: ' . $tSlug);
         return;
     }
 
     $tMsg = new Flamingo_Inbound_Message((int) $pResult['flamingo_inbound_id']);
     $tFields = is_array($tMsg->fields) ? $tMsg->fields : [];
-
-    // Upload errors are kept in memory for this request only, so they
-    // are from this submission only.
-    $tErrorList = cx2p_fErrorLog();
 
     // Textarea values can have some HTML. See cx2p_fCleanHtml.
     $tHtmlFieldList = [];
@@ -274,11 +283,11 @@ function cx2p_fAfterFlamingo($pResult)
         $tHtmlFieldList[] = $tTag->name;
     }
 
-    cx2p_fCreatePost($tPage->post_content, $tFields, cx2p_fSaveAttachId(), $tErrorList, $tHtmlFieldList);
+    cx2p_fCreatePost($tPage->post_content, $tFields, cx2p_fSaveAttachId(), $tHtmlFieldList);
 }
 
 // ----------------------------------------
-function cx2p_fCreatePost($pTemplate, $pFields, $pAttachIdList, $pErrorList = [], $pHtmlFieldList = [])
+function cx2p_fCreatePost($pTemplate, $pFields, $pAttachIdList, $pHtmlFieldList = [])
 {
     $tAttr = [];
     $tBlockList = [];
@@ -300,10 +309,7 @@ function cx2p_fCreatePost($pTemplate, $pFields, $pAttachIdList, $pErrorList = []
         $tBlockList = array_merge($tBlockList, cx2p_fReplaceInBlock($tBlock, $pFields, $pHtmlFieldList));
     }
     if ($tInAttr) {
-        error_log(cx2p_cSlug . ': ' . cx2p_cAttrEnd . ' not found in the template');
-    }
-    if ($pErrorList) {
-        $tBlockList[] = cx2p_fErrorBlock($pErrorList);
+        cx2p_fErrorLog(cx2p_cAttrEnd . ' not found in the template');
     }
 
     $tTitle = isset($tAttr['title']) ? sanitize_text_field($tAttr['title']) : '';
@@ -326,7 +332,7 @@ function cx2p_fCreatePost($pTemplate, $pFields, $pAttachIdList, $pErrorList = []
     // Core applies kses to the content when the submitter lacks unfiltered_html.
     $tPostId = wp_insert_post(wp_slash($tPost), true);
     if (is_wp_error($tPostId)) {
-        error_log(cx2p_cSlug . ': wp_insert_post failed: ' . $tPostId->get_error_message());
+        cx2p_fErrorLog('wp_insert_post failed: ' . $tPostId->get_error_message());
         return 0;
     }
 
@@ -343,7 +349,7 @@ function cx2p_fCreatePost($pTemplate, $pFields, $pAttachIdList, $pErrorList = []
             $tTime = isset($tAttr['expire-time']) ? cx2p_fParseTime($tAttr['expire-time']) : '';
             update_post_meta($tPostId, cx2p_cExpireMetaKey, $tDate . ' ' . ($tTime ? $tTime : '00:00'));
         } else {
-            error_log(cx2p_cSlug . ': invalid expire-date: "' . $tAttr['expire-date'] . '"');
+            cx2p_fErrorLog('invalid expire-date: "' . $tAttr['expire-date'] . '"');
         }
     }
 
@@ -640,25 +646,6 @@ function cx2p_fReplaceFields($pText, $pFields, $pIsHtml, $pHtmlFieldList = [])
         $tDoc = cx2p_fLoadHtml($tHtml);
         return cx2p_fNodeHtml($tDoc, $tDoc->getElementsByTagName('body')->item(0), false);
     }, $pText);
-}
-
-// ----------------------------------------
-// A paragraph block listing the error messages, one per line. Messages
-// can hold submitted file names, so they are escaped like field values.
-function cx2p_fErrorBlock($pErrorList)
-{
-    $tLineList = [];
-    foreach ($pErrorList as $tMsg) {
-        $tLineList[] = str_replace(['[', ']'], ['&#91;', '&#93;'], esc_html((string) $tMsg));
-    }
-    $tHtml = '<p>Upload errors:<br>' . implode('<br>', $tLineList) . '</p>';
-    return [
-        'blockName'    => 'core/paragraph',
-        'attrs'        => [],
-        'innerBlocks'  => [],
-        'innerHTML'    => $tHtml,
-        'innerContent' => [$tHtml],
-    ];
 }
 
 // ----------------------------------------

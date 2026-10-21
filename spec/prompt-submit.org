@@ -148,6 +148,8 @@ on a WordPress site. Nothing is committed or pushed.
   them.
 
 ** Prompt 4
+- NOTE: this failed. Reverted code back to point before this.
+
 + The code for this plugin contact-2-post.php is at:
   https://github.com/TurtleEngr/WP-contact-2-post/tree/feature/save-error-log
 
@@ -231,6 +233,8 @@ describe the old behavior. I left them alone because they read like
 records of past prompts.
 
 ** Prompt 5
+- NOTE: Need to redo this
+
 + The code for this plugin contact-2-post is at
   https://github.com/TurtleEngr/WP-contact-2-post
   develop branch
@@ -280,6 +284,8 @@ anything at line 670, because =cx2p_fCleanHtml()= has already removed
 those. =php -l= passes.
 
 ** Prompt 6
+- NOTE: Ignore this one.
+
 VERSION-dev: 1.4.1
 
 + The code for this plugin contact-2-post is at

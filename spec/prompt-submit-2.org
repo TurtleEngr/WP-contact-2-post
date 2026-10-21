@@ -1,0 +1,103 @@
+* Submit Pluging to wordpress.org - Round 2 after major rollback
+
+** Prompt 1
+
++ The code for this plugin contact-2-post is at
+  https://github.com/TurtleEngr/WP-contact-2-post
+  branch: develop
+
++ Note: the previous changes have been reverted back to an earlier
+  version, so refresh what you know from the current develop branch.
+
++ Goal: Change the error reporting in contact-2-post.php. Do not save
+  the errors in the DB or in error_log(). When a contact-form-7 form
+  is submitted and that triggers this plugin's code at
+  contact-2-post.php. If there are any errors, report them with a
+  WordPress popup window.
+
++ Also, update README.org to describe how errors are handled, and list
+  all the possible errors that might popup.
+
++ Follow the directions in CLAUDE.org
+
+** Response 1
+
++ Q: WordPress has no built-in popup for visitors on the front
+  end. The errors would be added to CF7's reply to the browser, and
+  the plugin's JS would show them. What kind of popup do you want?
+  + A: Browser alert()
+
++ Q: With no log, email or DB, the person who submits the form is the
+  only one who sees errors. Setup errors (post_template not set,
+  template page not found, ATTR-END missing, wp_insert_post failed)
+  are about the site, not the submission. Should the popup show them?
+  + A: Show them all
+
+I'll pull the current =develop= and look at its error handling before
+deciding anything.
+
+I'll make a browser =alert()= that shows every error. First I'll check
+CF7's submit event details, the existing JS file and CodingStyle.org.
+
+Now the JS. I'll add the popup to the existing script, which CF7 pages
+already load:
+
+Both checks pass: the reply only gets =cx2p_errors= when there are
+errors, and the alert only appears in that case. (The one remaining
+match is the new filter reading the list.) Now README.org:
+
+The popup actually appears before CF7 shows its own message, because
+CF7 writes its message after the =wpcf7submit= event, so I'll fix that
+sentence in the README:
+
+Errors now show up as a browser =alert()= when the form is submitted,
+and nothing is saved to the database or the PHP log. The three files
+are attached in full, based on =develop= (85d7a6b):
+contact-2-post.php, js/cx2p-paste.js and README.org. The popup itself
+also needs a JS change, so cx2p-paste.js is the third file.
+
+I tested with stand-in versions of WordPress and the browser, not on a
+real WordPress site. =php -l= and =node --check= pass. The reply
+carries the errors only when there are some, and the alert only
+appears then.
+
+*** contact-2-post.php
+- =cx2p_fErrorLog()= no longer calls =error_log()=. It only keeps the
+  list in memory for that one submission.
+- The 5 direct =error_log()= calls now use =cx2p_fErrorLog()= instead,
+  so all 9 errors show in the popup.
+- New =cx2p_fFeedbackResponse()=, hooked to CF7's
+  =wpcf7_feedback_response= filter. It adds the list to CF7's reply to
+  the browser as =cx2p_errors=. That filter runs after everything
+  else, so every error has been collected by then.
+- Removed the "Upload errors:" block in the post (=cx2p_fErrorBlock=,
+  and the =$pErrorList= parameter), because it was saved in the
+  database.
+
+*** js/cx2p-paste.js
+- New =cx2p_fShowErrors()= listens for CF7's =wpcf7submit= event and
+  shows the alert.
+- I put it in this file rather than a new one, because CF7 pages
+  already load it. A new file would also mean changing the Makefile's
+  zip file list and adding another script to load. The cost is that
+  the name "paste" no longer quite fits; I updated the comment at the
+  top.
+
+*** README.org
+- New "Error Popup" section: how it works, when the popup doesn't
+  appear, and all 9 possible errors with what each one means.
+- Updated the 3 places that mentioned =error_log=.
+- Removed the "debug-log-manager" install step, since nothing is
+  logged now, and renumbered the steps after it.
+
+*** Things to know:
+- **No popup on a PHP fatal error.** The form gets no reply at all, so
+  there is nothing to show. That's the case where your form never
+  returned, and this change doesn't fix it.
+- **No popup without JavaScript.** If JavaScript is off in the
+  browser, the errors are lost.
+- **Visitors see server details.** As you chose, all errors are shown,
+  so visitors also see setup errors. The "copy failed" and "not added
+  to Media Library" messages include the full server path.
+- **Not changed:** development.org still says =cx2p_fErrorLog()=
+  writes to the PHP log. Want me to update it as well?
