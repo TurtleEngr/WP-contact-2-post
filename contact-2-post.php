@@ -467,7 +467,7 @@ function cx2p_fTextBlock($pBlock, $pMatch, $pText, $pFields, $pHtmlFieldList)
     $tEdge = '(\s|&nbsp;|<br\s*/?>)*';
     $pText = preg_replace("#^$tEdge|$tEdge\$#i", '', $pText);
     $pText = force_balance_tags(cx2p_fReplaceFields($pText, $pFields, true, $pHtmlFieldList));
-    if (trim(str_replace('&nbsp;', ' ', strip_tags($pText))) === '') {
+    if (trim(str_replace('&nbsp;', ' ', wp_strip_all_tags($pText))) === '') {
         return [];
     }
     $tHtml = $pMatch[1] . $pText . $pMatch[3];
@@ -640,7 +640,9 @@ function cx2p_fReplaceFields($pText, $pFields, $pIsHtml, $pHtmlFieldList = [])
             return $tValue;
         }
         $tHtml = in_array($pMatch[1], $pHtmlFieldList, true) ? cx2p_fCleanHtml($tValue) : '';
-        if ($tHtml === strip_tags($tHtml)) {
+        // wp_strip_all_tags() trims, so trim here too, or a value with
+        // no tags but with edge white space would be taken as HTML.
+        if (trim($tHtml) === wp_strip_all_tags($tHtml)) {
             return str_replace(['[', ']'], ['&#91;', '&#93;'], nl2br(esc_html($tValue), false));
         }
         $tDoc = cx2p_fLoadHtml($tHtml);

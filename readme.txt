@@ -8,45 +8,41 @@ Stable tag: VERSION
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-When a Contact Form 7 form is submitted, this plugin saves uploaded
-images to the Media Library, and it can create a "pending post" from a
-post page template.
+When a contact-form-7 form is submitted, this plugin saves uploaded
+images to Media Library, then it creates a post from a template page.
 
 == Description ==
 
-When a Contact Form 7 form is submitted and Flamingo saves the
-message, this plugin will create a post with status "Pending," when
-"create_post: true" is in the "Additional Settings" for the form.
+With this plugin a contact-form-7 form can be used to create a post.
+The created post will have a "Pending" status. See the documentation
+for how to configure this plugin, contact-form-7, and flamingo.
 
 Required plugins: contact-form-7, flamingo.
 
 Optional plugin: ninja-auto-post-expire - If this plugin is installed
-the "expiry date" field for a post can be set with this
-(contact-2-post) plugin.
+the "expiry date" field for a post can be set with this plugin.
 
 This plugin assumes you are using Gutenberg Blocks for editing.
 
 Files uploaded with the Contact Form 7 "[file NAME]" fields are saved
-to the Media Library before the email is sent. Only image files are
-saved. The type is checked from the file content, and the file
-extension must also be an allowed image type. Other files are
-skipped, and a line is written to the PHP error log. File names are
-reduced to the characters a-z, A-Z, 0-9, ".", "_" and "-", and
-existing files are never overwritten: "_1", "_2", and so on is added
-to the name.
+to the Media Library. Only image files are saved. The type is checked
+from the file content, and the file extension must also be an allowed
+image type. Other files are skipped, and the error is reported in a
+popup. File names are reduced to the characters a-z, A-Z, 0-9, ".",
+"_" and "-", and existing files are never overwritten: "_1", "_2", and
+so on is added to the name.
 
-The images are attached to the created post, and the first image is
-used for the Featured Image. If an uploaded file could not be saved,
-the error messages for that submission are added to the end of the
-post, after "Upload errors:".
+The images URLs added to the created post, and the first uploaded
+image is used for the Featured Image. If an uploaded file could not be
+saved, the error message is reported with a popup.
 
 == Installation ==
 
 Install these plugins in this order.
 
-1. Install and activate contact-form-7 plugin.
-1. Install and activate flamingo plugin.
-1. Install and activate this plugin contact-2-post
+1. Install contact-form-7 plugin.
+1. Install flamingo plugin.
+1. Install this plugin contact-2-post
 
 If the save-cf7-file-uploads plugin is installed, delete it. That
 functionallity is handled by this plugin.
@@ -58,28 +54,28 @@ In the "Additional Settings" tab for a contact form make sure
 
 = Where can I get more documentation =
 
-See: https://github.com/TurtleEngr/WP-contact-2-post
+See: https://turtleengr.github.io/WP-contact-2-post/
 
-= How can I configure Contact Form 7 to use this? ==
+= How do I configure Contact Form 7 to use this? ==
 
-See:
-https://github.com/TurtleEngr/WP-contact-2-post#contact-form-settings
+See: https://turtleengr.github.io/WP-contact-2-post/#contact-form-settings
 
-= How can I define a template for the posts?
+= How do I define a template for the posts?
 
-See:
-https://github.com/TurtleEngr/WP-contact-2-post#contact-form-settings
+See: https://turtleengr.github.io/WP-contact-2-post/#template-page
 
-= Where can I report bug or feature requests? =
+= Where can I report bugs or feature requests? =
 
-See: https://github.com/TurtleEngr/WP-contact-2-post Issues
+See: https://github.com/TurtleEngr/WP-contact-2-post/issues
 
 = Where can I find newer versions? =
 
-The latest "stable version" can be found as wordpress.org.
+The latest "stable version" can be found at
+https://moria.whyayh.com/rel/released/software/own/WP-contact-2-post/
+(or if accepted, at wordpress.org.)
 
 For development versions see:
-https://github.com/TurtleEngr/WP-contact-2-post#development-installs
+https://turtleengr.github.io/WP-contact-2-post/#development-installs
 
 == Changelog ==
 
@@ -94,8 +90,8 @@ https://github.com/TurtleEngr/WP-contact-2-post#development-installs
 
 - Changed to follow the wordpress.org plugin guidelines.
 
-- Merged in the save-cf7-file-uploads plugin. The function and filter
-  prefix is now cx2p_. That plugin is no longer needed.
+- Merged in the save-cf7-file-uploads plugin functionallity.
+  That plugin should not be installed.
 
 - Fixed: uploaded images were not attached to the post (hook name
   mismatch).

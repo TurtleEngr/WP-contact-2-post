@@ -19,50 +19,50 @@
 
 
 - When a Contact Form 7 form is submitted, this plugin saves the
-  uploaded image files to the Media Library. Then, after Flamingo
-  saves the message, this plugin can create a "pending post" from a
-  template post page. The first uploaded image is attached as the
-  post's featured image
+  uploaded image files to the Media Library. Then this plugin can
+  create a "pending post" from a template post page. The first
+  uploaded image is attached as the post's featured image
 
 ** Installation
 
 1. Install contact-form-7 plugin.
    + Rollback to version 6.1.7, if date fields don't work. For why see
      issue: https://github.com/TurtleEngr/WP-contact-2-post/issues/1
-     Install "WP Rollback" plugin to rollback.
+     Installing "WP Rollback" plugin is the easiest way to rollback
+     the plugin.
 2. Install flamingo plugin.
 3. Optional: Install ninja-auto-post-expire plugin
 4. If save-cf7-file-uploads is installed, delete it. It is not
    compatible with this plugin.
-5. Install and activate this plugin contact-2-post
+5. Install and activate this plugin: contact-2-post
 
 *** Development Installs
 
-These are not stable versions. ver-VERSION-rel is the current stable
-version.
+Some of these are not stable versions. ver-VERSION-rel is the current
+stable version.
 
-1. Follow Installation steps 1 to 3 above.
+1. Follow the Installation steps 1 to 3 above.
 2. Go to: https://moria.whyayh.com/rel/released/software/own/WP-contact-2-post
 3. Then download the contact-2-VER.zip file you want.
-4. In WordPress, install with Upload Plugin, then activate.
+4. In WordPress, install with Upload Plugin.
 
 ** Usage
 
-To use this plugin, you need to add some things to your contact forms.
-See "Contact Form Settings" section.
+To use this plugin, you need to add some things to your
+contact-forms-7 forms.  See "Contact Form Settings" section.
 
-Also, you need to define a template for your posts.  See "Template
+Also, you need to create a template for your posts.  See "Template
 Page" section.
 
 Uploaded images are saved for every form, even without =create_post=.
 See "Uploaded Files" section.
 
-If you installed ninja-auto-post-expire, you will the "Post" option
-needs to be set to "Yes" in its Post Expire Settings.
+If you installed ninja-auto-post-expire, the "Post" option needs to be
+set to "Yes" for the Post Expire Settings.
 
 *** Contact Form Settings
 
-In a form's "Additional Settings" tab, add these settings:
+In the contact form's "Additional Settings" tab, add these settings:
 
 #+begin_example
 create_post: true
@@ -86,29 +86,29 @@ do_not_store: false
   it is set to 'true', the form data will not be stored and this
   contact-2-post plugin will not work.
 
-While this plugin does not "publish" the posts, you should turn
-on reCAPTCHA in contact-form-7 settings so your admin doesn't get
-spammed with bot submitted "Pending" posts.
+This plugin does not "publish" the posts, but you should turn on
+reCAPTCHA in contact-form-7 settings so your admin doesn't get spammed
+with bot submitted "Pending" posts.
 
 *** Template Page
 
-All the blocks of the 'PageSlug' page are copied to the new
+All the blocks of the ='PageSlug'= page are copied to the new
 post. {field} is replaced with the value of the form 'field' with that
-name. Values are HTML escaped, and "[" "]" in values are encoded so
-they cannot run a shortcode. Checkbox values are joined with ", ". If
-there is no field with that name, {field} is left as is.
+name. The field's HTML text is escaped. Also, "[" "]" is encoded so
+they cannot run a shortcode. Checkbox values are joined with ",". If
+there is no fields with that name, {field} is left as is.
 
-Textarea fields are the exception: they can have some HTML. When
-HTML text is pasted into a form's textarea, it is cleaned, and the
-textarea shows the HTML tags that are kept. Only these tags are kept:
-h1, h2, h3, h4, a, p, b, strong, i, em, ul, ol, li, br. All
-attributes are removed, except href on "a" tags, and only for http,
-https, or mailto URLs. Other tags are removed (their text is kept), and script and
+Textarea fields are the exception: they can have some HTML. When HTML
+text is pasted into a form's textarea, it is cleaned, and the textarea
+shows the HTML tags that are kept. Only these tags are kept: h1, h2,
+h3, h4, a, p, b, strong, i, em, ul, ol, li, br. All attributes are
+removed, except href on "a" tags, and only for http, https, or mailto
+URLs. Other tags are removed (their text is kept), and script and
 style elements are removed with their content. The same cleaning is
 done again when the post is created. If a textarea value has none of
 the allowed tags, it is escaped like other fields.
 
-So the post can be edited in the block editor, a {field} with p,
+So that the post can be edited in the block editor, a {field} with p,
 h1-h4, ul, or ol tags is changed to blocks: Paragraph, Heading, and
 List blocks. This only works when the {field} is in a Paragraph block
 in the template. Any text before or after the {field} in that
@@ -116,13 +116,11 @@ paragraph is put in its own paragraph. In other blocks (for example a
 Heading), only the inline tags are kept, and the block tags are
 changed to line breaks.
 
-A post has attributes that are not blocks. This is how they are
-defined in the page template. After the page's title, put the post's
-attribute lines between ATTR-BEGIN and ATTR-END lines (one per line,
-or separated with Shift-Enter). They can be in one top-level block or
-in several. Every top-level block from the one with ATTR-BEGIN to the
-one with ATTR-END are not copied. They are used to set the post's
-attributes. FYI, all these are optional.
+A post's attributes are not blocks, so they are defined in the
+template between ATTR-BEGIN and ATTR-END lines, which are put after
+the Title.  ATTR-BEGIN to ATTR-END and the text between them are not
+copied to the post; they are used to set the post's attributes. FYI,
+all of them are optional.
 
 #+begin_example
 ATTR-BEGIN
@@ -155,7 +153,7 @@ shown in the error popup. See "Error Popup".
 *** Uploaded Files
 
 Files uploaded with the Contact Form 7 =[file NAME]= field are saved
-to the Media Library before the email is sent.
+to the Media Library.
 
 1. Only image files are saved. The type is checked from the file
    content, and the file extension must also be an allowed image
@@ -166,16 +164,17 @@ to the Media Library before the email is sent.
 3. Existing files are never overwritten. "_1", "_2", ... is added to
    the base name instead.
 
-If a post is created, the images are attached to it, and the first
-image is the post's Featured Image.
+If a post is created, the first saved image is the post's Featured
+Image.
 
 *** Error Popup
 
 Errors found while a form submission is processed are collected in
-memory. When Contact Form 7 sends its reply back to the browser, the
-errors are added to it, and the browser shows them in a popup
-(=alert()=). The form's normal message is shown after the popup is
-closed.
+memory.
+
+When Contact Form 7 form is submitted any errors in contac-2-form will
+be reported in a popup, usually a post will not be created. For
+example:
 
 #+begin_example
 Contact 2 Post errors:
@@ -183,18 +182,14 @@ Contact 2 Post errors:
 - invalid expire-date: "2026-13-01"
 #+end_example
 
-The errors are not saved in the database, not added to the post, and
-not written to the PHP error log. They are only shown to the person
-who submitted the form, so watch for the popup when you test a form.
-
 The popup is not shown if:
 + there were no errors.
 + JavaScript is turned off in the browser.
 + PHP stopped with a fatal error. Then the form does not get a reply
   at all.
 
-These are all the errors that can be in the popup. NAME is the
-uploaded file's name, PATH is where it was to be saved on the server.
+These are all the possible errors. NAME is the uploaded file's name,
+PATH is where it was to be saved on the server.
 
 + Uploaded files. These can happen with any form, even without
   =create_post=. The other uploaded files are still saved.
@@ -219,7 +214,6 @@ uploaded file's name, PATH is where it was to be saved on the server.
   + =wp_insert_post failed: REASON= - WordPress could not create the
     post.
   + =invalid expire-date: "VALUE"= - expire-date is not YYYY-MM-DD.
-    The post is made, with no expiry date.
 
 ** Examples
 Complete examples can be found at

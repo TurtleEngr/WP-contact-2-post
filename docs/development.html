@@ -25,13 +25,14 @@
     <li><code class="verbatim">make</code></li>
     <li><code class="verbatim">pandoc</code> - convert org files to markdown
     format</li>
-    <li><code class="verbatim">perl</code></li>
-    <li><code class="verbatim">php</code> - for the pod2* programs</li>
+    <li><code class="verbatim">perl</code> - for the pod2* programs. Needed
+    by org2html.sh</li>
+    <li><code class="verbatim">php</code></li>
     <li><code class="verbatim">pod2markdown</code> - libpod-markdown-perl
     pkg</li>
     <li><code class="verbatim">pod2pdf</code> - optional</li>
     <li><code class="verbatim">sed</code></li>
-    <li><code class="verbatim">tidy</code></li>
+    <li><code class="verbatim">tidy</code> - needed by org2html.sh</li>
     <li><code class="verbatim">zip</code></li>
   </ul>
   <h3 id="custom-scripts">Custom Scripts</h3>
@@ -81,9 +82,9 @@
   <h2 id="to-build">To Build</h2>
   <h3 id="modify-the-makefile">Modify the Makefile</h3>
   <p>Define the location of where the plugin's zip file will be saved.</p>
-  <pre class="example"><code>mServer = moria.whyayh.com
-mPubDev = /rel/development/software/own/$(mProj)
-mPubRel = /rel/released/software/own/$(mProj)
+  <pre class="example"><code>mServer = example.com
+mPubDev = /rel/development/$(mProj)
+mPubRel = /rel/released/$(mProj)
 </code></pre>
   <h3 id="build-steps">Build steps</h3>
   <h4>=make=</h4>
@@ -114,7 +115,7 @@ mPubRel = /rel/released/software/own/$(mProj)
     branches)</li>
     <li>Save a stable (tested) development version</li>
     <li>Tag the version, push to develop</li>
-    <li>Merge develop to main (which is a stable development version)</li>
+    <li>Merge develop to main</li>
   </ul>
   <h4>=make release=</h4>
   <ul>

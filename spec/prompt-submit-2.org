@@ -101,3 +101,39 @@ appears then.
   to Media Library" messages include the full server path.
 - **Not changed:** development.org still says =cx2p_fErrorLog()=
   writes to the PHP log. Want me to update it as well?
+
+** Prompt 2
+
++ The code for this plugin contact-2-post is at
+  https://github.com/TurtleEngr/WP-contact-2-post
+  develop branch
+
++ Goal: Change contact-2-post.php so that it uses wp_strip_all_tags()
+  not strip_tags()
+
++ You can ignore all the text in the spec/ directory.
+
++ Follow the directions in CLAUDE.org
+
+** Response 2
+
+I'll pull the current =develop=, since the code may have changed since my last copy.
+
+Both call sites are the same as last time, so I'll make the same two changes:
+
+contact-2-post.php now uses =wp_strip_all_tags()= in both places that had =strip_tags()=. The complete file is attached, based on the current =develop= (9218f5c), so your alert-popup commit is kept.
+
+- **Line 470, =cx2p_fTextBlock=:** a direct swap. The result was
+  already trimmed, so =wp_strip_all_tags()= trimming it too changes
+  nothing.
+
+- **Line 643, =cx2p_fReplaceFields=:** I also changed the left side of
+  the "no tags" check to =trim($tHtml)=, with a two-line comment.
+  - =wp_strip_all_tags()= trims its result. With a plain swap, a
+    textarea value with no tags but a trailing newline would be
+    treated as HTML, and its line breaks would collapse.
+  - The 11-value test from the earlier version still applies: the new
+    check matches the old =strip_tags()= result every time, and a
+    plain swap gets 2 of them wrong.
+
+=php -l= passes, and no =strip_tags()= calls are left.
