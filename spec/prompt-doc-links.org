@@ -89,3 +89,61 @@ The "How to add documentation, and support links" item in
 
 ** Response 2
 
+I'll pull the latest code and derive the call graph mechanically from
+the source, so the outline matches what's actually there.
+
+Comments mention function names too ("See cx2p_fCleanHtml"), which
+gives false edges. I'll rerun with comments stripped:
+
+I have a clean call graph. I'll write it as an org outline, matching
+the repo's other docs: one call tree per WordPress hook, then the same
+functions in dependency order with leaves first.
+
+Checking the outline against the code: every function is listed, and
+every function's level is above all the functions it calls.
+
+The outline is in =function-outline.org=, written in org format to
+match your other docs, so it could go in =spec/=. It covers the
+current =develop= branch, commit 6ca6e37.
+
+It has two views of the same 29 functions:
+
+1. **Call tree by entry point.** WordPress starts every call through
+   one of four hooks:
+   - =plugin_row_meta= calls =cx2p_fMetaLinks=.
+   - =wpcf7_enqueue_scripts= calls =cx2p_fEnqueuePasteScript=.
+   - =wpcf7_before_send_mail= calls =cx2p_fOnBeforeCf7SendMail=, which
+     saves the uploads.
+   - =wpcf7_after_flamingo= calls =cx2p_fAfterFlamingo=, which creates
+     the post. This is the deep branch, eight levels down to
+     =cx2p_fTidyInline=.
+
+   Calls are listed in the order they happen, with line
+   numbers. Repeated subtrees are marked "(see above)" and the three
+   recursive functions are marked.
+
+2. **Dependency order, leaves first, in levels 0 to 7.** Each function
+   only calls functions at lower levels or itself. Level 0 has 16
+   functions that call no other plugin functions;
+   =cx2p_fAfterFlamingo= is alone at level 7.
+
+- I built the call graph from the source with comments stripped,
+  because comments like "See cx2p_fCleanHtml" would otherwise add
+  false links. I then checked the finished outline against the code:
+  every function appears in both views, and each one's level is
+  exactly one above the deepest function it calls. Every function is
+  reachable from one of the four hooks, so there's no dead code.
+
+- A short notes section covers the two places this isn't obvious from
+  the code alone. The upload errors and attachment IDs pass between
+  the two form-submit hooks in static lists inside =cx2p_fErrorLog=
+  and =cx2p_fSaveAttachId=. And =submit.php= calls
+  =cx2p_fCreateAttachment= directly for testing.
+
+- I'm not committing or pushing =spec/function-outline.org=, for the
+  same reason as the last two times. Your CLAUDE.org says not to write
+  to any GitHub repository and to return complete files, and that
+  comes ahead of the hook.
+
+- The file is already in the conversation for you to add to =spec/=
+  and commit yourself.

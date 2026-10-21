@@ -153,40 +153,15 @@ mPubRel = /rel/released/software/own/$(mProj)
       IDs with <code class="verbatim">cx2p_fSaveAttachId()</code>.</p>
     </li>
     <li>
-      <p>Error messages are saved with <code class=
-      "verbatim">cx2p_fErrorLog($pMsg, $pAdminOnly)</code>. Calling
-      <code class="verbatim">cx2p_fErrorLog()</code> with no argument returns
-      the list: <code class="verbatim">[[msg, adminOnly], ...]</code>. The
-      list is a <code class="verbatim">static</code> variable, and each form
-      submission is one PHP request with its own memory, so an email only has
-      the errors from its own submission, even when several people submit at
-      the same time. The errors are not saved in the database, not added to
-      the post, and not written to the PHP error log.</p>
-      <ul>
-        <li>Submission errors (uploaded file not saved, invalid expire-date)
-        use <code class="verbatim">$pAdminOnly</code> false.</li>
-        <li>Site setup errors (<code class="verbatim">post_template</code>
-        not set, template page not found, ATTR-END not found, <code class=
-        "verbatim">wp_insert_post</code> failed) use <code class=
-        "verbatim">$pAdminOnly</code> true.</li>
-      </ul>
-    </li>
-    <li>
-      <p><code class="verbatim">cx2p_fSendErrors()</code> is hooked to
-      <code class="verbatim">wpcf7_submit</code> at priority 20, after
-      Flamingo (priority 10, which fires <code class=
-      "verbatim">wpcf7_after_flamingo</code>), so all errors are collected.
-      It runs even when <code class="verbatim">create_post</code> is not set
-      or Flamingo does not store the message. If there are errors, it sends
-      them with <code class="verbatim">wp_mail()</code>:</p>
-      <ul>
-        <li>to the site's <code class="verbatim">admin_email</code>: all
-        errors.</li>
-        <li>to the form's <code class="verbatim">your-email</code> field:
-        only the errors that are not admin-only. Not sent for spam, if the
-        address is not valid (<code class="verbatim">is_email()</code>), or
-        if it is the same as the admin email.</li>
-      </ul>
+      <p>Upload error messages are saved with <code class=
+      "verbatim">cx2p_fErrorLog()</code>, which also writes them to the PHP
+      error log. Calling <code class="verbatim">cx2p_fErrorLog()</code> with
+      no argument returns the list. The list is a <code class=
+      "verbatim">static</code> variable, and each form submission is one PHP
+      request with its own memory, so a post only gets the errors from its
+      own submission, even when several people submit at the same time. The
+      messages are not kept after the request ends; the PHP error log still
+      has them.</p>
     </li>
     <li>
       <p>These filters can change how uploads are saved: <code class=
@@ -253,7 +228,7 @@ mPubRel = /rel/released/software/own/$(mProj)
    aria-hidden="true"
    tabindex="-1"></a><span class=
    "ex">wp</span> eval-file test/submit.php badslug       <span class=
-   "co"># no post, error emailed to admin</span></span>
+   "co"># no post, error_log</span></span>
 <span id="cb3-7"><a href="#cb3-7"
    aria-hidden="true"
    tabindex="-1"></a><span class=
