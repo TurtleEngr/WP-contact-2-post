@@ -278,3 +278,105 @@ calls, and both now use =wp_strip_all_tags()=:
 The script/style removal in =wp_strip_all_tags()= doesn't change
 anything at line 670, because =cx2p_fCleanHtml()= has already removed
 those. =php -l= passes.
+
+** Prompt 6
+VERSION-dev: 1.4.1
+
++ The code for this plugin contact-2-post is at
+  https://github.com/TurtleEngr/WP-contact-2-post
+  develop branch
+
++ When testing contact-2-post.php, I gave a URL for an image that does
+  not exist. When I submitted the form it did not return, and no email
+  was sent. Is there some way for errors to be reflected back to the
+  contact-form-7 when there is an error found when submitting a form?
+  Can a "timeout" be set to return some kind of response, if functions
+  are not returning?
+
++ You can ignore all the text in the spec/ directory.
+
++ Follow the directions in CLAUDE.org
+
+** Response 6
+I'll read CLAUDE.org and pull the latest =develop= to see how image
+URLs are handled now.
+
+The plugin never fetches a URL, so I'll look at how the example form
+and template use URLs.
+
+The plugin has no code that fetches a URL. I'll check in the CF7
+source how a plugin can send a message back to the form.
+
+You can do both, but I don't think a slow function is what stopped
+your form. Nothing in contact-2-post.php downloads or checks an image
+URL, so a missing image can't make the plugin wait. I read through CF7
+itself, and the likelier cause is a PHP error that CF7's browser code
+never handles.
+
+**Why the form never returned**
+- CF7's browser code sends the form and waits for the answer with no
+  timeout. It also has no error handler (=await apiFetch(...)= in
+  =submit.js=).
+- If the server answers with an error (HTTP 500 from a PHP fatal
+  error, or a broken JSON reply), that code throws and stops. The
+  spinner then keeps going forever, which matches what you saw.
+- The error email is sent last in the request (=wpcf7_submit=,
+  priority 20). So a fatal error anywhere earlier also means no email.
+- A second possibility: the site is slow or stuck sending mail. With
+  =skip_mail: on=, =wp_mail()= is only called when there are errors,
+  so only error cases would stall. If an SMTP plugin is set up,
+  PHPMailer waits up to 300 seconds by default.
+
+**How to find which it is**
+1. In the browser, open DevTools → Network, submit the form, and click
+   the =feedback= request.
+   - Status 500 means a PHP error.
+   - "Pending" for a long time means the server is stuck.
+2. Turn on =WP_DEBUG_LOG= and look in =wp-content/debug.log=. PHP
+   still logs fatal errors there; only the plugin's own logging was
+   removed.
+3. Send me the result and say which field held the URL (url, text or
+   textarea) and where its ={field}= is in the template. Then I can
+   reproduce it.
+
+**Sending errors back to the form.** CF7 offers three hooks:
+- **Validation (=wpcf7_validate_url= and similar):** runs before
+  anything is saved. It shows a message next to the field and the form
+  isn't submitted. This is the place to reject a bad URL; checking the
+  image actually exists would need an HTTP request with a short
+  timeout.
+- **Abort in =wpcf7_before_send_mail=:** set =$abort = true= and call
+  =$submission->set_response('…')=. The form shows that
+  message. Flamingo doesn't store aborted submissions, so no post is
+  made.
+- **=wpcf7_feedback_response= filter:** runs after everything else,
+  just before the answer goes back. It can add the submitter's errors
+  to the message, for example "Sent, but image x.exe was not
+  saved". The post is still created. This fits the current design
+  best.
+
+None of these helps when PHP dies with a fatal error, because the
+request stops before any answer is built.
+
+**A timeout**
+- **On the server, it won't work reliably.** On Linux, PHP's
+  =max_execution_time= doesn't count time spent waiting on the
+  network, mail or the database. When it does trigger, it is itself a
+  fatal error, so the form gets no usable answer anyway. What you can
+  do is put timeouts on the calls that can block:
+  - The =timeout= argument of =wp_remote_get()=, if the plugin ever
+    checks URLs.
+  - =$phpmailer->Timeout= through the =phpmailer_init= hook, for SMTP.
+- **In the browser, it works.** The plugin already loads
+  =js/cx2p-paste.js= on CF7 pages, and a small addition there could
+  act as a watchdog:
+  - Start a timer on CF7's =wpcf7beforesubmit= event.
+  - If =wpcf7submit= doesn't arrive within about 60 seconds, or the
+    request fails, show a message and stop the spinner. The message
+    would say the submission may not have gone through, and not to
+    resend it yet.
+  - This covers both the PHP-error case and the stuck-server case.
+
+My suggestion is to find the actual cause first. Then I'd add the
+=wpcf7_feedback_response= message and the browser watchdog. Want me to
+write those two, or wait until you've checked the Network tab?
