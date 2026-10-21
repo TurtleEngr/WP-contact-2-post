@@ -167,7 +167,21 @@ to the Media Library.
 If a post is created, the first saved image is the post's Featured
 Image.
 
-*** Error Popup
+** Examples
+Complete examples can be found at
+<a href="example.html" target="_blank"> Contact 2 Post Examples</a>
+
+** Support
+
+Plugin bugs and documentation bugs can be filed at: [[https://github.com/TurtleEngr/WP-contact-2-post/issues][Issues]] You can
+also make Feature Requests there.
+
+** For Developers
+
+If you want to modify the plugin's code, you can find the directions
+at: <a href="development.html" target="_blank"> Plugin Development</a>
+
+** Error Popup
 
 Errors found while a form submission is processed are collected in
 memory.
@@ -214,17 +228,3 @@ PATH is where it was to be saved on the server.
   + =wp_insert_post failed: REASON= - WordPress could not create the
     post.
   + =invalid expire-date: "VALUE"= - expire-date is not YYYY-MM-DD.
-
-** Examples
-Complete examples can be found at
-<a href="example.html" target="_blank"> Contact 2 Post Examples</a>
-
-** Support
-
-Plugin bugs and documentation bugs can be filed at: [[https://github.com/TurtleEngr/WP-contact-2-post/issues][Issues]] You can
-also make Feature Requests there.
-
-** For Developers
-
-If you want to modify the plugin's code, you can find the directions
-at: <a href="development.html" target="_blank"> Plugin Development</a>
