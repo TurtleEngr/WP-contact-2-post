@@ -15,12 +15,238 @@
   <h3 id="contact">Contact</h3>
   <p>Create contact form: add-post</p>
   <h4>Form</h4>
+  <pre class=
+  "example"><code>&lt;details&gt;&lt;summary&gt;Click here for more details...&lt;/summary&gt;
+You can click on the lines with an arrow icon to get more details
+about a field. Fields with a * are required. When you submit this form
+an email will be sent to website editors and/or a pending post will be
+created.
+&lt;/details&gt;
+
+Your full name*
+    [text* your-name autocomplete:name minlength:3 maxlength:60 size:60
+    placeholder "First L."]
+
+&lt;details&gt;&lt;summary&gt;Your email*...&lt;/summary&gt;
+We need this if we have questions about the event.
+&lt;/details&gt;
+    [email* your-email autocomplete:email minlength:3 maxlength:60 size:60]
+
+&lt;h2&gt;Details&lt;/h2&gt;
+
+&lt;details&gt;&lt;summary&gt;Title*...&lt;/summary&gt;
+Required. The short title part that is before a ":".
+&lt;/details&gt;
+    [text* your-subject minlength:5 maxlength:60 size:40 placeholder "Title"]
+
+&lt;details&gt;&lt;summary&gt;Subtitle...&lt;/summary&gt;
+Optional: The part of the title that is usually after the ":" or on
+the line below the title.
+&lt;/details&gt;
+    [text subtitle-1 minlength:5 maxlength:80 size:80 placeholder "Subtitle"]
+
+&lt;details&gt;&lt;summary&gt;Author*...&lt;/summary&gt;
+Required. Primary author for a book or article. If more than one put
+the other names in the Authors field. If no author, maybe use the
+publication's name?
+&lt;/details&gt;
+    [text* Author-1 minlength:5 maxlength:60 size:60 placeholder "Last, First"]
+
+&lt;details&gt;&lt;summary&gt;Authors...&lt;/summary&gt;
+If more than one author, put the other author names here.
+&lt;/details&gt;
+    [text Author-2 minlength:5 maxlength:80 size:80 placeholder "First Last, ..."]
+
+&lt;details&gt;&lt;summary&gt;Publication Date*...&lt;/summary&gt;
+Publish date of a book or an article. Guess, if you don't know, or put
+in the date you saw the article.
+&lt;/details&gt;
+    [date* pub-date-1 minlength:10 maxlength:12 size:12]
+
+&lt;details&gt;&lt;summary&gt;Publisher...&lt;/summary&gt;
+For books this is easy. For articles, the publication name or
+publisher.  For videos, the Channel name or the hosting organization
+name.
+&lt;/details&gt;
+    [text publisher-1 minlength:5 maxlength:60 size:60 placeholder "Publisher"]
+
+&lt;details&gt;&lt;summary&gt;Main URL*...&lt;/summary&gt;
+If book, the URL for where the book could be bought.
+If article, URL for article
+If video, URL for video
+&lt;/details&gt;
+    [url* main-url-1 minlength:10 maxlength:400 placeholder "https://Main-URL"]
+
+&lt;details&gt;&lt;summary&gt;Suggested Image URL...&lt;/summary&gt;
+While optional, your post will go up a lot faster if you include an
+image. URL for event post's images. Or use the next field to attach an
+image.
+&lt;/details&gt;
+    [url image-url-1 minlength:10 maxlength:400 placeholder "https://IMAGE-URL"]
+
+&lt;details&gt;&lt;summary&gt;Attach Suggested Image...&lt;/summary&gt;
+Optional. Attach an image from your PC (jpg, jpeg, png). 5MB limit.
+&lt;/details&gt;
+    [file image-file-1 limit:5mb filetypes:jpg|jpeg|png]
+
+&lt;details&gt;&lt;summary&gt;Summary* (5,000ch)...&lt;/summary&gt;
+Give a brief summary of the book or article.
+Also include URL's for, author interviews or talks, author website,
+author blog site such as substack.
+If you want to post a complete article, contact the webteam.
+&lt;/details&gt;
+    [textarea* summary-1 maxlength:5000 placeholder "Description"]
+
+&lt;h2&gt;&lt;a target="_blank" href="/categories-and-tags/"&gt;categories-and-tags list&lt;/a&gt;&lt;/h2&gt;
+
+&lt;details&gt;&lt;summary&gt;Categories*......&lt;/summary&gt;
+Check all that apply. For a complete list of categories, see: &lt;a
+target="_blank"
+href="/categories-and-tags/#categories"&gt;categories-and-tags&lt;/a&gt;. Add
+the alternative category in the "Notes" textbox.
+&lt;/details&gt;
+    [checkbox* category-1
+  "announcement"
+  "article"
+  "book"
+  "document"
+  "documentary"
+  "handout"
+  "newsletter"
+  "organization"
+  "photos"
+  "podcast"
+  "townhall"
+  "video"
+  "website"
+ "Other - see Notes"]
+
+&lt;details&gt;&lt;summary&gt;Tags*...&lt;/summary&gt;
+Check all that apply. For a complete list of tags,
+see &lt;a target="_blank"
+href="/categories-and-tags/#tags-with-descriptions-and-counts"&gt;categories-and-tags&lt;/a&gt;.
+Add the alternative tags in the "Notes" text box.
+&lt;/details&gt;
+    [checkbox* tags-1
+  "building"
+  "community"
+  "critical-thinking"
+  "decision-process"
+  "donate"
+  "finding-common-goals"
+  "history"
+  "local"
+  "music"
+  "news"
+  "psychology"
+  "review"
+  "speech"
+  "summary"
+  "Other - see Notes"]
+
+&lt;details&gt;&lt;summary&gt;Featured...&lt;/summary&gt;
+Do you want the post to be "Featured?"
+&lt;/details&gt;
+    [radio featured-1 default:1 "No" "Yes"]
+
+&lt;details&gt;&lt;summary&gt;Notes to editor (2,000ch)...&lt;/summary&gt;
+Notes to web team. For example: formatting requests, video links to
+author interviews, links to review articles, etc.
+&lt;/details&gt;
+    [textarea notes-1 maxlength:2000 placeholder "Directions to the editor."]
+
+[submit "Send"]
+</code></pre>
   <h4>Mail</h4>
+  <pre class="example"><code>To: ORG-post@googlegroups.com
+From: [_site_title] &lt;admin@example.com&gt;
+Subject: Add Post: [your-subject]
+Additional headers: Reply-To: ORG-post@googlegroups.com
+</code></pre>
+  <h5>Message Body</h5>
+  <pre class="example"><code>From: [your-name] [your-email]
+Subject: Add Post [your-subject]
+
+Name: [your-name]
+Email: [your-email]
+
+Details:
+    Title: [your-subject]
+    Subtitle: [subtitle-1]
+    Author: [Author-1]
+    Other-Authors: [Author-2]
+    Pub-Date: [pub-date-1]
+    Publisher: [publisher-1]
+    Main-URL: [main-url-1]
+    Image-URL: [image-url-1]
+    See attached file for image.
+
+Summary:
+    [summary-1]
+
+Category: [category-1]
+Tags: [tags-1]
+Featured: [featured-1]
+Also see suggested categories and tags in Notes.
+
+Notes:
+    [notes-1]
+
+--
+A "pending post" with "[your-subject]" may have been created.
+
+If you will be handling this request, please send an email to
+ORG-post@googlegroups.com to let others know, so there is no
+duplication.
+
+This message is from the add-post-form on website [_site_title] at URL
+[_site_url]
+</code></pre>
   <h4>Message</h4>
-  <h4>Additional</h4>
-  <h3 id="page">Page</h3>
+  <pre class=
+  "example"><code>Thank you for adding the post details. We will let you know when it
+is posted. Let us know if you saw an error popup, because that means
+your submission may have failed.
+</code></pre>
+  <h4>Additional Settings</h4>
+  <pre class="example"><code>skip_mail: on
+create_post: true
+do_not_store: false
+post_template: template-post
+</code></pre>
   <h3 id="template">Template</h3>
-  <p>Create a page named: template-post</p>
+  <p>Create a page named: template-post ##+begin<sub>example</sub> ATTR-BEGIN
+  title: <cite>{your-subject}</cite> categories: <cite>{category-1}</cite>
+  tags: <cite>{tags-1}</cite> publish-date: <cite>{pub-date-1}</cite>
+  ATTR-END</p>
+  <p><cite>{subtitle-1}</cite></p>
+  <p>By: <cite>{Author-1}</cite> and <cite>{Authors-1}</cite> Publisher:
+  <cite>{publisher-1}</cite> Recommended by: <cite>{your-name}</cite></p>
+  <p><cite>{summary-1}</cite></p>
+  <p>Buy/View: <cite>{main-url-1}</cite></p>
+  <p>Notes</p>
+  <p>For details, see the Contact form add-post and <a href=
+  "https://github.com/TurtleEngr/WP-contact-2-post">https://github.com/TurtleEngr/WP-contact-2-post</a></p>
+  <p>Name: <cite>{your-name}</cite> Email: <cite>{your-email}</cite>
+  Featured: <cite>{featured-1}</cite> Alt Image URL:
+  <cite>{image-url-1}</cite></p>
+  <p>Note: <cite>{notes-1}</cite></p>
+  <h3 id="page">Page</h3>
+  <p>Create a page named: Add a Post Form</p>
+  <pre class=
+  "example"><code>Use this form to add new posts that would be of interest to ORG.
+The web team will receive an email and add the post.
+Do not use this for adding events; use the "Add Event Form."
+
+See the Guidelines for Posts page for the kinds of posts we are
+interested in.
+
+For event posts, use the "Add Event Form."
+
+For general questions, see the "Contact US" Form.
+
+[Contact Form 7: add-post]
+</code></pre>
   <h3 id="note">Note</h3>
   <p>If you have defined the publish-date, when you look at the generated
   post, its publish date it might show "immediately" which looks like it
@@ -31,12 +257,252 @@
   <h3 id="contact-1">Contact</h3>
   <p>Create contact form: add-event</p>
   <h4>Form</h4>
+  <pre class=
+  "example"><code>&lt;details&gt;&lt;summary&gt;Click here for more details...&lt;/summary&gt;
+You can click on the lines with an arrow icon to get more details
+about a field. Fields with a * are required. When you submit this form
+an email will be sent to website editors and/or a pending event post
+will be created.
+&lt;/details&gt;
+
+Your name*
+    [text* your-name autocomplete:name minlength:3 maxlength:60
+    placeholder "First Last"]
+
+&lt;details&gt;&lt;summary&gt;Your email*...&lt;/summary&gt;
+We need this if we have questions about the event.
+&lt;/details&gt;
+    [email* your-email autocomplete:email minlength:8 maxlength:60]
+
+&lt;details&gt;&lt;summary&gt;Is this urgent?...&lt;/summary&gt;
+If Yes, we will try to get this posted soon (1 to 2 days).
+&lt;/details&gt;
+    [radio urgent-1 default:1 "Normal" "Urgent"]
+
+&lt;details&gt;&lt;summary&gt;&lt;b&gt;Event URL...&lt;/b&gt;&lt;/summary&gt;
+If the event is posted at another site where people can sign up, or
+get more information, please include that URL.
+&lt;/details&gt;
+    [url event-url-1 minlength:10 maxlength:400 placeholder "https://EVENT-URL"]
+
+&lt;details&gt;&lt;summary&gt;Is this an ORG-Sponsored event or meeting?&lt;/summary&gt;
+ORG sponsored events will probably be featured on the home page. A
+"Yes" means the Council has approved sponsoring this event. You can
+use the "Contact Us" form to ask.
+&lt;/details&gt;
+    [radio org-event-1 default:1 "No" "Need-to-Ask" "Yes"]
+
+&lt;h2&gt;Details&lt;/h2&gt;
+
+&lt;details&gt;&lt;summary&gt;Title*...&lt;/summary&gt;
+Required.
+&lt;/details&gt;
+    [text* your-subject minlength:5 maxlength:40 placeholder "Title of event"]
+
+&lt;details&gt;&lt;summary&gt;Date*...&lt;/summary&gt;
+Required. The event post will "expire" after this date. However, the
+post might be reused later to post photos from the event.
+&lt;/details&gt;
+    [date* date-1 minlength:10 maxlength:20 placeholder "YYYY-MM-DD"]
+
+&lt;details&gt;&lt;summary&gt;Begin Time...&lt;/summary&gt;
+Use 24-hour format. For example, use 14:30 for 2:30pm.
+If this is an all day event, say that in the "Notes" textbox.
+&lt;/details&gt;
+    [text time-beg-1 size:5 minlength:5 maxlength:5 placeholder "HH:MM 24-hour format"]
+
+&lt;details&gt;&lt;summary&gt;End Time...&lt;/summary&gt;
+Required, if there is a begin time.
+&lt;/details&gt;
+    [text time-end-1 size:5 minlength:5 maxlength:5 placeholder "HH:MM 24-hour format"]
+
+&lt;details&gt;&lt;summary&gt;Is this a repeating event?...&lt;/summary&gt;
+If Yes, describe the repeating information in the "Notes" textbox.
+&lt;/details&gt;
+    [radio repeating-1 default:1 "No" "Yes"]
+
+&lt;details&gt;&lt;summary&gt;Location...&lt;/summary&gt;
+Required. Give the address or if an online event, give the URL.
+&lt;/details&gt;
+    [text location-1 minlength:5 maxlength:80 placeholder "street, city, or URL"]
+
+&lt;details&gt;&lt;summary&gt;Group's URL...&lt;/summary&gt;
+Optional. The sponsoring group's URL.
+&lt;/details&gt;
+    [url group-url-1 minlength:10 maxlength:400 placeholder "https://GROUP-URL"]
+
+&lt;details&gt;&lt;summary&gt;Suggested Image URL...&lt;/summary&gt;
+Optional. URL for event post's images. Or use the next field to attach
+an image.
+&lt;/details&gt;
+    [url image-url-1 minlength:10 maxlength:400 placeholder "https://IMAGE-URL"]
+
+&lt;details&gt;&lt;summary&gt;Attach Suggested Image...&lt;/summary&gt;
+Optional. Attach an image file from your PC (jpg, png). 3MB
+limit. Preferred aspect ratio 16:9 or 9:16.
+&lt;/details&gt;
+    [file image-file-1 limit:3mb filetypes:jpg|jpeg|png]
+
+&lt;details&gt;&lt;summary&gt;Describe the event* (5,000ch limit)...&lt;/summary&gt;
+Required. Give details about the event. What is the purpose, group
+sponsoring the event, directions, etc. Only include plain text
+here--do not cut/paste formatted text.
+&lt;/details&gt;
+    [textarea* event-details-1 maxlength:5000 placeholder "Describe the event"]
+
+&lt;h2&gt;&lt;a target="_blank" href="/categories-and-tags/"&gt;categories-and-tags list&lt;/a&gt;&lt;/h2&gt;
+
+&lt;details&gt;&lt;summary&gt;Categories*...&lt;/summary&gt;
+Check all that apply. For a complete list of categories, see: &lt;a
+target="_blank"
+href="/categories-and-tags/#categories"&gt;categories-and-tags&lt;/a&gt;. Add
+the alternative category in the "Notes" textbox.
+&lt;/details&gt;
+    [checkbox* category-1 default:1
+ "announcement"
+ "podcast"
+ "townhall"
+ "webinar"
+ "Other - see Notes"]
+
+&lt;details&gt;&lt;summary&gt;Tags*...&lt;/summary&gt;
+Check all that apply. For a complete list of tags, see &lt;a
+target="_blank"
+href="/categories-and-tags/#tags-with-descriptions-and-counts"&gt;categories-and-tags&lt;/a&gt;. Add
+the alternative tags in the "Notes" text box.
+&lt;/details&gt;
+    [checkbox* tags-1 default:1
+ "event"
+ "meeting"
+ "Other - see Notes"]
+
+&lt;details&gt;&lt;summary&gt;Notes to editor (1,000ch)...&lt;/summary&gt;
+Details for the web-team. This will not go in the event's post. For
+example, if this is a repeating event, describe that here. Also,
+suggest other categories and tags here.
+&lt;/details&gt;
+    [textarea event-notes-1 maxlength:1000]
+
+[submit "Send"]
+</code></pre>
   <h4>Mail</h4>
+  <pre class="example"><code>To: ORG-post@googlegroups.com
+From: [_site_title] &lt;admin@example.com&gt;
+Subject: Add Event: [your-subject] [date-1] [urgent-1]
+Additional headers: Reply-To: ORG-post@googlegroups.com
+</code></pre>
+  <h6>Message Body</h6>
+  <pre class="example"><code>From: [your-name] [your-email]
+Subject: Add Event: [your-subject] [date-1]
+
+Name: [your-name]
+Email: [your-email]
+
+Urgent: [urgent-1]
+
+Event-URL: [event-url-1]
+    (All the details may be at the Event-URL. The following values
+    may override things.)
+
+ORG Sponsored event? [org-event-1]
+
+Details:
+    Title: [your-subject]
+    Date:  [date-1]
+    Begin Time: [time-beg-1]
+    End Time:   [time-end-1]
+    Repeating:  [repeating-1] If yes, see Notes
+    Location:  [location-1]
+    Group-URL: [group-url-1]
+
+    Image-URL: [image-url-1]
+    Image, see attached file?
+
+Event-Description:
+    [event-details-1]
+
+Categories: [category-1]
+    Always category: announcement
+
+Tags: [tags-1]
+    Always tag: event
+
+Also see suggested categories and tags in Notes.
+
+Notes:
+    [event-notes-1]
+
+--
+A "pending post event" with "[your-subject]" may have been created.
+
+If you will be handling this request, please send an email to
+org-post@googlegroups.com to let others know, so there is no
+duplication.
+
+This message is from the add-event form on website [_site_title] at
+URL [_site_url]
+</code></pre>
   <h4>Message</h4>
+  <pre class=
+  "example"><code>Thank you for adding your event details. We will let you know when it
+is posted. Let us know if you saw an error popup, because that means
+your submission may have failed.
+</code></pre>
   <h4>Additional</h4>
-  <h3 id="page-1">Page</h3>
+  <pre class="example"><code>skip_mail: on
+create_post: true
+do_not_store: false
+post_template: template-event
+</code></pre>
   <h3 id="template-1">Template</h3>
   <p>Create a page named: template-event</p>
+  <pre class="example"><code>ATTR-BEGIN
+title: <cite>{your-subject}</cite>
+categories: <cite>{category-1}</cite>
+tags: <cite>{tags-1}</cite>
+publish-date: <cite>{date-1}</cite>
+expire-date: <cite>{time-beg-1}</cite>
+expire-time: <cite>{time-end-1}</cite>
+ATTR-END
+
+When: <cite>{date-1}</cite>, <cite>{time-beg-1}</cite> to <cite>{time-end-1}</cite>
+Location: <cite>{location-1}</cite>
+By: <cite>{group-url}</cite>
+
+<cite>{event-details-1}</cite>
+
+Event URL: <cite>{event-url-1}</cite>
+
+Notes
+
+For details, see the Contact form add-event and
+https://github.com/TurtleEngr/WP-contact-2-post
+
+Name: <cite>{your-name}</cite>
+Email: <cite>{your-email}</cite>
+Urgent: <cite>{urgent-1}</cite>
+ORG Sponsored event? <cite>{org-event-1}</cite>
+Repeating: <cite>{repeating-1}</cite>
+Alt Image URL: <cite>{image-url-1}</cite>
+
+Note: <cite>{event-notes-1}</cite>
+</code></pre>
+  <h3 id="page-1">Page</h3>
+  <p>Create a page named: Add An Event Form</p>
+  <pre class=
+  "example"><code>Use this form only for events that would be of interest to ORG.  The
+web team will receive an email and add the event to the website.
+
+See the Guidelines for Posts page for the kinds of events we are
+interested in.
+
+For general posts (books, articles, videos, etc.), use the "Add Post
+Form."
+
+For general questions, use the "General Contact" Form.
+
+[Contact Form 7: add-event]
+</code></pre>
   <h3 id="note-1">Note</h3>
 </body>
 </html>

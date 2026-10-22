@@ -149,16 +149,17 @@ $(mProduct) : $(mBuildList)
 	-touch $@
 
 docs/index.html : README.org VERSION
+	bin/rm-trailing-sp $?
 	bin/org2html.sh -i README.org -o $@ -s 2
 	sed -i "s/VERSION/$$(cat VERSION)/" $@
-	bin/rm-trailing-sp $@
+	sed -i 's/\&amp;/\&/g' $@
 
 README.md : README.org VERSION
+	bin/rm-trailing-sp $?
 	bin/pandoc -f org -t markdown <README.org | awk '/<!DOCTYPE html>/,/```/ {next} /```{=html}/ {next} {print $$0}' >$@
 	sed -i "s/VERSION/$$(cat VERSION)/" $@
 	sed -i 's/^\[version]/![version]/' $@
 	sed -i 's/^\[WordPress]/![WordPress]/' $@
-	bin/rm-trailing-sp $@
 
 check-dev :
 	if diff -q VERSION VERSION-dev >/dev/null 2>&1; then \
@@ -206,7 +207,11 @@ dist/$(mName)/LICENSE : LICENSE
 	-cp $? $@
 
 docs/development.html : development.org
+	bin/rm-trailing-sp $?
 	bin/org2html.sh -i $? -o $@ -s 2
+	sed -i 's/\&amp;/\&/g' $@
 
 docs/example.html : example.org
+	bin/rm-trailing-sp $?
 	bin/org2html.sh -i $? -o $@ -s 2
+	sed -i 's/\&amp;/\&/g' $@
