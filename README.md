@@ -1,10 +1,10 @@
 # Contact 2 Post
 
-![version](https://img.shields.io/badge/version-1.4.5-orange.svg)
+![version](https://img.shields.io/badge/version-1.4.6-orange.svg)
 
 ![WordPress](https://img.shields.io/badge/WordPress-Compatible-blue.svg)
 
--   ver-1.4.5
+-   ver-1.4.6
 
 <!-- -->
 ```
@@ -154,7 +154,7 @@ are saved to the Media Library.
 2.  File names are normalized. File names can only contain letters in
     the set: \[a-zA-Z0-9.\_-\]. Any letters not in the set are converted
     to a \"[\", and repeated \"]{.underline}\" are collapsed.
-3.  Existing files are never overwritten. \"~1~\", \"~2~\", ... is added
+3.  Existing files are never overwritten. \"\_1\", \"\_2\", ... is added
     to the base name instead.
 
 If a post is created, the first saved image is the post\'s Featured
@@ -163,7 +163,7 @@ Image.
 ## Examples
 
 Complete examples can be found at \<a href=\"example.html\"
-target=\"~blank~\"\> Contact 2 Post Examples\</a\>
+target=\"\_blank\"\> Contact 2 Post Examples\</a\>
 
 ## Support
 
@@ -174,7 +174,7 @@ also make Feature Requests there.
 ## For Developers
 
 If you want to modify the plugin\'s code, you can find the directions
-at: \<a href=\"development.html\" target=\"~blank~\"\> Plugin
+at: \<a href=\"development.html\" target=\"\_blank\"\> Plugin
 Development\</a\>
 
 ## Error Popup
