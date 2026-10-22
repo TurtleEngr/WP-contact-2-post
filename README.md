@@ -1,10 +1,10 @@
 # Contact 2 Post
 
-![version](https://img.shields.io/badge/version-1.4.6-orange.svg)
+![version](https://img.shields.io/badge/version-1.4.7-orange.svg)
 
 ![WordPress](https://img.shields.io/badge/WordPress-Compatible-blue.svg)
 
-ver-1.4.6
+ver-1.4.7
 
 When a Contact Form 7 form is submitted, this plugin saves the uploaded
 image files to the Media Library. Then this plugin can create a

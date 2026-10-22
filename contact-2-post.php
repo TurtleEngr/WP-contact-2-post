@@ -5,7 +5,6 @@
  * Description: When a Contact Form 7 form is submitted, this plugin saves uploaded images to the Media Library, and can create a pending post from a template post page.
  * Version: VERSION
  * Requires at least: 6.0
- * Tested up to: 7.1
  * Requires Plugins: contact-form-7, flamingo
  * Requires PHP: 8.0
  * Author: TurtleEngr
