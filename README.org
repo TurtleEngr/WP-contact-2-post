@@ -38,8 +38,7 @@
 
 *** Development Installs
 
-Some of these are not stable versions. ver-VERSION-rel is the current
-stable version.
+Some of these are not stable versions.
 
 1. Follow the Installation steps 1 to 3 above.
 2. Go to: https://moria.whyayh.com/rel/released/software/own/WP-contact-2-post

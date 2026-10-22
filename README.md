@@ -29,8 +29,7 @@
 
 ### Development Installs
 
-Some of these are not stable versions. ver-1.4.5-rel is the current
-stable version.
+Some of these are not stable versions.
 
 1.  Follow the Installation steps 1 to 3 above.
 2.  Go to:
