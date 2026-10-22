@@ -78,14 +78,38 @@ The "How to add documentation, and support links" item in
 =spec/todo.org= can be closed. I didn't edit that file.
 ** Prompt 2
 
-+ Goal: Given the code contact-2-post.php I would like your to make
-  an outline of the functions showing there dependency order by how
-  they are called.
++ Goal: Given the code in contact-2-post.php, I would like you to make
+  an outline of the functions showing their dependency order, starting
+  with when a contact-form-7 is submitted. Put output in
+  function.org
 
 + The code for this plugin is at:
   https://github.com/TurtleEngr/WP-contact-2-post
 
-+ Follow the directions in CLAUDE.org
-
 ** Response 2
 
+I'll pull the plugin source, trace the call chain from the Contact
+Form 7 submit hook, and write the outline to function.org.
+
+I've written function.org. It traces a submission through three hooks,
+in the order they run in the same request:
+
+1. =wpcf7_before_send_mail=: saves the uploaded images.
+2. =wpcf7_after_flamingo=: builds the pending post from the template
+   page.
+3. =wpcf7_feedback_response=: adds any saved errors to the reply sent
+   to the browser.
+
+The outline also has:
+- a short setup section (=plugins_loaded=, plus the script loaded when
+  the form page is shown);
+- separate sections for the two shared helpers, =cx2p_fReplaceFields=
+  and the HTML-to-blocks functions;
+- a numbered list of every function with its dependencies listed
+  before it, so the simplest functions come first.
+
+All 28 =cx2p_= functions in contact-2-post.php are reachable from a
+hook. Three of them call themselves: =cx2p_fReplaceInBlock=,
+=cx2p_fListBlock= and =cx2p_fNodeHtml=.
+
+I've only read the repo and haven't written anything to it.
