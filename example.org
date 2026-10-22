@@ -540,3 +540,4 @@ For general questions, use the "General Contact" Form.
 #+end_example
 
 *** Note
+The publish date will be "now" when you publish the event post.
