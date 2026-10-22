@@ -119,7 +119,6 @@ publish : check-rel
 	rsync -a $(mDocList) readme.txt dist/$(mName)-$$(cat VERSION).zip $(mServer):$(mPubRel)
 	ssh $(mServer) mv -f $(mPubRel)/index.html $(mPubRel)/README.html
 	cp VERSION VERSION-pub
-	incver.sh -p
 	-git ci -am Updated
 	git push origin develop
 	@echo 'If OK, make release'

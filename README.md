@@ -1,10 +1,10 @@
 # Contact 2 Post
 
-![version](https://img.shields.io/badge/version-1.4.6-orange.svg)
+![version](https://img.shields.io/badge/version-1.4.5-orange.svg)
 
 ![WordPress](https://img.shields.io/badge/WordPress-Compatible-blue.svg)
 
--   ver-1.4.6
+-   ver-1.4.5
 
 <!-- -->
 ```
@@ -29,7 +29,7 @@
 
 ### Development Installs
 
-Some of these are not stable versions. ver-1.4.6-rel is the current
+Some of these are not stable versions. ver-1.4.5-rel is the current
 stable version.
 
 1.  Follow the Installation steps 1 to 3 above.
