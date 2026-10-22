@@ -156,7 +156,7 @@ docs/index.html : README.org VERSION
 
 README.md : README.org VERSION
 	bin/rm-trailing-sp $?
-	bin/pandoc -f org -t markdown <README.org | awk '/<!DOCTYPE html>/,/```/ {next} /```{=html}/ {next} {print $$0}' >$@
+	pandoc -f org -t markdown <README.org | awk '/```{=html}/ {next} /<!DOCTYPE html>/,/```/ {next} {print $$0}' >$@
 	sed -i "s/VERSION/$$(cat VERSION)/" $@
 	sed -i 's/^\[version]/![version]/' $@
 	sed -i 's/^\[WordPress]/![WordPress]/' $@
