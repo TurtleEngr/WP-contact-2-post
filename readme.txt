@@ -79,6 +79,10 @@ https://turtleengr.github.io/WP-contact-2-post/#development-installs
 
 == Changelog ==
 
+= 1.4.6 =
+
+- Updated documentation.
+
 = 1.4.2 =
 
 - Report errors with a popup.
