@@ -4,14 +4,12 @@
 
 ![WordPress](https://img.shields.io/badge/WordPress-Compatible-blue.svg)
 
--   ver-1.4.6
+ver-1.4.6
 
-
-
--   When a Contact Form 7 form is submitted, this plugin saves the
-    uploaded image files to the Media Library. Then this plugin can
-    create a \"pending post\" from a template post page. The first
-    uploaded image is attached as the post\'s featured image
+When a Contact Form 7 form is submitted, this plugin saves the uploaded
+image files to the Media Library. Then this plugin can create a
+\"pending post\" from a template post page. The first uploaded image is
+attached as the post\'s featured image
 
 ## Installation
 
@@ -60,7 +58,7 @@ create_post: true
 post_template: PageSlug
 skip_mail: on
 do_not_store: false
-
+```
 
 -   `create_post`{.verbatim} - this contact-2-post plugin option. If
     \'true\' that activates this plugin
@@ -122,7 +120,7 @@ publish-date: {field}
 expire-date: {field}
 expire-time: {field}
 ATTR-END
-
+```
 
 -   `title`{.verbatim} - post title. See Flamingo documentation for how
     to change {your-subject} Default: UNDEFINED
@@ -189,7 +187,7 @@ be reported in a popup, usually a post will not be created. For example:
 Contact 2 Post errors:
 - file type not allowed, not saved: photo.exe
 - invalid expire-date: "2026-13-01"
-
+```
 
 The popup is not shown if:
 

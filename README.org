@@ -16,13 +16,12 @@
 
 [[https://img.shields.io/badge/WordPress-Compatible-blue.svg][WordPress]]
 
-- ver-VERSION
+ver-VERSION
 
-
-- When a Contact Form 7 form is submitted, this plugin saves the
-  uploaded image files to the Media Library. Then this plugin can
-  create a "pending post" from a template post page. The first
-  uploaded image is attached as the post's featured image
+When a Contact Form 7 form is submitted, this plugin saves the
+uploaded image files to the Media Library. Then this plugin can create
+a "pending post" from a template post page. The first uploaded image
+is attached as the post's featured image
 
 ** Installation
 
