@@ -148,8 +148,8 @@ $(mProduct) : $(mBuildList)
 
 docs/index.html : README.org VERSION
 	bin/rm-trailing-sp $?
+	sed -i "s/^ver-[0-9.]*/ver-$$(cat VERSION)/" README.org
 	bin/org2html.sh -i README.org -o $@ -s 2
-	sed -i "s/VERSION/$$(cat VERSION)/" $@
 	sed -i 's/\&amp;/\&/g' $@
 
 check-dev :
