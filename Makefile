@@ -24,7 +24,6 @@ mBuildList = \
 
 # Generated files that will be put in docs/
 mDocList = \
-	README.md \
 	docs/development.html \
 	docs/example.html \
 	docs/index.html
@@ -152,14 +151,6 @@ docs/index.html : README.org VERSION
 	bin/org2html.sh -i README.org -o $@ -s 2
 	sed -i "s/VERSION/$$(cat VERSION)/" $@
 	sed -i 's/\&amp;/\&/g' $@
-
-README.md : README.org VERSION
-	bin/rm-trailing-sp $?
-	pandoc -f org -t markdown <README.org | awk '/```{=html}/ {next} /<!DOCTYPE html>/,/```/ {next} {print $$0}' >$@
-	sed -i 's/^<!-- -->//' $@
-	sed -i "s/VERSION/$$(cat VERSION)/" $@
-	sed -i 's/^\[version]/![version]/' $@
-	sed -i 's/^\[WordPress]/![WordPress]/' $@
 
 check-dev :
 	if diff -q VERSION VERSION-dev >/dev/null 2>&1; then \

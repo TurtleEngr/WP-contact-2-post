@@ -12,10 +12,6 @@
 #+END_EXPORT
 * Contact 2 Post
 
-[[https://img.shields.io/badge/version-VERSION-orange.svg][version]]
-
-[[https://img.shields.io/badge/WordPress-Compatible-blue.svg][WordPress]]
-
 ver-VERSION
 
 When a Contact Form 7 form is submitted, this plugin saves the
